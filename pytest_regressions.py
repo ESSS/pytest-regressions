@@ -11,14 +11,13 @@ import pytest
 import yaml
 
 
-
 def pytest_addoption(parser):
-    group = parser.getgroup('regressions')
+    group = parser.getgroup("regressions")
     group.addoption(
-        '--force-regen',
-        action='store_true',
+        "--force-regen",
+        action="store_true",
         default=False,
-        help='Re-generate all data_regression fixture data files.',
+        help="Re-generate all data_regression fixture data files.",
     )
 
 
@@ -88,7 +87,7 @@ class DataRegressionFixture(object):
             """Dump dict contents to the given filename"""
             import yaml
 
-            with filename.open('wb') as f:
+            with filename.open("wb") as f:
                 yaml.dump_all(
                     [data_dict],
                     f,
@@ -96,7 +95,7 @@ class DataRegressionFixture(object):
                     default_flow_style=False,
                     allow_unicode=True,
                     indent=2,
-                    encoding='utf-8',
+                    encoding="utf-8",
                 )
 
         _regression_check(
@@ -105,7 +104,7 @@ class DataRegressionFixture(object):
             request=self.request,
             check_fn=_check_text_files,
             dump_fn=dump,
-            extension='.yml',
+            extension=".yml",
             basename=basename,
             fullpath=fullpath,
             force_regen=self.force_regen,
@@ -116,17 +115,17 @@ class DataRegressionFixture(object):
 
 
 def _regression_check(
-        datadir,
-        original_datadir,
-        request,
-        check_fn,
-        dump_fn,
-        extension,
-        basename=None,
-        fullpath=None,
-        force_regen=False,
-        obtained_filename=None,
-        dump_aux_fn=lambda filename: [],
+    datadir,
+    original_datadir,
+    request,
+    check_fn,
+    dump_fn,
+    extension,
+    basename=None,
+    fullpath=None,
+    force_regen=False,
+    obtained_filename=None,
+    dump_aux_fn=lambda filename: [],
 ):
     """
     First run of this check will generate a expected file. Following attempts will always try to
@@ -169,29 +168,30 @@ def _regression_check(
         source_filename = (original_datadir / basename).with_suffix(dump_ext)
 
     def make_location_message(banner, filename, aux_files):
-        msg = [
-            banner,
-            '- {}'.format(filename),
-        ]
+        msg = [banner, "- {}".format(filename)]
         if aux_files:
-            msg.append('Auxiliary:')
-            msg += ['- {}'.format(x) for x in aux_files]
-        return '\n'.join(msg)
+            msg.append("Auxiliary:")
+            msg += ["- {}".format(x) for x in aux_files]
+        return "\n".join(msg)
 
-    force_regen = force_regen or request.config.getoption('force_regen')
+    force_regen = force_regen or request.config.getoption("force_regen")
     if not filename.is_file():
         source_filename.parent.mkdir(parents=True, exist_ok=True)
         dump_fn(source_filename)
         aux_created = dump_aux_fn(source_filename)
 
-        msg = make_location_message('File not found in data directory, created:', source_filename, aux_created)
+        msg = make_location_message(
+            "File not found in data directory, created:", source_filename, aux_created
+        )
         pytest.fail(msg)
     else:
         if obtained_filename is None:
             if fullpath:
-                obtained_filename = (datadir / basename).with_suffix('.obtained' + extension)
+                obtained_filename = (datadir / basename).with_suffix(
+                    ".obtained" + extension
+                )
             else:
-                obtained_filename = filename.with_suffix('.obtained' + extension)
+                obtained_filename = filename.with_suffix(".obtained" + extension)
 
         dump_fn(obtained_filename)
 
@@ -202,7 +202,7 @@ def _regression_check(
                 dump_fn(source_filename)
                 aux_created = dump_aux_fn(source_filename)
                 msg = make_location_message(
-                    'Files differ and --force-regen set, regenerating file at:',
+                    "Files differ and --force-regen set, regenerating file at:",
                     source_filename,
                     aux_created,
                 )
@@ -237,15 +237,16 @@ class RegressionYamlDumper(yaml.SafeDumper):
         """
         # Use multi-representer instead of simple-representer because it supports polymorphism.
         yaml.add_multi_representer(
-            data_type,
-            multi_representer=representer_fn,
-            Dumper=cls)
+            data_type, multi_representer=representer_fn, Dumper=cls
+        )
 
     # non-PEP 8 alias used internally at ESSS
     AddCustomYamlRepresenter = add_custom_yaml_representer
 
 
-def _check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encoding=None):
+def _check_text_files(
+    obtained_fn, expected_fn, fix_callback=lambda x: x, encoding=None
+):
     """
     Compare two files contents. If the files differ, show the diff and write a nice HTML
     diff file into the data directory.
@@ -272,7 +273,7 @@ def _check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encodi
     if obtained_lines != expected_lines:
         diff_lines = list(difflib.unified_diff(expected_lines, obtained_lines))
         if len(diff_lines) <= 500:
-            html_fn = obtained_fn.with_suffix('.diff.html')
+            html_fn = obtained_fn.with_suffix(".diff.html")
             try:
                 differ = difflib.HtmlDiff()
                 html_diff = differ.make_file(
@@ -282,20 +283,22 @@ def _check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encodi
                     todesc=obtained_fn,
                 )
             except Exception as e:
-                html_fn = '(failed to generate html diff: %s)' % e
+                html_fn = "(failed to generate html diff: %s)" % e
             else:
-                html_fn.write_text(html_diff, encoding='UTF-8')
+                html_fn.write_text(html_diff, encoding="UTF-8")
 
-            diff = ['FILES DIFFER:', str(expected_fn), str(obtained_fn)]
-            diff += ['HTML DIFF: %s' % html_fn]
+            diff = ["FILES DIFFER:", str(expected_fn), str(obtained_fn)]
+            diff += ["HTML DIFF: %s" % html_fn]
             diff += diff_lines
-            raise AssertionError('\n'.join(diff))
+            raise AssertionError("\n".join(diff))
         else:
             # difflib has exponential scaling and for thousands of lines it starts to take minutes to render
             # the HTML diff.
             msg = [
-                "Files are different, but diff is too big ({} lines)".format(len(diff_lines)),
+                "Files are different, but diff is too big ({} lines)".format(
+                    len(diff_lines)
+                ),
                 "- obtained: {}".format(obtained_fn),
                 "- expected: {}".format(expected_fn),
             ]
-            raise AssertionError('\n'.join(msg))
+            raise AssertionError("\n".join(msg))
