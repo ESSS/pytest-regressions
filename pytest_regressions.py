@@ -105,6 +105,9 @@ class DataRegressionFixture(object):
             force_regen=self.force_regen,
         )
 
+    # non-PEP 8 alias used internally at ESSS
+    Check = check
+
 
 def _regression_check(
         datadir,

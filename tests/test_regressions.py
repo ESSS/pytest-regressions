@@ -3,11 +3,6 @@ from __future__ import unicode_literals
 import os
 
 
-def test_foobar(data_regression):
-    contents = {'contents': 'Foo', 'value': 11}
-    data_regression.check(contents)
-
-
 def test_data_regression(testdir, monkeypatch):
     """
     :type testdir: _pytest.pytester.TmpTestdir
