@@ -1,12 +1,5 @@
 from __future__ import unicode_literals
 
-import os
-
-
-def test_foobar(data_regression):
-    contents = {'contents': 'Foo', 'value': 11}
-    data_regression.check(contents)
-
 
 def test_data_regression(testdir, monkeypatch):
     """
@@ -27,8 +20,8 @@ def test_data_regression(testdir, monkeypatch):
 
     def get_yaml_contents():
         yaml_filename = testdir.tmpdir / 'test_file' / 'test_1.yml'
-        assert os.path.isfile(yaml_filename)
-        with open(yaml_filename) as f:
+        assert yaml_filename.check(file=1)
+        with yaml_filename.open() as f:
             return yaml.load(f)
 
     check_regression_fixture(
