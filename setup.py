@@ -24,6 +24,9 @@ setup(
     long_description=read('README.rst'),
     py_modules=['pytest_regressions'],
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
+    extras_require={
+        'dev': ['pre-commit', 'restructuredtext-lint'],
+    },
     install_requires=[
         'pathlib2;python_version<"3.0"',
         'pytest-datadir>=1.1.0',
