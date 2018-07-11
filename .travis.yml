@@ -5,6 +5,8 @@ language: python
 
 jobs:
     include:
+      - python: 3.6
+        env: TOX_ENV=linting
       - python: 2.7
         env: TOX_ENV=py27
       - python: 3.5

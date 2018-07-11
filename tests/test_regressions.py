@@ -10,16 +10,18 @@ def test_data_regression(testdir, monkeypatch):
     import sys
     import yaml
 
-    monkeypatch.setattr(sys, 'testing_get_data', lambda: {'contents': 'Foo', 'value': 10}, raising=False)
-    source = '''
+    monkeypatch.setattr(
+        sys, "testing_get_data", lambda: {"contents": "Foo", "value": 10}, raising=False
+    )
+    source = """
         import sys
         def test_1(data_regression):
             contents = sys.testing_get_data()
             data_regression.check(contents)
-    '''
+    """
 
     def get_yaml_contents():
-        yaml_filename = testdir.tmpdir / 'test_file' / 'test_1.yml'
+        yaml_filename = testdir.tmpdir / "test_file" / "test_1.yml"
         assert yaml_filename.check(file=1)
         with yaml_filename.open() as f:
             return yaml.load(f)
@@ -29,14 +31,19 @@ def test_data_regression(testdir, monkeypatch):
         source=source,
         data_getter=get_yaml_contents,
         data_modifier=lambda: monkeypatch.setattr(
-            sys, 'testing_get_data', lambda: {'contents': 'Bar', 'value': 20}, raising=False),
-        expected_data_1={'contents': 'Foo', 'value': 10},
-        expected_data_2={'contents': 'Bar', 'value': 20},
+            sys,
+            "testing_get_data",
+            lambda: {"contents": "Bar", "value": 20},
+            raising=False,
+        ),
+        expected_data_1={"contents": "Foo", "value": 10},
+        expected_data_2={"contents": "Bar", "value": 20},
     )
 
 
 def check_regression_fixture(
-        testdir, source, data_getter, data_modifier, expected_data_1, expected_data_2):
+    testdir, source, data_getter, data_modifier, expected_data_1, expected_data_2
+):
     """
     Helper method to test regression fixtures like `data_regression`. Offers a basic template/script
     able to validate main behaviors expected by regression fixtures.
@@ -99,7 +106,7 @@ def check_regression_fixture(
     assert data_getter() == expected_data_1
 
     # force regeneration (test fails again)
-    result = testdir.inline_run('--force-regen')
+    result = testdir.inline_run("--force-regen")
     result.assertoutcome(failed=1)
     assert data_getter() == expected_data_2
 
