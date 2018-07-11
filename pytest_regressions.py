@@ -241,6 +241,9 @@ class RegressionYamlDumper(yaml.SafeDumper):
             multi_representer=representer_fn,
             Dumper=cls)
 
+    # non-PEP 8 alias used internally at ESSS
+    AddCustomYamlRepresenter = add_custom_yaml_representer
+
 
 def _check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encoding=None):
     """
