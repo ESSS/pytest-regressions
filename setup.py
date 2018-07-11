@@ -3,7 +3,7 @@
 
 import os
 import codecs
-from setuptools import setup
+from setuptools import setup, find_packages
 
 
 def read(fname):
@@ -22,7 +22,8 @@ setup(
     url="https://github.com/ESSS/pytest-regressions",
     description="Easy to use fixtures to write regression tests.",
     long_description=read("README.rst"),
-    py_modules=["pytest_regressions"],
+    packages=find_packages("src"),
+    package_dir={"": "src"},
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
     extras_require={"dev": ["pre-commit", "restructuredtext-lint"]},
     install_requires=[
@@ -48,5 +49,5 @@ setup(
         "Operating System :: OS Independent",
         "License :: OSI Approved :: MIT License",
     ],
-    entry_points={"pytest11": ["regressions = pytest_regressions"]},
+    entry_points={"pytest11": ["regressions = pytest_regressions.plugin"]},
 )
