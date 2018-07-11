@@ -1,64 +1,115 @@
-# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+import os
 
 
-def test_bar_fixture(testdir):
-    """Make sure that pytest accepts our fixture."""
+def test_foobar(data_regression):
+    contents = {'contents': 'Foo', 'value': 11}
+    data_regression.check(contents)
 
-    # create a temporary pytest test module
-    testdir.makepyfile("""
-        def test_sth(bar):
-            assert bar == "europython2015"
-    """)
 
-    # run pytest with the following cmd args
-    result = testdir.runpytest(
-        '--foo=europython2015',
-        '-v'
+def test_data_regression(testdir, monkeypatch):
+    """
+    :type testdir: _pytest.pytester.TmpTestdir
+
+    :type monkeypatch: _pytest.monkeypatch.monkeypatch
+    """
+    import sys
+    import yaml
+
+    monkeypatch.setattr(sys, 'testing_get_data', lambda: {'contents': 'Foo', 'value': 10}, raising=False)
+    source = '''
+        import sys
+        def test_1(data_regression):
+            contents = sys.testing_get_data()
+            data_regression.check(contents)
+    '''
+
+    def get_yaml_contents():
+        yaml_filename = testdir.tmpdir / 'test_file' / 'test_1.yml'
+        assert os.path.isfile(yaml_filename)
+        with open(yaml_filename) as f:
+            return yaml.load(f)
+
+    check_regression_fixture(
+        testdir,
+        source=source,
+        data_getter=get_yaml_contents,
+        data_modifier=lambda: monkeypatch.setattr(
+            sys, 'testing_get_data', lambda: {'contents': 'Bar', 'value': 20}, raising=False),
+        expected_data_1={'contents': 'Foo', 'value': 10},
+        expected_data_2={'contents': 'Bar', 'value': 20},
     )
 
-    # fnmatch_lines does an assertion internally
-    result.stdout.fnmatch_lines([
-        '*::test_sth PASSED*',
-    ])
 
-    # make sure that that we get a '0' exit code for the testsuite
-    assert result.ret == 0
+def check_regression_fixture(
+        testdir, source, data_getter, data_modifier, expected_data_1, expected_data_2):
+    """
+    Helper method to test regression fixtures like `data_regression`. Offers a basic template/script
+    able to validate main behaviors expected by regression fixtures.
 
+    Usage
+    -----
 
-def test_help_message(testdir):
-    result = testdir.runpytest(
-        '--help',
+    ```
+    import sys
+
+    monkeypatch.setattr(sys, 'get_data', lambda: 'foo', raising=False)
+    source = '''
+        import sys
+        def test_1(fake_regression):
+            data = sys.get_data()
+            fake_regression.Check(data)
+    '''
+
+    def get_data():
+        fake_filename = os.path.join(str(testdir.tmpdir), 'test_file', 'test_1.fake')
+        assert os.path.isfile(fake_filename)
+        with open(fake_filename) as f:
+            return f.read()
+
+    check_regression_fixture(
+        testdir,
+        source,
+        data_getter=get_data,
+        data_modifier=lambda: monkeypatch.setattr(sys, 'get_data', lambda: 'bar', raising=False),
+        expected_data_1='foo',
+        expected_data_2='bar',
     )
-    # fnmatch_lines does an assertion internally
-    result.stdout.fnmatch_lines([
-        'regressions:',
-        '*--foo=DEST_FOO*Set the value for the fixture "bar".',
-    ])
+    ```
 
+    :param Testdir testdir: `testdir` fixture. Requires pytest's `pytester` to be installed.
+    :param str source: Source code using regression fixture.
+    :param callable data_getter: Function without arguments that returns contents of file
+        created by regression test when it fails first time (i.e. the expected file for future
+        runs).
+    :param callable data_modifier: Function without arguments that must change data compared by
+        regression fixture so it fails in next comparison.
+    :param object expected_data_1: Expected data in expected file for first state of data.
+    :param object expected_data_1: Expected data in expected file for second state of data.
+    """
+    testdir.makepyfile(test_file=source)
 
-def test_hello_ini_setting(testdir):
-    testdir.makeini("""
-        [pytest]
-        HELLO = world
-    """)
+    # First run fails because there's no expected file yet
+    result = testdir.inline_run()
+    result.assertoutcome(failed=1)
 
-    testdir.makepyfile("""
-        import pytest
+    # ensure now that the file was generated and the test passes
+    assert data_getter() == expected_data_1
+    result = testdir.inline_run()
+    result.assertoutcome(passed=1)
 
-        @pytest.fixture
-        def hello(request):
-            return request.config.getini('HELLO')
+    # changing the regression data makes the test fail (file remains unchanged)
+    data_modifier()
+    result = testdir.inline_run()
+    result.assertoutcome(failed=1)
+    assert data_getter() == expected_data_1
 
-        def test_hello_world(hello):
-            assert hello == 'world'
-    """)
+    # force regeneration (test fails again)
+    result = testdir.inline_run('--force-regen')
+    result.assertoutcome(failed=1)
+    assert data_getter() == expected_data_2
 
-    result = testdir.runpytest('-v')
-
-    # fnmatch_lines does an assertion internally
-    result.stdout.fnmatch_lines([
-        '*::test_hello_world PASSED*',
-    ])
-
-    # make sure that that we get a '0' exit code for the testsuite
-    assert result.ret == 0
+    # test should pass again
+    result = testdir.inline_run()
+    result.assertoutcome(passed=1)

@@ -15,7 +15,8 @@ matrix:
         env: TOX_ENV=pypy
 
 install:
-  - pip install tox
+  - pip install -U pip
+  - pip install -U setuptools tox
 
 script:
   - tox -e $TOX_ENV
