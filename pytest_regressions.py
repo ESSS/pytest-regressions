@@ -76,13 +76,11 @@ class DataRegressionFixture(object):
         """
         __tracebackhide__ = False
 
-        import io
-
         def dump(filename):
             """Dump dict contents to the given filename"""
             import yaml
 
-            with io.open(filename, 'wb') as f:
+            with filename.open('wb') as f:
                 yaml.dump_all(
                     [data_dict],
                     f,
