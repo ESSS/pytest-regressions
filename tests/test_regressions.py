@@ -1,7 +1,5 @@
 from __future__ import unicode_literals
 
-import os
-
 
 def test_data_regression(testdir, monkeypatch):
     """

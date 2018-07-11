@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 import difflib
-from pathlib import Path
+import six
+
+if six.PY2:
+    from pathlib2 import Path
+else:
+    from pathlib import Path
 
 import pytest
 import yaml
+
 
 
 def pytest_addoption(parser):
@@ -54,8 +60,10 @@ class DataRegressionFixture(object):
         :type request: FixtureRequest
         """
         self.request = request
-        self.datadir = datadir
-        self.original_datadir = original_datadir
+        # coercing to Path here because pytest-datadir uses pathlib instead of pathlib2; should
+        # be fixed in the next release
+        self.datadir = Path(six.text_type(datadir))
+        self.original_datadir = Path(six.text_type(original_datadir))
         self.force_regen = False
 
     def check(self, data_dict, basename=None, fullpath=None):
@@ -95,7 +103,7 @@ class DataRegressionFixture(object):
             datadir=self.datadir,
             original_datadir=self.original_datadir,
             request=self.request,
-            check_fn=check_text_files,
+            check_fn=_check_text_files,
             dump_fn=dump,
             extension='.yml',
             basename=basename,
@@ -234,7 +242,7 @@ class RegressionYamlDumper(yaml.SafeDumper):
             Dumper=cls)
 
 
-def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encoding=None):
+def _check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encoding=None):
     """
     Compare two files contents. If the files differ, show the diff and write a nice HTML
     diff file into the data directory.
