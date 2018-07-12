@@ -126,9 +126,8 @@ def _regression_check(
     if fullpath:
         filename = source_filename = Path(fullpath)
     else:
-        dump_ext = extension
-        filename = (datadir / basename).with_suffix(dump_ext)
-        source_filename = (original_datadir / basename).with_suffix(dump_ext)
+        filename = datadir / (basename + extension)
+        source_filename = original_datadir / (basename + extension)
 
     def make_location_message(banner, filename, aux_files):
         msg = [banner, "- {}".format(filename)]
