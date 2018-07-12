@@ -93,7 +93,7 @@ def test_data_regression_full_path(testdir, tmpdir):
     source = """
         def test(data_regression):
             contents = {'data': [1, 2]}
-            data_regression.Check(contents, fullpath=%s)
+            data_regression.check(contents, fullpath=%s)
     """ % (
         repr(six.text_type(fullpath))
     )
@@ -142,38 +142,34 @@ def test_data_regression_no_aliases(testdir):
     result = testdir.inline_run()
     result.assertoutcome(failed=1)
 
-    with io.open(
-        os.path.join(six.text_type(testdir.tmpdir), "test_file", "test.yml"), "r"
-    ) as yaml_file:
-        yaml_file_contents = yaml_file.read()
-        assert yaml_file_contents == dedent(
-            """\
-            color1:
-            - 255
-            - 0
-            - 0
-            color2:
-            - 0
-            - 255
-            - 0
-            color3:
-            - 0
-            - 0
-            - 255
-            color4:
-            - 255
-            - 0
-            - 0
-            color5:
-            - 0
-            - 255
-            - 0
-            color6:
-            - 0
-            - 0
-            - 255
-            """
-        )
-
+    yaml_file_contents = testdir.tmpdir.join("test_file", "test.yml").read()
+    assert yaml_file_contents == dedent(
+        """\
+        color1:
+        - 255
+        - 0
+        - 0
+        color2:
+        - 0
+        - 255
+        - 0
+        color3:
+        - 0
+        - 0
+        - 255
+        color4:
+        - 255
+        - 0
+        - 0
+        color5:
+        - 0
+        - 255
+        - 0
+        color6:
+        - 0
+        - 0
+        - 255
+        """
+    )
     result = testdir.inline_run()
     result.assertoutcome(passed=1)

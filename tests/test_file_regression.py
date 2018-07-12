@@ -1,9 +1,8 @@
 # encoding: UTF-8
-import os
 import textwrap
+from pathlib import Path
 
 import pytest
-import six
 
 from pytest_regressions.testing import check_regression_fixture_workflow
 
@@ -28,35 +27,32 @@ def test_binary_and_text_error(file_regression):
         file_regression.check("", encoding="UTF-8", binary=True)
 
 
-def test_file_regression_fixture(testdir, monkeypatch):
+def test_file_regression_workflow(testdir, monkeypatch):
     """
     :type testdir: _pytest.pytester.TmpTestdir
     :type monkeypatch: _pytest.monkeypatch.monkeypatch
     """
     import sys
 
-    monkeypatch.setattr(sys, "GetData", lambda: "foo", raising=False)
+    monkeypatch.setattr(sys, "get_data", lambda: "foo", raising=False)
     source = """
         import sys
         def test_1(file_regression):
-            contents = sys.GetData()
-            file_regression.Check(contents, extension='.test')
+            contents = sys.get_data()
+            file_regression.check(contents, extension='.test')
     """
 
-    def GetFileContents():
-        txt_filename = os.path.join(
-            six.text_type(testdir.tmpdir), "test_file", "test_1.test"
-        )
-        assert os.path.isfile(txt_filename)
-        with open(txt_filename) as f:
-            return f.read()
+    def get_file_contents():
+        fn = Path(str(testdir.tmpdir)) / "test_file" / "test_1.test"
+        assert fn.is_file()
+        return fn.read_text()
 
     check_regression_fixture_workflow(
         testdir,
         source,
-        data_getter=GetFileContents,
+        data_getter=get_file_contents,
         data_modifier=lambda: monkeypatch.setattr(
-            sys, "GetData", lambda: "foobar", raising=False
+            sys, "get_data", lambda: "foobar", raising=False
         ),
         expected_data_1="foo",
         expected_data_2="foobar",
