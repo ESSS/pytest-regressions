@@ -56,3 +56,31 @@ def file_regression(datadir, original_datadir, request):
     from .file_regression import FileRegressionFixture
 
     return FileRegressionFixture(datadir, original_datadir, request)
+
+
+@pytest.fixture
+def num_regression(datadir, original_datadir, request):
+    """
+    Example usage:
+
+    def testSomeData(num_regression):
+        num_regression.check(
+            {
+                'U_gas': U[0],
+                'U_liquid': U[1],
+                'gas_vol_frac [-]': α[0],
+                'liquid_vol_frac [-]': α[1],
+                'P': Pa_to_bar(P),
+            },
+            data_index=positions,
+            default_tolerance=dict(atol=1e-8, rtol=1e-8)
+        )
+
+    :type embed_data: _EmbedDataFixture
+    :type request: FixtureRequest
+    :rtype: DataRegressionFixture
+    :return: Data regression fixture.
+    """
+    from .num_regression import NumericRegressionFixture
+
+    return NumericRegressionFixture(datadir, original_datadir, request)
