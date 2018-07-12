@@ -38,3 +38,21 @@ def data_regression(datadir, original_datadir, request):
     from .data_regression import DataRegressionFixture
 
     return DataRegressionFixture(datadir, original_datadir, request)
+
+
+@pytest.fixture
+def file_regression(datadir, original_datadir, request):
+    """
+    Very similar to `data_regression`, but instead of saving data to YAML file it saves to an
+    arbitrary format.
+
+    Useful when used to compare contents of files of specific format (like documents, for instance).
+
+    :type embed_data: _EmbedDataFixture
+    :type request: FixtureRequest
+    :rtype: FileRegressionFixture
+    :return: File regression fixture.
+    """
+    from .file_regression import FileRegressionFixture
+
+    return FileRegressionFixture(datadir, original_datadir, request)
