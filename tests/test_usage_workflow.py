@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 
-def test_data_regression(testdir, monkeypatch):
+def test_usage_workflow(testdir, monkeypatch):
     """
     :type testdir: _pytest.pytester.TmpTestdir
 

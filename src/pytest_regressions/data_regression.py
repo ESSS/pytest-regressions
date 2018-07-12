@@ -194,16 +194,13 @@ class RegressionYamlDumper(yaml.SafeDumper):
         subclasses of `data_type`.
 
         :param type data_type: Type of objects.
-        :param callable representer_fn: Function that receives object of `data_type` type as
+        :param callable representer_fn: Function that receives ``(dumper, data)`` type as
             argument and must must return a YAML-convertible representation.
         """
         # Use multi-representer instead of simple-representer because it supports polymorphism.
         yaml.add_multi_representer(
             data_type, multi_representer=representer_fn, Dumper=cls
         )
-
-    # non-PEP 8 alias used internally at ESSS
-    AddCustomYamlRepresenter = add_custom_yaml_representer
 
 
 def _check_text_files(
