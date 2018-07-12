@@ -104,3 +104,6 @@ class FileRegressionFixture(object):
             force_regen=self.force_regen,
             obtained_filename=obtained_filename,
         )
+
+    # non-PEP 8 alias used internally at ESSS
+    Check = check

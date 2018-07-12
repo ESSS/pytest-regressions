@@ -26,7 +26,7 @@ def test_usage_workflow(testdir, monkeypatch):
         with yaml_filename.open() as f:
             return yaml.load(f)
 
-    check_regression_fixture(
+    check_regression_fixture_workflow(
         testdir,
         source=source,
         data_getter=get_yaml_contents,
@@ -41,7 +41,7 @@ def test_usage_workflow(testdir, monkeypatch):
     )
 
 
-def check_regression_fixture(
+def check_regression_fixture_workflow(
     testdir, source, data_getter, data_modifier, expected_data_1, expected_data_2
 ):
     """
@@ -68,7 +68,7 @@ def check_regression_fixture(
         with open(fake_filename) as f:
             return f.read()
 
-    check_regression_fixture(
+    check_regression_fixture_workflow(
         testdir,
         source,
         data_getter=get_data,
