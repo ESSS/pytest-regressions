@@ -52,9 +52,11 @@ class FileRegressionFixture(object):
         """
         __tracebackhide__ = 0
 
-        if not bool(binary) ^ bool(encoding):
+        if binary and encoding:
             raise ValueError(
-                "Only binary or encoding parameters must be passed at the same time."
+                "Only binary ({!r}) or encoding ({!r}) parameters must be passed at the same time.".format(
+                    binary, encoding
+                )
             )
 
         if binary:
