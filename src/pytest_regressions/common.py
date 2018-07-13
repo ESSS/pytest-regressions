@@ -1,8 +1,13 @@
 # encoding: UTF-8
 import difflib
-from pathlib import Path
-
 import pytest
+import six
+
+
+if six.PY2:
+    from pathlib2 import Path
+else:
+    from pathlib import Path
 
 
 def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encoding=None):

@@ -1,5 +1,5 @@
 # encoding: UTF-8
-from pathlib import Path
+from pytest_regressions.common import Path
 
 import six
 

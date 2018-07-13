@@ -1,6 +1,6 @@
 # encoding: UTF-8
 import textwrap
-from pathlib import Path
+from pytest_regressions.common import Path
 
 import pytest
 

@@ -5,12 +5,6 @@ import six
 
 from pytest_regressions.common import check_text_files, perform_regression_check
 
-
-if six.PY2:
-    from pathlib2 import Path
-else:
-    from pathlib import Path
-
 import yaml
 
 

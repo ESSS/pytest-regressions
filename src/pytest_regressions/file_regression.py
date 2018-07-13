@@ -1,6 +1,6 @@
 # encoding: UTF-8
 from functools import partial
-from pathlib import Path
+from pytest_regressions.common import Path
 
 import six
 
