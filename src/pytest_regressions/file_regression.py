@@ -92,7 +92,9 @@ class FileRegressionFixture(object):
 
         def dump_fn(filename):
             mode = "wb" if binary else "w"
-            with io.open(filename, mode, encoding=encoding, newline=newline) as f:
+            with io.open(
+                six.text_type(filename), mode, encoding=encoding, newline=newline
+            ) as f:
                 f.write(contents)
 
         perform_regression_check(
