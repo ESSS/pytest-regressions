@@ -63,13 +63,13 @@ class FileRegressionFixture(object):
         if binary:
             assert isinstance(
                 contents, six.binary_type
-            ), "Expected contents as six.binary_type but type was {}".format(
+            ), "Expected bytes contents but received type {}".format(
                 type(contents).__name__
             )
         else:
             assert isinstance(
                 contents, six.text_type
-            ), "Expected contents as string but type was {}".format(
+            ), "Expected text/unicode contents but received type {}".format(
                 type(contents).__name__
             )
 

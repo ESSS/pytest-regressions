@@ -1,4 +1,5 @@
 # encoding: UTF-8
+from __future__ import unicode_literals
 import textwrap
 from pytest_regressions.common import Path
 
