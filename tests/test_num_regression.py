@@ -1,11 +1,54 @@
 import numpy as np
+import pandas as pd
 import pytest
+
+from pytest_regressions.testing import check_regression_fixture_workflow
 
 
 @pytest.fixture
 def no_regen(num_regression, request):
     if num_regression._force_regen or request.config.getoption("force_regen"):
         pytest.fail("--force-regen should not be used on this test.")
+
+
+def test_usage_workflow(testdir, monkeypatch):
+    """
+    :type testdir: _pytest.pytester.TmpTestdir
+
+    :type monkeypatch: _pytest.monkeypatch.monkeypatch
+    """
+
+    import sys
+
+    monkeypatch.setattr(
+        sys, "testing_get_data", lambda: {"data": 1.1 * np.ones(50)}, raising=False
+    )
+    source = """
+        import sys
+        def test_1(num_regression):
+            contents = sys.testing_get_data()
+            num_regression.check(contents)
+    """
+
+    def get_csv_contents():
+        filename = testdir.tmpdir / "test_file" / "test_1.csv"
+        frame = pd.read_csv(str(filename))
+        return {"data": frame["data"].values}
+
+    def compare_arrays(obtained, expected):
+        assert (obtained["data"] == expected["data"]).all()
+
+    check_regression_fixture_workflow(
+        testdir,
+        source=source,
+        data_getter=get_csv_contents,
+        data_modifier=lambda: monkeypatch.setattr(
+            sys, "testing_get_data", lambda: {"data": 1.2 * np.ones(50)}, raising=False
+        ),
+        expected_data_1={"data": 1.1 * np.ones(50)},
+        expected_data_2={"data": 1.2 * np.ones(50)},
+        compare_fn=compare_arrays,
+    )
 
 
 @pytest.mark.xfail(reason="#3 needs investigation", strict=True)

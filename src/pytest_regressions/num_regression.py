@@ -43,7 +43,7 @@ class NumericRegressionFixture(object):
         """
         import numpy as np
 
-        __tracebackhide__ = True
+        __tracebackhide__ = False
 
         obtained_data_type = obtained_column.values.dtype
         expected_data_type = expected_column.values.dtype
@@ -67,7 +67,7 @@ class NumericRegressionFixture(object):
         Check if obtained and expected columns have the same size.
         Helper method used in _check_fn method.
         """
-        __tracebackhide__ = True
+        __tracebackhide__ = False
 
         obtained_data_shape = obtained_column.values.shape
         expected_data_shape = expected_column.values.shape
@@ -89,10 +89,10 @@ class NumericRegressionFixture(object):
         import numpy as np
         import pandas as pd
 
-        __tracebackhide__ = True
+        __tracebackhide__ = False
 
-        obtained_data = pd.read_csv(obtained_filename)
-        expected_data = pd.read_csv(expected_filename)
+        obtained_data = pd.read_csv(six.text_type(obtained_filename))
+        expected_data = pd.read_csv(six.text_type(expected_filename))
 
         comparison_tables_dict = {}
         for k in obtained_data.keys():
@@ -209,7 +209,7 @@ class NumericRegressionFixture(object):
         import pandas as pd
         import functools
 
-        __tracebackhide__ = True
+        __tracebackhide__ = False
 
         if tolerances is None:
             tolerances = {}
