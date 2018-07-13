@@ -2,10 +2,9 @@
 from functools import partial
 
 import six
-
-from pytest_regressions.common import check_text_files, perform_regression_check
-
 import yaml
+
+from pytest_regressions.common import Path, check_text_files, perform_regression_check
 
 
 class DataRegressionFixture(object):
