@@ -159,7 +159,7 @@ class NumericRegressionFixture(object):
         :param six.text_type filename:
         """
         data_object.to_csv(
-            filename,
+            six.text_type(filename),
             float_format="%%.%sg" % (NumericRegressionFixture.DISPLAY_PRECISION,),
         )
 
