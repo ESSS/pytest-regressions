@@ -1,3 +1,4 @@
+# encoding: UTF-8
 import difflib
 from pathlib import Path
 

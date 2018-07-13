@@ -1,3 +1,6 @@
+# encoding: UTF-8
+
+
 def check_regression_fixture_workflow(
     testdir, source, data_getter, data_modifier, expected_data_1, expected_data_2
 ):

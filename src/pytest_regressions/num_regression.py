@@ -1,3 +1,4 @@
+# encoding: UTF-8
 from pathlib import Path
 
 import six
