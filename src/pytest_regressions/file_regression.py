@@ -1,6 +1,5 @@
 # encoding: UTF-8
 from functools import partial
-from pytest_regressions.common import Path
 
 import six
 
@@ -20,8 +19,8 @@ class FileRegressionFixture(object):
         self.request = request
         # coercing to Path here because pytest-datadir uses pathlib instead of pathlib2; should
         # be fixed in the next release
-        self.datadir = Path(six.text_type(datadir))
-        self.original_datadir = Path(six.text_type(original_datadir))
+        self.datadir = datadir
+        self.original_datadir = original_datadir
         self.force_regen = False
 
     def check(

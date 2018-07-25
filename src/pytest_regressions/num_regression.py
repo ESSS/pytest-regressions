@@ -1,5 +1,4 @@
 # encoding: UTF-8
-from pytest_regressions.common import Path
 
 import six
 
@@ -23,10 +22,8 @@ class NumericRegressionFixture(object):
         self._default_tolerance = {}
 
         self.request = request
-        # coercing to Path here because pytest-datadir uses pathlib instead of pathlib2; should
-        # be fixed in the next release
-        self.datadir = Path(six.text_type(datadir))
-        self.original_datadir = Path(six.text_type(original_datadir))
+        self.datadir = datadir
+        self.original_datadir = original_datadir
         self._force_regen = False
 
         self._pandas_display_options = (

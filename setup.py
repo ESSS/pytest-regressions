@@ -27,8 +27,9 @@ setup(
     python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
     extras_require={"dev": ["pre-commit", "restructuredtext-lint", "numpy", "pandas"]},
     install_requires=[
-        'pathlib2;python_version<"3.0"',
-        "pytest-datadir>=1.1.0",
+        "pathlib2;python_version<'3.0'",
+        "pre-commit",
+        "pytest-datadir>=1.2.0",
         "pytest>=3.5.0",
         "pyyaml",
         "six",
