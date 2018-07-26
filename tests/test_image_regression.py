@@ -10,6 +10,7 @@ def test_image_regression(image_regression, datadir):
     import matplotlib.pyplot as plt
     import numpy as np
 
+    # this ensures matplot lib does not use a GUI backend (such as Tk)
     matplotlib.use("Agg")
 
     # Data for plotting
