@@ -10,12 +10,12 @@ pytest-regressions
     :target: https://pypi.org/project/pytest-regressions
     :alt: Python versions
 
-.. image:: https://travis-ci.org/nicoddemus/pytest-regressions.svg?branch=master
-    :target: https://travis-ci.org/nicoddemus/pytest-regressions
+.. image:: https://travis-ci.com/ESSS/pytest-regressions.svg?branch=master
+    :target: https://travis-ci.com/ESSS/pytest-regressions
     :alt: See Build Status on Travis CI
 
-.. image:: https://ci.appveyor.com/api/projects/status/github/nicoddemus/pytest-regressions?branch=master
-    :target: https://ci.appveyor.com/project/nicoddemus/pytest-regressions/branch/master
+.. image:: https://ci.appveyor.com/api/projects/status/oq3udklexcx38sc0/branch/master
+    :target: https://ci.appveyor.com/project/ESSS/pytest-regressions/branch/master
     :alt: See Build Status on AppVeyor
 
 Easy to use fixtures to write regression tests.
