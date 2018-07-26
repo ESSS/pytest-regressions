@@ -33,7 +33,7 @@ def test_image_regression(image_regression, datadir):
     image_filename = datadir / "test.png"
     fig.savefig(str(image_filename))
 
-    image_regression.check(image_filename.read_bytes())
+    image_regression.check(image_filename.read_bytes(), diff_threshold=1.0)
 
 
 def test_image_regression_workflow(testdir, monkeypatch, datadir):
