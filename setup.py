@@ -33,6 +33,8 @@ setup(
         "pytest>=3.5.0",
         "pyyaml",
         "six",
+        "matplotlib",
+        "pillow",
     ],
     classifiers=[
         "Development Status :: 5 - Production/Stable",

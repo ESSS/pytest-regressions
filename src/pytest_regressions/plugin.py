@@ -85,3 +85,10 @@ def num_regression(datadir, original_datadir, request):
     from .num_regression import NumericRegressionFixture
 
     return NumericRegressionFixture(datadir, original_datadir, request)
+
+
+@pytest.fixture
+def image_regression(datadir, original_datadir, request):
+    from .image_regression import ImageRegressionFixture
+
+    return ImageRegressionFixture(datadir, original_datadir, request)

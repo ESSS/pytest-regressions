@@ -17,8 +17,6 @@ class FileRegressionFixture(object):
         :type request: FixtureRequest
         """
         self.request = request
-        # coercing to Path here because pytest-datadir uses pathlib instead of pathlib2; should
-        # be fixed in the next release
         self.datadir = datadir
         self.original_datadir = original_datadir
         self.force_regen = False
