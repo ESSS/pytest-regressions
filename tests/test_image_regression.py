@@ -7,11 +7,12 @@ from pytest_regressions.testing import check_regression_fixture_workflow
 
 def test_image_regression(image_regression, datadir):
     import matplotlib
-    import matplotlib.pyplot as plt
-    import numpy as np
 
     # this ensures matplot lib does not use a GUI backend (such as Tk)
     matplotlib.use("Agg")
+
+    import matplotlib.pyplot as plt
+    import numpy as np
 
     # Data for plotting
     t = np.arange(0.0, 2.0, 0.01)
