@@ -13,7 +13,7 @@ def read(fname):
 
 setup(
     name="pytest-regressions",
-    version="1.0.0",
+    version="0.1.0",
     author="ESSS",
     author_email="foss@esss.co",
     maintainer="Bruno Oliveira",
