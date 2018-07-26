@@ -1,3 +1,4 @@
+exclude: '^($|.*\.bin)'
 repos:
 -   repo: https://github.com/ambv/black
     rev: 18.6b4
