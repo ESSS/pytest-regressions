@@ -14,6 +14,7 @@ class DataRegressionFixture(object):
     def __init__(self, datadir, original_datadir, request):
         """
         :type datadir: Path
+        :type original_datadir: Path
         :type request: FixtureRequest
         """
         self.request = request

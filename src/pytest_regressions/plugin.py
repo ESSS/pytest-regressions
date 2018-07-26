@@ -89,6 +89,14 @@ def num_regression(datadir, original_datadir, request):
 
 @pytest.fixture
 def image_regression(datadir, original_datadir, request):
+    """
+    Regression checks for images, accounting for small differences between them.
+
+    Example:
+        def test_plots(datadir, image_regression):
+            path = generate_plot(datadir / 'plot.png')
+            image_regression.check(path.read_bytes(), diff_threshold=2.5)  # 2.5%
+    """
     from .image_regression import ImageRegressionFixture
 
     return ImageRegressionFixture(datadir, original_datadir, request)

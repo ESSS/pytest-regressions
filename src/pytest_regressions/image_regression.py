@@ -1,23 +1,21 @@
 # encoding: UTF-8
 import io
-import shutil
 from functools import partial
 
 import six
-
-from pytest_regressions.common import Path
 
 from pytest_regressions.common import perform_regression_check
 
 
 class ImageRegressionFixture(object):
     """
-
+    Regression test for image objects, accounting for small differences.
     """
 
     def __init__(self, datadir, original_datadir, request):
         """
-        :type embed_data: _EmbedDataFixture
+        :type datadir: Path
+        :type original_datadir: Path
         :type request: FixtureRequest
         """
         self.request = request
@@ -32,7 +30,7 @@ class ImageRegressionFixture(object):
         At this time, in this module, channel operations are only implemented
         for 8-bit images (e.g. "L" and "RGB").
 
-        :param six.text_type image_filename:
+        :param Path filename:
             The name of the file
         """
         from PIL import Image
@@ -120,16 +118,23 @@ class ImageRegressionFixture(object):
         equal = manhattan_distance <= diff_threshold
         check_result(equal, manhattan_distance)
 
-    def check(
-        self, image_contents, diff_threshold=0.1, expect_equal=True, basename=None
-    ):
+    def check(self, image_data, diff_threshold=0.1, expect_equal=True, basename=None):
         """
+        Checks that the given image contents are comparable with the ones stored in the data directory.
+
+        :param bytes image_data: image data
+        :param str|None basename: basename to store the information in the data directory. If none, use the name
+            of the test function.
+        :param bool expect_equal: if the image should considered equal below of the given threshold. If False, the
+            image should be considered different at least above the threshold.
+        :param float diff_threshold:
+            Tolerage as a percentage (1 to 100) on how the images are allowed to differ.
 
         """
         from PIL import Image
 
         def dump_fn(target):
-            image = Image.open(io.BytesIO(image_contents))
+            image = Image.open(io.BytesIO(image_data))
             image.save(six.text_type(target), "PNG")
 
         perform_regression_check(

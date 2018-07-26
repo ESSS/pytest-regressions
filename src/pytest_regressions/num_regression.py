@@ -15,7 +15,8 @@ class NumericRegressionFixture(object):
 
     def __init__(self, datadir, original_datadir, request):
         """
-        :type embed_data: _EmbedDataFixture
+        :type datadir: Path
+        :type original_datadir: Path
         :type request: FixtureRequest
         """
         self._tolerances_dict = {}
