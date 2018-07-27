@@ -20,3 +20,7 @@ build: false  # Not a C# project, build stuff at the test step instead.
 
 test_script:
   - "C:\\Python36\\python -m tox -e %TOX_ENV%"
+
+# We don't deploy anything on tags with AppVeyor, we use Travis instead, so we
+# might as well save resources
+skip_tags: true
