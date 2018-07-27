@@ -13,10 +13,6 @@ jobs:
         env: TOX_ENV=py35
       - python: 3.6
         env: TOX_ENV=py36
-      - python: pypy
-        env: TOX_ENV=pypy
-      - python: pypy3
-        env: TOX_ENV=pypy3
 
 install:
   - pip install -U pip
