@@ -13,7 +13,8 @@ def read(fname):
 
 setup(
     name="pytest-regressions",
-    version="0.1.0",
+    use_scm_version=True,
+    setup_requires=["setuptools_scm"],
     author="ESSS",
     author_email="foss@esss.co",
     maintainer="Bruno Oliveira",
