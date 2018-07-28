@@ -18,7 +18,7 @@ pytest-regressions
     :target: https://ci.appveyor.com/project/ESSS/pytest-regressions/branch/master
     :alt: See Build Status on AppVeyor
 
-Easy to use fixtures to write regression tests.
+Fixtures to write regression tests.
 
 ----
 
