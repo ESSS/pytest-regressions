@@ -175,33 +175,45 @@ class NumericRegressionFixture(object):
         Checks the given dict against a previously recorded version, or generate a new file.
         The dict must map from user-defined keys to 1d numpy arrays.
 
-        Example:
-        num_regression.check({
-            'U_gas': U[0][positions],
-            'U_liquid': U[1][positions],
-            'gas_vol_frac [-]': vol_frac[0][positions],
-            'liquid_vol_frac [-]': vol_frac[1][positions],
-            'P': Pa_to_bar(P)[positions],
-        })
+        Example::
+
+            num_regression.check({
+                'U_gas': U[0][positions],
+                'U_liquid': U[1][positions],
+                'gas_vol_frac [-]': vol_frac[0][positions],
+                'liquid_vol_frac [-]': vol_frac[1][positions],
+                'P': Pa_to_bar(P)[positions],
+            })
 
         :param dict data_dict: dict mapping keys to numpy arrays.
-        :param six.text_type basename: basename of the file to test/record. If not given the name
+
+        :param str basename: basename of the file to test/record. If not given the name
             of the test is used.
-        :param six.text_type fullpath: complete path to use as a reference file. This option
+
+        :param str fullpath: complete path to use as a reference file. This option
             will ignore embed_data completely, being useful if a reference file is located
             in the session data dir for example.
+
         :param dict tolerances: dict mapping keys from the data_dict to tolerance settings for the
-            given data. Example: tolerances={'U': Tolerance(atol=1e-2)}
+            given data. Example::
+
+                tolerances={'U': Tolerance(atol=1e-2)}
+
         :param dict default_tolerance: dict mapping the default tolerance for the current check
-            call. Example: default_tolerance=dict(atol=1e-7, rtol=1e-18).
-            If not provided, will use defaults from numpy's isclose function.
+            call. Example::
+
+                default_tolerance=dict(atol=1e-7, rtol=1e-18).
+
+            If not provided, will use defaults from numpy's ``isclose`` function.
+
         :param list data_index: If set, will override the indexes shown in the outputs. Default
-            is panda's default, which is range(0, len(data))
+            is panda's default, which is ``range(0, len(data))``.
+
         :param bool fill_different_shape_with_nan: If set, all the data provided in the data_dict
-            that has size lower than the bigger size will be filled with np.NaN, in order to save
+            that has size lower than the bigger size will be filled with ``np.NaN``, in order to save
             the data in a CSV file.
 
-        basename and fullpath are exclusive.
+        ``basename`` and ``fullpath`` are exclusive.
         """
         import numpy as np
         import pandas as pd

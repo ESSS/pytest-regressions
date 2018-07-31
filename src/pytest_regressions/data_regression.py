@@ -28,15 +28,15 @@ class DataRegressionFixture(object):
 
         :param dict data_dict: any yaml serializable dict.
 
-        :param six.text_type basename: basename of the file to test/record. If not given the name
+        :param str basename: basename of the file to test/record. If not given the name
             of the test is used.
             Use either `basename` or `fullpath`.
 
-        :param six.text_type fullpath: complete path to use as a reference file. This option
-            will ignore `datadir` fixture when reading _expected_ files but will still use it to
-            write _obtained_ files.
-            Useful if a reference file is located in the session data dir for example.
-            Use either `basename` or `fullpath`.
+        :param str fullpath: complete path to use as a reference file. This option
+            will ignore ``datadir`` fixture when reading *expected* files but will still use it to
+            write *obtained* files. Useful if a reference file is located in the session data dir for example.
+
+        ``basename`` and ``fullpath`` are exclusive.
         """
         __tracebackhide__ = False
 

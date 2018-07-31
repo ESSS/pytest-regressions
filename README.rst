@@ -6,6 +6,9 @@ pytest-regressions
     :target: https://pypi.org/project/pytest-regressions
     :alt: PyPI version
 
+.. image:: https://img.shields.io/conda/vn/conda-forge/pytest-regressions.svg
+    :target: https://anaconda.org/conda-forge/pytest-regressions
+
 .. image:: https://img.shields.io/pypi/pyversions/pytest-regressions.svg
     :target: https://pypi.org/project/pytest-regressions
     :alt: Python versions
@@ -18,23 +21,29 @@ pytest-regressions
     :target: https://ci.appveyor.com/project/ESSS/pytest-regressions/branch/master
     :alt: See Build Status on AppVeyor
 
+.. image:: https://img.shields.io/readthedocs/pytest-regressions.svg
+  :target: https://pytest-regressions.readthedocs.io/en/latest
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+  :target: https://github.com/ambv/black
+
 Fixtures to write regression tests.
-
-----
-
-This `pytest`_ plugin was generated with `Cookiecutter`_ along with `@hackebrot`_'s `cookiecutter-pytest-plugin`_ template.
-
 
 Features
 --------
 
-* TODO
+This plugin makes it simple to test general data, images, files, and numeric tables by saving *expected*
+data in a *data directory* (courtesy of `pytest-datadir <https://github.com/gabrielcnr/pytest-datadir>`_) that
+can be used to verify that future runs produce the same data.
+
+See `the docs <https://pytest-regressions.readthedocs.io/en/latest>`_ for examples and API usage.
 
 
 Requirements
 ------------
 
-* TODO
+* ``pytest>=3.5``
+* Python 2.7 and Python 3.5+.
 
 
 Installation
@@ -44,11 +53,6 @@ You can install "pytest-regressions" via `pip`_ from `PyPI`_::
 
     $ pip install pytest-regressions
 
-
-Usage
------
-
-* TODO
 
 Contributing
 ------------
@@ -65,6 +69,11 @@ Issues
 ------
 
 If you encounter any problems, please `file an issue`_ along with a detailed description.
+
+----
+
+This `pytest`_ plugin was generated with `Cookiecutter`_ along with `@hackebrot`_'s `cookiecutter-pytest-plugin`_ template.
+
 
 .. _`Cookiecutter`: https://github.com/audreyr/cookiecutter
 .. _`@hackebrot`: https://github.com/hackebrot

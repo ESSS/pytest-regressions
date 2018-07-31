@@ -1,0 +1,22 @@
+Main Grid:
+  active_cells: 300
+  cell_count: 1000
+  id: 0
+  properties:
+  - max: 85
+    min: 75
+    name: Temperature
+  - max: 0.4
+    min: 0.3
+    name: Porosity
+Refin1:
+  active_cells: 44
+  cell_count: 48
+  id: 1
+  properties:
+  - max: 81
+    min: 78
+    name: Temperature
+  - max: 0.39
+    min: 0.36
+    name: Porosity
