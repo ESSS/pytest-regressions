@@ -37,17 +37,15 @@ class FileRegressionFixture(object):
         """
         Checks the contents against a previously recorded version, or generate a new file.
 
-        :param six.text_type contents: contents to write to the file
-        :param six.text_type|None encoding: Encoding used to write file, if any.
-        :param six.text_type extension: Extension of file.
-        :param six.text_type|None newline: See `io.open` docs.
+        :param str contents: contents to write to the file
+        :param str|None encoding: Encoding used to write file, if any.
+        :param str extension: Extension of file.
+        :param str|None newline: See `io.open` docs.
         :param bool binary: If the file is binary or text.
         :param obtained_filename: ..see:: FileRegressionCheck
-        :param check_fn: a function with signature (obtained_filename, expected_filename) that should raise
+        :param check_fn: a function with signature ``(obtained_filename, expected_filename)`` that should raise
             AssertionError if both files differ.
-            If not given, use internal TODO.
-
-        ..see: `data_regression.Check` for `basename` and `fullpath` arguments.
+            If not given, use internal function which compares text using :py:mod:`difflib`.
         """
         __tracebackhide__ = 0
 

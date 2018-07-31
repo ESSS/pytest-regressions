@@ -34,7 +34,7 @@ setup(
             "pillow",
             "pre-commit",
             "restructuredtext-lint",
-            "sphinx",
+            "tox",
         ]
     },
     install_requires=[
