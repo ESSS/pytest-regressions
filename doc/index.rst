@@ -14,4 +14,3 @@ pytest-regressions
    overview
    api
    license
-
