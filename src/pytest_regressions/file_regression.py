@@ -47,7 +47,7 @@ class FileRegressionFixture(object):
             AssertionError if both files differ.
             If not given, use internal function which compares text using :py:mod:`difflib`.
         """
-        __tracebackhide__ = 0
+        __tracebackhide__ = True
 
         if binary and encoding:
             raise ValueError(

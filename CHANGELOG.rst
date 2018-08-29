@@ -1,4 +1,9 @@
 
+1.0.2 (2018-08-29)
+------------------
+
+* Hide traceback of internal functions when displaying failures.
+
 1.0.1 (2018-07-27)
 ------------------
 
