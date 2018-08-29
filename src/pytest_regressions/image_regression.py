@@ -93,6 +93,8 @@ class ImageRegressionFixture(object):
         """
         from PIL import ImageChops
 
+        __tracebackhide__ = True
+
         obtained_img = self._load_image(obtained_file)
         expected_img = self._load_image(expected_file)
 
@@ -131,6 +133,8 @@ class ImageRegressionFixture(object):
             Tolerage as a percentage (1 to 100) on how the images are allowed to differ.
 
         """
+        __tracebackhide__ = True
+
         from PIL import Image
 
         def dump_fn(target):

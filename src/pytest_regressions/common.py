@@ -27,7 +27,7 @@ def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encodin
         changed as needed.
         The resulting lines will be used to compare with the contents of expected_fn.
     """
-    __tracebackhide__ = False
+    __tracebackhide__ = True
 
     obtained_fn = Path(obtained_fn)
     expected_fn = Path(expected_fn)
@@ -109,7 +109,7 @@ def perform_regression_check(
 
     assert not (basename and fullpath), "pass either basename or fullpath, but not both"
 
-    __tracebackhide__ = False
+    __tracebackhide__ = True
 
     if basename is None:
         basename = re.sub("[\W]", "_", request.node.name)
