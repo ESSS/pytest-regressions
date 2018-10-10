@@ -1,3 +1,9 @@
+1.0.3 (2018-10-10)
+------------------
+
+* Set ``pandas`` ``display.max_columns`` option in ``num_regression`` to prevent
+  ``pandas`` from truncating the output (`#3 <https://github.com/ESSS/pytest-regressions/issues/3>`_).
+
 
 1.0.2 (2018-08-29)
 ------------------

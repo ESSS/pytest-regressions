@@ -12,6 +12,7 @@ class NumericRegressionFixture(object):
 
     DISPLAY_PRECISION = 17  # Decimal places
     DISPLAY_WIDTH = 1000  # Max. Chars on outputs
+    DISPLAY_MAX_COLUMNS = 1000  # Max. Number of columns (see #3)
 
     def __init__(self, datadir, original_datadir, request):
         """
@@ -32,6 +33,8 @@ class NumericRegressionFixture(object):
             NumericRegressionFixture.DISPLAY_PRECISION,
             "display.width",
             NumericRegressionFixture.DISPLAY_WIDTH,
+            "display.max_columns",
+            NumericRegressionFixture.DISPLAY_MAX_COLUMNS,
         )
 
     def _check_data_types(self, key, obtained_column, expected_column):

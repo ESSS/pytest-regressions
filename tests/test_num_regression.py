@@ -51,7 +51,6 @@ def test_usage_workflow(testdir, monkeypatch):
     )
 
 
-@pytest.mark.xfail(reason="#3 needs investigation", strict=True)
 def test_common_cases(num_regression, no_regen):
     # Most common case: Data is valid, is present and should pass
     data1 = 1.1 * np.ones(5000)
