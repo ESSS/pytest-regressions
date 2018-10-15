@@ -37,7 +37,7 @@ class FileRegressionFixture(object):
         """
         Checks the contents against a previously recorded version, or generate a new file.
 
-        :param str contents: contents to write to the file
+        :param str contents: content to be verified.
         :param str|None encoding: Encoding used to write file, if any.
         :param str extension: Extension of file.
         :param str|None newline: See `io.open` docs.
