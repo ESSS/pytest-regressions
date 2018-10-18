@@ -1,7 +1,7 @@
 1.0.4 (2018-10-18)
 ------------------
 
-* Fixed DeprecationWarning: invalid escape sequence \W.
+* Fixed ``DeprecationWarning: invalid escape sequence \W``.
 
 1.0.3 (2018-10-10)
 ------------------
