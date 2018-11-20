@@ -1,3 +1,8 @@
+1.0.5 (2018-11-20)
+------------------
+
+* `#15 <https://github.com/ESSS/pytest-regressions/pull/15>`__: Remove some extra line separators from the diff output, which makes the representation more compact.
+
 1.0.4 (2018-10-18)
 ------------------
 

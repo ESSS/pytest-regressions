@@ -35,7 +35,9 @@ def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encodin
     expected_lines = expected_fn.read_text(encoding=encoding).splitlines()
 
     if obtained_lines != expected_lines:
-        diff_lines = list(difflib.unified_diff(expected_lines, obtained_lines))
+        diff_lines = list(
+            difflib.unified_diff(expected_lines, obtained_lines, lineterm="")
+        )
         if len(diff_lines) <= 500:
             html_fn = obtained_fn.with_suffix(".diff.html")
             try:
