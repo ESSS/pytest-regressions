@@ -64,7 +64,7 @@ But this presents a number of problems:
 * Error-prone.
 * If a check fails, we don't know what else might be wrong with the obtained data.
 * Does not scale for large data.
-* **Maintenance burden**: if the data changes in the future (and it will) it will be a major head-ache to update the values,
+* **Maintenance burden**: if the data changes in the future (and it will) it will be a major headache to update the values,
   specially if there are a lot of similar tests like this one.
 
 
