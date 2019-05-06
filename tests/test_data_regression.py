@@ -62,7 +62,7 @@ def test_usage_workflow(testdir, monkeypatch):
         yaml_filename = testdir.tmpdir / "test_file" / "test_1.yml"
         assert yaml_filename.check(file=1)
         with yaml_filename.open() as f:
-            return yaml.load(f)
+            return yaml.safe_load(f)
 
     check_regression_fixture_workflow(
         testdir,
