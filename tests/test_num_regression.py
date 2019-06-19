@@ -197,3 +197,39 @@ def test_integer_values_smoke_test(num_regression, no_regen):
 def test_number_formats(num_regression, no_regen):
     data1 = np.array([1.2345678e50, 1.2345678e-50, 0.0])
     num_regression.check({"data1": data1})
+
+
+def test_fill_different_shape_with_nan(num_regression, no_regen):
+    data1 = np.ones(5, dtype=np.float64)
+    data2 = np.ones(2, dtype=np.float32)
+    data3 = np.ones(6, dtype=np.float16)
+    num_regression.check({"data1": data1, "data2": data2, "data3": data3})
+
+
+def test_fill_different_shape_with_nan_false(num_regression, no_regen):
+    data1 = np.ones(5, dtype=np.float64)
+    data2 = np.ones(2, dtype=np.float32)
+    data3 = np.ones(6, dtype=np.float16)
+    with pytest.raises(AssertionError) as excinfo:
+        num_regression.check(
+            {"data1": data1, "data2": data2, "data3": data3},
+            fill_different_shape_with_nan=False,
+        )
+    obtained_error_msg = str(excinfo.value)
+    assert (
+        "Data dict with different array lengths will not be accepted."
+        in obtained_error_msg
+    )
+
+
+def test_fill_different_shape_with_nan_for_non_float_array(num_regression, no_regen):
+    data1 = np.ones(5, dtype=np.int32)
+    data2 = np.ones(2, dtype=np.float64)
+    data3 = np.ones(6, dtype=np.float64)
+    with pytest.raises(TypeError) as excinfo:
+        num_regression.check({"data1": data1, "data2": data2, "data3": data3})
+    obtained_error_msg = str(excinfo.value)
+    assert (
+        "Checking multiple arrays with different shapes are not supported for non-float arrays"
+        in obtained_error_msg
+    )

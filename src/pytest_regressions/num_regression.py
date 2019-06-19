@@ -249,7 +249,13 @@ class NumericRegressionFixture(object):
             if not fill_different_shape_with_nan:
                 assert (
                     False
-                ), "Data dict with different array lengths will not be accepted." "Try setting fill_different_shape_with_nan=True."
+                ), "Data dict with different array lengths will not be accepted. Try setting fill_different_shape_with_nan=True."
+            elif len(data_dict) > 1 and not all(
+                np.issubdtype(a.dtype, np.floating) for a in data_dict.values()
+            ):
+                raise TypeError(
+                    'Checking multiple arrays with different shapes are not supported for non-float arrays" in obtained_error_msg.'
+                )
             else:
                 max_size = max(data_shapes)
                 for k, obj in data_dict.items():
