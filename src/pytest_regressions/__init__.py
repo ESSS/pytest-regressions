@@ -5,7 +5,7 @@ def add_custom_yaml_representer(data_type, representer_fn):
 
     :param type data_type: Type of objects.
     :param callable representer_fn: Function that receives object of `data_type` type as
-        argument and must must return a YAML-convertible representation.
+        argument and must return a YAML-convertible representation.
     """
     from .data_regression import RegressionYamlDumper
 
