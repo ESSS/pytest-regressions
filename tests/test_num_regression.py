@@ -161,32 +161,28 @@ def test_different_data_types(num_regression, no_regen):
     num_regression.check({"data1": data1})
 
     data2 = np.array(["a"] * 10)
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(
+        AssertionError,
+        match="Data type for data data1 of obtained and expected are not the same.",
+    ):
         num_regression.check({"data1": data2})
-    obtained_error_msg = str(excinfo.value)
-    assert (
-        "Data type for data data1 of obtained and expected are not the same."
-        in obtained_error_msg
-    )
 
 
 def test_n_dimensions(num_regression, no_regen):
     data1 = np.ones(shape=(10, 10), dtype=np.int)
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(
+        AssertionError,
+        match="Only 1D arrays are supported on num_data_regression fixture.",
+    ):
         num_regression.check({"data1": data1})
-    obtained_error_msg = str(excinfo.value)
-    assert (
-        "Only 1D arrays are supported on num_data_regression fixture."
-        in obtained_error_msg
-    )
 
 
 def test_arrays_with_different_sizes(num_regression, no_regen):
     data1 = np.ones(10, dtype=np.float64)
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(
+        AssertionError, match="Obtained and expected data shape are not the same."
+    ):
         num_regression.check({"data1": data1})
-    obtained_error_msg = str(excinfo.value)
-    assert "Obtained and expected data shape are not the same." in obtained_error_msg
 
 
 def test_integer_values_smoke_test(num_regression, no_regen):
@@ -210,26 +206,22 @@ def test_fill_different_shape_with_nan_false(num_regression, no_regen):
     data1 = np.ones(5, dtype=np.float64)
     data2 = np.ones(2, dtype=np.float32)
     data3 = np.ones(6, dtype=np.float16)
-    with pytest.raises(AssertionError) as excinfo:
+    with pytest.raises(
+        AssertionError,
+        match="Data dict with different array lengths will not be accepted.",
+    ):
         num_regression.check(
             {"data1": data1, "data2": data2, "data3": data3},
             fill_different_shape_with_nan=False,
         )
-    obtained_error_msg = str(excinfo.value)
-    assert (
-        "Data dict with different array lengths will not be accepted."
-        in obtained_error_msg
-    )
 
 
 def test_fill_different_shape_with_nan_for_non_float_array(num_regression, no_regen):
     data1 = np.ones(5, dtype=np.int32)
     data2 = np.ones(2, dtype=np.float64)
     data3 = np.ones(6, dtype=np.float64)
-    with pytest.raises(TypeError) as excinfo:
+    with pytest.raises(
+        TypeError,
+        match="Checking multiple arrays with different shapes are not supported for non-float arrays",
+    ):
         num_regression.check({"data1": data1, "data2": data2, "data3": data3})
-    obtained_error_msg = str(excinfo.value)
-    assert (
-        "Checking multiple arrays with different shapes are not supported for non-float arrays"
-        in obtained_error_msg
-    )
