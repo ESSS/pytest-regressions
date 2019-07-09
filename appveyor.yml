@@ -16,7 +16,6 @@ environment:
       TOXENV: "py37"
 
 install:
-  - "%PYTHON%\\python -m pip install -U pip"
   - "%PYTHON%\\python -m pip install -U setuptools tox"
 
 build: false  # Not a C# project, build stuff at the test step instead.
