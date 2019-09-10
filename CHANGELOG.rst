@@ -1,7 +1,9 @@
-1.0.6 (UNRELEASED)
+1.0.6 (2019-09-10)
 ------------------
 
 * `#18 <https://github.com/ESSS/pytest-regressions/pull/18>`__: When using ``fill_different_shape_with_nan=True``, a proper ``TypeError`` will be raised for non-float arrays instead of filling integer arrays with "garbage".
+
+* `#22 <https://github.com/ESSS/pytest-regressions/issues/22>`__: Fix warning when comparing arrays of boolean values.
 
 1.0.5 (2018-11-20)
 ------------------
