@@ -1,11 +1,8 @@
-# encoding: UTF-8
-
-import six
 
 from pytest_regressions.common import perform_regression_check
 
 
-class NumericRegressionFixture(object):
+class NumericRegressionFixture:
     """
     Numeric Data Regression fixture implementation used on num_regression fixture.
     """
@@ -84,16 +81,16 @@ class NumericRegressionFixture(object):
         """
         Check if dict contents dumped to a file match the contents in expected file.
 
-        :param six.text_type obtained_filename:
-        :param six.text_type expected_filename:
+        :param str obtained_filename:
+        :param str expected_filename:
         """
         import numpy as np
         import pandas as pd
 
         __tracebackhide__ = True
 
-        obtained_data = pd.read_csv(six.text_type(obtained_filename))
-        expected_data = pd.read_csv(six.text_type(expected_filename))
+        obtained_data = pd.read_csv(str(obtained_filename))
+        expected_data = pd.read_csv(str(expected_filename))
 
         comparison_tables_dict = {}
         for k in obtained_data.keys():
@@ -101,14 +98,14 @@ class NumericRegressionFixture(object):
             expected_column = expected_data.get(k)
 
             if expected_column is None:
-                error_msg = "Could not find key '%s' in the expected results.\n" % (k,)
+                error_msg = f"Could not find key '{k}' in the expected results.\n"
                 error_msg += "Keys in the obtained data table: ["
                 for k in obtained_data.keys():
-                    error_msg += "'%s', " % (k,)
+                    error_msg += f"'{k}', "
                 error_msg += "]\n"
                 error_msg += "Keys in the expected data table: ["
                 for k in expected_data.keys():
-                    error_msg += "'%s', " % (k,)
+                    error_msg += f"'{k}', "
                 error_msg += "]\n"
                 error_msg += "To update values, use --force-regen option.\n\n"
                 raise AssertionError(error_msg)
@@ -124,7 +121,7 @@ class NumericRegressionFixture(object):
                     obtained_column.values,
                     expected_column.values,
                     equal_nan=True,
-                    **tolerance_args
+                    **tolerance_args,
                 )
             else:
                 not_close_mask = obtained_column.values != expected_column.values
@@ -141,18 +138,14 @@ class NumericRegressionFixture(object):
                 comparison_table = pd.concat(
                     [diff_obtained_data, diff_expected_data, diffs], axis=1
                 )
-                comparison_table.columns = [
-                    "obtained_%s" % (k,),
-                    "expected_%s" % (k,),
-                    "diff",
-                ]
+                comparison_table.columns = [f"obtained_{k}", f"expected_{k}", "diff"]
                 comparison_tables_dict[k] = comparison_table
 
         if len(comparison_tables_dict) > 0:
             error_msg = "Values are not sufficiently close.\n"
             error_msg += "To update values, use --force-regen option.\n\n"
             for k, comparison_table in comparison_tables_dict.items():
-                error_msg += "%s:\n%s\n\n" % (k, comparison_table)
+                error_msg += f"{k}:\n{comparison_table}\n\n"
             raise AssertionError(error_msg)
 
     def _dump_fn(self, data_object, filename):
@@ -160,11 +153,11 @@ class NumericRegressionFixture(object):
         Dump dict contents to the given filename
 
         :param pd.DataFrame data_object:
-        :param six.text_type filename:
+        :param str filename:
         """
         data_object.to_csv(
-            six.text_type(filename),
-            float_format="%%.%sg" % (NumericRegressionFixture.DISPLAY_PRECISION,),
+            str(filename),
+            float_format=f"%.{NumericRegressionFixture.DISPLAY_PRECISION}g",
         )
 
     def check(
