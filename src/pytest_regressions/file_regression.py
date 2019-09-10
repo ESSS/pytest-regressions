@@ -1,4 +1,3 @@
-# encoding: UTF-8
 from functools import partial
 
 import six
@@ -6,7 +5,7 @@ import six
 from .common import perform_regression_check, check_text_files
 
 
-class FileRegressionFixture(object):
+class FileRegressionFixture:
     """
     Implementation of `file_regression` fixture.
     """
@@ -58,13 +57,13 @@ class FileRegressionFixture(object):
 
         if binary:
             assert isinstance(
-                contents, six.binary_type
+                contents, bytes
             ), "Expected bytes contents but received type {}".format(
                 type(contents).__name__
             )
         else:
             assert isinstance(
-                contents, six.text_type
+                contents, str
             ), "Expected text/unicode contents but received type {}".format(
                 type(contents).__name__
             )
@@ -88,8 +87,8 @@ class FileRegressionFixture(object):
 
         def dump_fn(filename):
             mode = "wb" if binary else "w"
-            with io.open(
-                six.text_type(filename), mode, encoding=encoding, newline=newline
+            with open(
+                str(filename), mode, encoding=encoding, newline=newline
             ) as f:
                 f.write(contents)
 

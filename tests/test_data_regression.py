@@ -93,7 +93,7 @@ def test_data_regression_full_path(testdir, tmpdir):
             contents = {'data': [1, 2]}
             data_regression.check(contents, fullpath=%s)
     """ % (
-        repr(six.text_type(fullpath))
+        repr(str(fullpath))
     )
     testdir.makepyfile(test_foo=source)
     # First run fails because there's no yml file yet

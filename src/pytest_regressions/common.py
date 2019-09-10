@@ -1,13 +1,9 @@
-# encoding: UTF-8
 import difflib
 import pytest
 import six
 
 
-if six.PY2:
-    from pathlib2 import Path
-else:
-    from pathlib import Path
+from pathlib import Path
 
 
 def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encoding=None):
@@ -64,8 +60,8 @@ def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encodin
                 "Files are different, but diff is too big ({} lines)".format(
                     len(diff_lines)
                 ),
-                "- obtained: {}".format(obtained_fn),
-                "- expected: {}".format(expected_fn),
+                f"- obtained: {obtained_fn}",
+                f"- expected: {expected_fn}",
             ]
             raise AssertionError("\n".join(msg))
 
@@ -123,10 +119,10 @@ def perform_regression_check(
         source_filename = original_datadir / (basename + extension)
 
     def make_location_message(banner, filename, aux_files):
-        msg = [banner, "- {}".format(filename)]
+        msg = [banner, f"- {filename}"]
         if aux_files:
             msg.append("Auxiliary:")
-            msg += ["- {}".format(x) for x in aux_files]
+            msg += [f"- {x}" for x in aux_files]
         return "\n".join(msg)
 
     force_regen = force_regen or request.config.getoption("force_regen")

@@ -1,4 +1,3 @@
-# encoding: UTF-8
 import io
 from functools import partial
 
@@ -7,7 +6,7 @@ import six
 from pytest_regressions.common import perform_regression_check
 
 
-class ImageRegressionFixture(object):
+class ImageRegressionFixture:
     """
     Regression test for image objects, accounting for small differences.
     """
@@ -35,7 +34,7 @@ class ImageRegressionFixture(object):
         """
         from PIL import Image
 
-        img = Image.open(six.text_type(filename), "r")
+        img = Image.open(str(filename), "r")
         if img.mode not in ("L" or "RGB"):
             return img.convert("RGB")
         else:
@@ -139,7 +138,7 @@ class ImageRegressionFixture(object):
 
         def dump_fn(target):
             image = Image.open(io.BytesIO(image_data))
-            image.save(six.text_type(target), "PNG")
+            image.save(str(target), "PNG")
 
         perform_regression_check(
             datadir=self.datadir,
