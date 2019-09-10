@@ -1,6 +1,4 @@
 
-import six
-
 from pytest_regressions.common import perform_regression_check
 
 
@@ -83,8 +81,8 @@ class NumericRegressionFixture:
         """
         Check if dict contents dumped to a file match the contents in expected file.
 
-        :param six.text_type obtained_filename:
-        :param six.text_type expected_filename:
+        :param str obtained_filename:
+        :param str expected_filename:
         """
         import numpy as np
         import pandas as pd
@@ -123,7 +121,7 @@ class NumericRegressionFixture:
                     obtained_column.values,
                     expected_column.values,
                     equal_nan=True,
-                    **tolerance_args
+                    **tolerance_args,
                 )
             else:
                 not_close_mask = obtained_column.values != expected_column.values
@@ -140,11 +138,7 @@ class NumericRegressionFixture:
                 comparison_table = pd.concat(
                     [diff_obtained_data, diff_expected_data, diffs], axis=1
                 )
-                comparison_table.columns = [
-                    f"obtained_{k}",
-                    f"expected_{k}",
-                    "diff",
-                ]
+                comparison_table.columns = [f"obtained_{k}", f"expected_{k}", "diff"]
                 comparison_tables_dict[k] = comparison_table
 
         if len(comparison_tables_dict) > 0:
@@ -159,7 +153,7 @@ class NumericRegressionFixture:
         Dump dict contents to the given filename
 
         :param pd.DataFrame data_object:
-        :param six.text_type filename:
+        :param str filename:
         """
         data_object.to_csv(
             str(filename),

@@ -1,6 +1,5 @@
 import difflib
 import pytest
-import six
 
 
 from pathlib import Path
@@ -97,9 +96,9 @@ def perform_regression_check(
     :param callable dump_aux_fn: A function that receives the same file path as ``dump_fn``, but may
         dump additional files to help diagnose this regression later (for example dumping image of
         3d views and plots to compare later). Must return the list of file names written (used to display).
-    :param six.text_type extension: Extension of files compared by this check.
+    :param str extension: Extension of files compared by this check.
     :param bool force_regen: if true it will regenerate expected file.
-    :param six.text_type obtained_filename: complete path to use to write the obtained file. By
+    :param str obtained_filename: complete path to use to write the obtained file. By
         default will prepend `.obtained` before the file extension.
     ..see: `data_regression.Check` for `basename` and `fullpath` arguments.
     """

@@ -7,21 +7,16 @@ stages:
   if: repo = ESSS/pytest-regressions AND tag IS present
 jobs:
   include:
-    - python: '2.7'
-      env: TOXENV=py27
-    - python: '3.5'
-      env: TOXENV=py35
     - python: '3.6'
       env: TOXENV=py36
     - python: '3.7'
       env: TOXENV=py37
-    - python: '3.6'
+    - python: '3.7'
       env: TOXENV=docs
-    - python: '3.6'
+    - python: '3.7'
       env: TOXENV=linting
     - stage: deploy
-      python: '3.6'
-      env:
+      python: '3.7'
       install: pip install -U setuptools setuptools_scm
       script: skip
       deploy:

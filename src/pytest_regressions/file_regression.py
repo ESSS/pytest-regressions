@@ -1,7 +1,5 @@
 from functools import partial
 
-import six
-
 from .common import perform_regression_check, check_text_files
 
 
@@ -87,9 +85,7 @@ class FileRegressionFixture:
 
         def dump_fn(filename):
             mode = "wb" if binary else "w"
-            with open(
-                str(filename), mode, encoding=encoding, newline=newline
-            ) as f:
+            with open(str(filename), mode, encoding=encoding, newline=newline) as f:
                 f.write(contents)
 
         perform_regression_check(

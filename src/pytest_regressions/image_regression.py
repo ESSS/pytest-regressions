@@ -1,8 +1,6 @@
 import io
 from functools import partial
 
-import six
-
 from pytest_regressions.common import perform_regression_check
 
 
@@ -72,10 +70,10 @@ class ImageRegressionFixture:
 
         The Manhattan Distance is used to compute how much two images differ.
 
-        :param six.text_type obtained_file:
+        :param str obtained_file:
             The image with the obtained image
 
-        :param six.text_type expected_files:
+        :param str expected_files:
             The image with the expected image
 
         :param bool expected_equal:
