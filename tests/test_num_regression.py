@@ -225,3 +225,27 @@ def test_fill_different_shape_with_nan_for_non_float_array(num_regression, no_re
         match="Checking multiple arrays with different shapes are not supported for non-float arrays",
     ):
         num_regression.check({"data1": data1, "data2": data2, "data3": data3})
+
+
+def test_bool_array(num_regression, no_regen):
+    data1 = np.array([True, True, True], dtype=np.bool)
+    with pytest.raises(AssertionError) as excinfo:
+        num_regression.check({"data1": data1})
+    obtained_error_msg = str(excinfo.value)
+    expected = "\n".join(
+        [
+            "Values are not sufficiently close.",
+            "To update values, use --force-regen option.",
+        ]
+    )
+    assert expected in obtained_error_msg
+    expected = "\n".join(
+        [
+            "data1:",
+            "   obtained_data1  expected_data1  diff",
+            "0            True           False  True",
+            "1            True           False  True",
+            "2            True           False  True",
+        ]
+    )
+    assert expected in obtained_error_msg
