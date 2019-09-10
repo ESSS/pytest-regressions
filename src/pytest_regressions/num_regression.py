@@ -133,7 +133,10 @@ class NumericRegressionFixture(object):
                 diff_ids = np.where(not_close_mask)[0]
                 diff_obtained_data = obtained_column[diff_ids]
                 diff_expected_data = expected_column[diff_ids]
-                diffs = np.abs(obtained_column - expected_column)[diff_ids]
+                if data_type == np.bool:
+                    diffs = np.logical_xor(obtained_column, expected_column)[diff_ids]
+                else:
+                    diffs = np.abs(obtained_column - expected_column)[diff_ids]
 
                 comparison_table = pd.concat(
                     [diff_obtained_data, diff_expected_data, diffs], axis=1
