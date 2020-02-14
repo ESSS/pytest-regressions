@@ -4,7 +4,6 @@ import os
 import codecs
 from setuptools import setup, find_packages
 
-IMPORT_ERROR_MESSAGE = "library should be imported on target project"
 
 def read(fname):
     file_path = os.path.join(os.path.dirname(__file__), fname)

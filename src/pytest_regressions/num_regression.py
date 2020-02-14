@@ -1,6 +1,5 @@
 
-from pytest_regressions.common import perform_regression_check
-from setup import IMPORT_ERROR_MESSAGE
+from pytest_regressions.common import perform_regression_check, IMPORT_ERROR_MESSAGE
 
 class NumericRegressionFixture:
     """

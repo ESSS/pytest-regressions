@@ -4,6 +4,8 @@ import pytest
 
 from pathlib import Path
 
+IMPORT_ERROR_MESSAGE = "library should be imported on target project"
+
 
 def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encoding=None):
     """
