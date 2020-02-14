@@ -1,6 +1,7 @@
 
 from pytest_regressions.common import perform_regression_check, IMPORT_ERROR_MESSAGE
 
+
 class NumericRegressionFixture:
     """
     Numeric Data Regression fixture implementation used on num_regression fixture.
@@ -41,7 +42,7 @@ class NumericRegressionFixture:
         try:
             import numpy as np
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(f'Numpy {IMPORT_ERROR_MESSAGE}')
+            raise ModuleNotFoundError(f"Numpy {IMPORT_ERROR_MESSAGE}")
 
         __tracebackhide__ = True
         obtained_data_type = obtained_column.values.dtype
@@ -88,12 +89,11 @@ class NumericRegressionFixture:
         try:
             import numpy as np
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(f'Numpy {IMPORT_ERROR_MESSAGE}')
+            raise ModuleNotFoundError(f"Numpy {IMPORT_ERROR_MESSAGE}")
         try:
             import pandas as pd
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(f'Pandas {IMPORT_ERROR_MESSAGE}')
-
+            raise ModuleNotFoundError(f"Pandas {IMPORT_ERROR_MESSAGE}")
 
         __tracebackhide__ = True
 
@@ -226,11 +226,11 @@ class NumericRegressionFixture:
         try:
             import numpy as np
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(f'Numpy {IMPORT_ERROR_MESSAGE}')
+            raise ModuleNotFoundError(f"Numpy {IMPORT_ERROR_MESSAGE}")
         try:
             import pandas as pd
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(f'Pandas {IMPORT_ERROR_MESSAGE}')
+            raise ModuleNotFoundError(f"Pandas {IMPORT_ERROR_MESSAGE}")
 
         import functools
 

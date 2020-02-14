@@ -33,7 +33,7 @@ class ImageRegressionFixture:
         try:
             from PIL import Image
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(f'Pillow {IMPORT_ERROR_MESSAGE}')
+            raise ModuleNotFoundError(f"Pillow {IMPORT_ERROR_MESSAGE}")
 
         img = Image.open(str(filename), "r")
         if img.mode not in ("L" or "RGB"):
@@ -51,7 +51,7 @@ class ImageRegressionFixture:
         try:
             import numpy
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(f'Numpy {IMPORT_ERROR_MESSAGE}')
+            raise ModuleNotFoundError(f"Numpy {IMPORT_ERROR_MESSAGE}")
 
         number_of_pixels = diff_image.size[0] * diff_image.size[1]
         return (
@@ -97,7 +97,7 @@ class ImageRegressionFixture:
         try:
             from PIL import ImageChops
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(f'Pillow {IMPORT_ERROR_MESSAGE}')
+            raise ModuleNotFoundError(f"Pillow {IMPORT_ERROR_MESSAGE}")
 
         __tracebackhide__ = True
 
@@ -144,7 +144,7 @@ class ImageRegressionFixture:
         try:
             from PIL import Image
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(f'Pillow {IMPORT_ERROR_MESSAGE}')
+            raise ModuleNotFoundError(f"Pillow {IMPORT_ERROR_MESSAGE}")
 
         def dump_fn(target):
             image = Image.open(io.BytesIO(image_data))
