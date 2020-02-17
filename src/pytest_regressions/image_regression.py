@@ -1,7 +1,7 @@
 import io
 from functools import partial
 
-from pytest_regressions.common import perform_regression_check
+from pytest_regressions.common import perform_regression_check, import_error_message
 
 
 class ImageRegressionFixture:
@@ -30,7 +30,10 @@ class ImageRegressionFixture:
         :param Path filename:
             The name of the file
         """
-        from PIL import Image
+        try:
+            from PIL import Image
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(import_error_message("Pillow"))
 
         img = Image.open(str(filename), "r")
         if img.mode not in ("L" or "RGB"):
@@ -45,7 +48,10 @@ class ImageRegressionFixture:
         :param PIL.Image diff_image:
             An image in RGB mode computed from ImageChops.difference
         """
-        import numpy
+        try:
+            import numpy
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(import_error_message("Numpy"))
 
         number_of_pixels = diff_image.size[0] * diff_image.size[1]
         return (
@@ -88,7 +94,10 @@ class ImageRegressionFixture:
             raised if they are actually different and expect_equal is False or
             if they are equal and expect_equal is True.
         """
-        from PIL import ImageChops
+        try:
+            from PIL import ImageChops
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(import_error_message("Pillow"))
 
         __tracebackhide__ = True
 
@@ -132,7 +141,10 @@ class ImageRegressionFixture:
         """
         __tracebackhide__ = True
 
-        from PIL import Image
+        try:
+            from PIL import Image
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(import_error_message("Pillow"))
 
         def dump_fn(target):
             image = Image.open(io.BytesIO(image_data))

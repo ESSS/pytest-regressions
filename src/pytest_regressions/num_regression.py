@@ -1,5 +1,5 @@
 
-from pytest_regressions.common import perform_regression_check
+from pytest_regressions.common import perform_regression_check, import_error_message
 
 
 class NumericRegressionFixture:
@@ -39,10 +39,12 @@ class NumericRegressionFixture:
         Check if data type of obtained and expected columns are the same. Fail if not.
         Helper method used in _check_fn method.
         """
-        import numpy as np
+        try:
+            import numpy as np
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(import_error_message("Numpy"))
 
         __tracebackhide__ = True
-
         obtained_data_type = obtained_column.values.dtype
         expected_data_type = expected_column.values.dtype
         if obtained_data_type != expected_data_type:
@@ -84,8 +86,14 @@ class NumericRegressionFixture:
         :param str obtained_filename:
         :param str expected_filename:
         """
-        import numpy as np
-        import pandas as pd
+        try:
+            import numpy as np
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(import_error_message("Numpy"))
+        try:
+            import pandas as pd
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(import_error_message("Pandas"))
 
         __tracebackhide__ = True
 
@@ -214,8 +222,16 @@ class NumericRegressionFixture:
 
         ``basename`` and ``fullpath`` are exclusive.
         """
-        import numpy as np
-        import pandas as pd
+
+        try:
+            import numpy as np
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(import_error_message("Numpy"))
+        try:
+            import pandas as pd
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(import_error_message("Pandas"))
+
         import functools
 
         __tracebackhide__ = True

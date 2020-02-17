@@ -5,6 +5,10 @@ import pytest
 from pathlib import Path
 
 
+def import_error_message(libname):
+    return f"'{libname}' library is an optional dependency and must be installed explicitly when the fixture 'check' is used"
+
+
 def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encoding=None):
     """
     Compare two files contents. If the files differ, show the diff and write a nice HTML
