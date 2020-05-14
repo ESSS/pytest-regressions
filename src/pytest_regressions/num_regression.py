@@ -257,6 +257,7 @@ class NumericRegressionFixture:
             )
             data_shapes.append(shape[0])
 
+        data_shapes = np.array(data_shapes)
         if not np.all(data_shapes == data_shapes[0]):
             if not fill_different_shape_with_nan:
                 assert (
