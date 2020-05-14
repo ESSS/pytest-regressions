@@ -249,3 +249,11 @@ def test_bool_array(num_regression, no_regen):
         ]
     )
     assert expected in obtained_error_msg
+
+
+def test_arrays_of_same_size(num_regression):
+    same_size_int_arrays = {
+        "hello": np.zeros((1,), dtype=np.int),
+        "world": np.zeros((1,), dtype=np.int),
+    }
+    num_regression.check(same_size_int_arrays)
