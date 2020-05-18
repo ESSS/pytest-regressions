@@ -1,3 +1,8 @@
+2.0.1 (2020-05-18)
+------------------
+
+* `#28 <https://github.com/ESSS/pytest-regressions/pull/28>`__: Fix ``num_regression`` bug when comparing numpy shapes.
+
 2.0.0 (2019-09-10)
 ------------------
 

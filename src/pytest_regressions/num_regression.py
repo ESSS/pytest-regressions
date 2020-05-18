@@ -267,7 +267,7 @@ class NumericRegressionFixture:
                 np.issubdtype(a.dtype, np.floating) for a in data_dict.values()
             ):
                 raise TypeError(
-                    'Checking multiple arrays with different shapes are not supported for non-float arrays" in obtained_error_msg.'
+                    "Checking multiple arrays with different shapes are not supported for non-float arrays"
                 )
             else:
                 max_size = max(data_shapes)
