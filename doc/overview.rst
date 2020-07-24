@@ -73,7 +73,8 @@ Using data_regression
 
 The ``data_regression`` fixture provides a method to check general dictionary data like the one in the previous example.
 
-Just declare the ``data_regression`` fixture and call the ``check`` method:
+There is no need to import anything, just declare the ``data_regression`` fixture in your test's
+arguments and call the ``check`` method in the test:
 
 .. code-block:: python
 
