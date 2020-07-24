@@ -73,7 +73,8 @@ Using data_regression
 
 The ``data_regression`` fixture provides a method to check general dictionary data like the one in the previous example.
 
-Just declare the ``data_regression`` fixture and call the ``check`` method:
+There is no need to import anything, just declare the ``data_regression`` fixture in your test's
+arguments and call the ``check`` method in the test:
 
 .. code-block:: python
 
@@ -130,3 +131,34 @@ grids for example), then you can use the ``--force-regen`` flag to update the ex
 and commit the updated file.
 
 This workflow makes it very simple to keep the files up to date and to check all the information we need.
+
+
+Parametrized tests
+------------------
+
+When using parametrized tests, pytest will give each parametrization of your test a unique name.
+This means that ``pytest-regressions`` will create a new file for each parametrization too.
+
+Suppose we have an additional function ``summary_grids_2`` that generates longer data, we can
+re-use the same test with the ``@pytest.mark.parametrize`` decorator:
+
+.. code-block:: python
+
+    @pytest.mark.parametrize('data', [summary_grids(), summary_grids_2()])
+    def test_grids3(data_regression, data):
+        data_regression.check(data)
+
+Pytest will automatically name these as ``test_grids3[data0]`` and ``test_grids3[data1]``, so files
+``test_grids3_data0.yml`` and ``test_grids3_data1.yml`` will be created.
+
+The names of these files can be controlled using the ``ids`` `keyword for parametrize
+<https://docs.pytest.org/en/stable/example/parametrize.html#different-options-for-test-ids>`_, so
+instead of ``data0``, you can define more useful names such as ``short`` and ``long``:
+
+.. code-block:: python
+
+    @pytest.mark.parametrize('data', [summary_grids(), summary_grids_2()], ids=['short' 'long'])
+    def test_grids3(data_regression, data):
+        data_regression.check(data)
+
+which creates ``test_grids3_short.yml`` and ``test_grids3_long.yml`` respectively.
