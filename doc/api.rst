@@ -1,10 +1,6 @@
 API Reference
 =============
 
-.. note::
-    Any references to ``str`` in the documentation below can also be considered
-    ``unicode`` in Python 2.7.
-
 
 data_regression
 ---------------
