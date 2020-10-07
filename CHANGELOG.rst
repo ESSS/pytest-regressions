@@ -1,3 +1,8 @@
+2.0.2 (2020-10-07)
+------------------
+
+* `#34 <https://github.com/ESSS/pytest-regressions/pull/34>`__: Fix ``data_regression`` bug that creates empty file on serializing error.
+
 2.0.1 (2020-05-18)
 ------------------
 

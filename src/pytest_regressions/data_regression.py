@@ -43,16 +43,16 @@ class DataRegressionFixture:
             """Dump dict contents to the given filename"""
             import yaml
 
+            dumped_str = yaml.dump_all(
+                [data_dict],
+                Dumper=RegressionYamlDumper,
+                default_flow_style=False,
+                allow_unicode=True,
+                indent=2,
+                encoding="utf-8",
+            )
             with filename.open("wb") as f:
-                yaml.dump_all(
-                    [data_dict],
-                    f,
-                    Dumper=RegressionYamlDumper,
-                    default_flow_style=False,
-                    allow_unicode=True,
-                    indent=2,
-                    encoding="utf-8",
-                )
+                f.write(dumped_str)
 
         perform_regression_check(
             datadir=self.datadir,
