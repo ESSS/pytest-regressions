@@ -169,3 +169,25 @@ def test_data_regression_no_aliases(testdir):
     )
     result = testdir.inline_run()
     result.assertoutcome(passed=1)
+
+
+def test_not_create_file_on_error(testdir):
+    """Basic example where we serializing the object should throw an error and should not create the file"""
+
+    source = """
+        def test(data_regression):
+            class Scalar:
+                def __init__(self, value, unit):
+                    self.value = value
+                    self.unit = unit
+
+            contents = {"scalar": Scalar(10, "m")}
+            data_regression.Check(contents)
+    """
+    testdir.makepyfile(test_file=source)
+
+    result = testdir.inline_run()
+    result.assertoutcome(failed=1)
+
+    yaml_file = testdir.tmpdir.join("test_file", "test.yml")
+    assert not yaml_file.isfile()
