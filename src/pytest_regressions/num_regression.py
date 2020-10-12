@@ -1,172 +1,12 @@
 
 from pytest_regressions.common import perform_regression_check, import_error_message
+from pytest_regressions.dataframe_regression import DataFrameRegressionFixture
 
 
-class NumericRegressionFixture:
+class NumericRegressionFixture(DataFrameRegressionFixture):
     """
     Numeric Data Regression fixture implementation used on num_regression fixture.
     """
-
-    DISPLAY_PRECISION = 17  # Decimal places
-    DISPLAY_WIDTH = 1000  # Max. Chars on outputs
-    DISPLAY_MAX_COLUMNS = 1000  # Max. Number of columns (see #3)
-
-    def __init__(self, datadir, original_datadir, request):
-        """
-        :type datadir: Path
-        :type original_datadir: Path
-        :type request: FixtureRequest
-        """
-        self._tolerances_dict = {}
-        self._default_tolerance = {}
-
-        self.request = request
-        self.datadir = datadir
-        self.original_datadir = original_datadir
-        self._force_regen = False
-
-        self._pandas_display_options = (
-            "display.precision",
-            NumericRegressionFixture.DISPLAY_PRECISION,
-            "display.width",
-            NumericRegressionFixture.DISPLAY_WIDTH,
-            "display.max_columns",
-            NumericRegressionFixture.DISPLAY_MAX_COLUMNS,
-        )
-
-    def _check_data_types(self, key, obtained_column, expected_column):
-        """
-        Check if data type of obtained and expected columns are the same. Fail if not.
-        Helper method used in _check_fn method.
-        """
-        try:
-            import numpy as np
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError(import_error_message("Numpy"))
-
-        __tracebackhide__ = True
-        obtained_data_type = obtained_column.values.dtype
-        expected_data_type = expected_column.values.dtype
-        if obtained_data_type != expected_data_type:
-            # Check if both data types are comparable as numbers (float, int, short, bytes, etc...)
-            if np.issubdtype(obtained_data_type, np.number) and np.issubdtype(
-                expected_data_type, np.number
-            ):
-                return
-
-            # In case they are not, assume they are not comparable
-            error_msg = (
-                "Data type for data %s of obtained and expected are not the same.\n"
-                "Obtained: %s\n"
-                "Expected: %s\n" % (key, obtained_data_type, expected_data_type)
-            )
-            raise AssertionError(error_msg)
-
-    def _check_data_shapes(self, obtained_column, expected_column):
-        """
-        Check if obtained and expected columns have the same size.
-        Helper method used in _check_fn method.
-        """
-        __tracebackhide__ = True
-
-        obtained_data_shape = obtained_column.values.shape
-        expected_data_shape = expected_column.values.shape
-        if obtained_data_shape != expected_data_shape:
-            error_msg = (
-                "Obtained and expected data shape are not the same.\n"
-                "Obtained: %s\n"
-                "Expected: %s\n" % (obtained_data_shape, expected_data_shape)
-            )
-            raise AssertionError(error_msg)
-
-    def _check_fn(self, obtained_filename, expected_filename):
-        """
-        Check if dict contents dumped to a file match the contents in expected file.
-
-        :param str obtained_filename:
-        :param str expected_filename:
-        """
-        try:
-            import numpy as np
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError(import_error_message("Numpy"))
-        try:
-            import pandas as pd
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError(import_error_message("Pandas"))
-
-        __tracebackhide__ = True
-
-        obtained_data = pd.read_csv(str(obtained_filename))
-        expected_data = pd.read_csv(str(expected_filename))
-
-        comparison_tables_dict = {}
-        for k in obtained_data.keys():
-            obtained_column = obtained_data[k]
-            expected_column = expected_data.get(k)
-
-            if expected_column is None:
-                error_msg = f"Could not find key '{k}' in the expected results.\n"
-                error_msg += "Keys in the obtained data table: ["
-                for k in obtained_data.keys():
-                    error_msg += f"'{k}', "
-                error_msg += "]\n"
-                error_msg += "Keys in the expected data table: ["
-                for k in expected_data.keys():
-                    error_msg += f"'{k}', "
-                error_msg += "]\n"
-                error_msg += "To update values, use --force-regen option.\n\n"
-                raise AssertionError(error_msg)
-
-            tolerance_args = self._tolerances_dict.get(k, self._default_tolerance)
-
-            self._check_data_types(k, obtained_column, expected_column)
-            self._check_data_shapes(obtained_column, expected_column)
-
-            data_type = obtained_column.values.dtype
-            if data_type in [float, np.float, np.float16, np.float32, np.float64]:
-                not_close_mask = ~np.isclose(
-                    obtained_column.values,
-                    expected_column.values,
-                    equal_nan=True,
-                    **tolerance_args,
-                )
-            else:
-                not_close_mask = obtained_column.values != expected_column.values
-
-            if np.any(not_close_mask):
-                diff_ids = np.where(not_close_mask)[0]
-                diff_obtained_data = obtained_column[diff_ids]
-                diff_expected_data = expected_column[diff_ids]
-                if data_type == np.bool:
-                    diffs = np.logical_xor(obtained_column, expected_column)[diff_ids]
-                else:
-                    diffs = np.abs(obtained_column - expected_column)[diff_ids]
-
-                comparison_table = pd.concat(
-                    [diff_obtained_data, diff_expected_data, diffs], axis=1
-                )
-                comparison_table.columns = [f"obtained_{k}", f"expected_{k}", "diff"]
-                comparison_tables_dict[k] = comparison_table
-
-        if len(comparison_tables_dict) > 0:
-            error_msg = "Values are not sufficiently close.\n"
-            error_msg += "To update values, use --force-regen option.\n\n"
-            for k, comparison_table in comparison_tables_dict.items():
-                error_msg += f"{k}:\n{comparison_table}\n\n"
-            raise AssertionError(error_msg)
-
-    def _dump_fn(self, data_object, filename):
-        """
-        Dump dict contents to the given filename
-
-        :param pd.DataFrame data_object:
-        :param str filename:
-        """
-        data_object.to_csv(
-            str(filename),
-            float_format=f"%.{NumericRegressionFixture.DISPLAY_PRECISION}g",
-        )
 
     def check(
         self,
@@ -232,18 +72,6 @@ class NumericRegressionFixture:
         except ModuleNotFoundError:
             raise ModuleNotFoundError(import_error_message("Pandas"))
 
-        import functools
-
-        __tracebackhide__ = True
-
-        if tolerances is None:
-            tolerances = {}
-        self._tolerances_dict = tolerances
-
-        if default_tolerance is None:
-            default_tolerance = {}
-        self._default_tolerance = default_tolerance
-
         data_shapes = []
         for obj in data_dict.values():
             assert type(obj) in [
@@ -278,17 +106,7 @@ class NumericRegressionFixture:
                     data_dict[k] = new_data
 
         data_frame = pd.DataFrame(data_dict, index=data_index)
-        dump_fn = functools.partial(self._dump_fn, data_frame)
 
-        with pd.option_context(*self._pandas_display_options):
-            perform_regression_check(
-                datadir=self.datadir,
-                original_datadir=self.original_datadir,
-                request=self.request,
-                check_fn=self._check_fn,
-                dump_fn=dump_fn,
-                extension=".csv",
-                basename=basename,
-                fullpath=fullpath,
-                force_regen=self._force_regen,
-            )
+        DataFrameRegressionFixture.check(
+            self, data_frame, basename, fullpath, tolerances, default_tolerance
+        )

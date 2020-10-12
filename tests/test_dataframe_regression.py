@@ -6,8 +6,8 @@ from pytest_regressions.testing import check_regression_fixture_workflow
 
 
 @pytest.fixture
-def no_regen(num_regression, request):
-    if num_regression._force_regen or request.config.getoption("force_regen"):
+def no_regen(dataframe_regression, request):
+    if dataframe_regression._force_regen or request.config.getoption("force_regen"):
         pytest.fail("--force-regen should not be used on this test.")
 
 
@@ -25,9 +25,10 @@ def test_usage_workflow(testdir, monkeypatch):
     )
     source = """
         import sys
-        def test_1(num_regression):
+        import pandas as pd
+        def test_1(dataframe_regression):
             contents = sys.testing_get_data()
-            num_regression.check(contents)
+            dataframe_regression.check(pd.DataFrame.from_dict(contents))
     """
 
     def get_csv_contents():
@@ -51,18 +52,20 @@ def test_usage_workflow(testdir, monkeypatch):
     )
 
 
-def test_common_cases(num_regression, no_regen):
+def test_common_cases(dataframe_regression, no_regen):
     # Most common case: Data is valid, is present and should pass
     data1 = 1.1 * np.ones(5000)
     data2 = 2.2 * np.ones(5000)
-    num_regression.check({"data1": data1, "data2": data2})
+    dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1, "data2": data2}))
 
     # Assertion error case 1: Data has one invalid place
     data1 = 1.1 * np.ones(5000)
     data2 = 2.2 * np.ones(5000)
     data1[500] += 0.1
     with pytest.raises(AssertionError) as excinfo:
-        num_regression.check({"data1": data1, "data2": data2})
+        dataframe_regression.check(
+            pd.DataFrame.from_dict({"data1": data1, "data2": data2})
+        )
     obtained_error_msg = str(excinfo.value)
     expected = "\n".join(
         [
@@ -92,7 +95,9 @@ def test_common_cases(num_regression, no_regen):
     data1[600] += 0.2
     data2[700] += 0.3
     with pytest.raises(AssertionError) as excinfo:
-        num_regression.check({"data1": data1, "data2": data2})
+        dataframe_regression.check(
+            pd.DataFrame.from_dict({"data1": data1, "data2": data2})
+        )
     obtained_error_msg = str(excinfo.value)
     expected = "\n".join(
         [
@@ -125,8 +130,8 @@ def test_common_cases(num_regression, no_regen):
     data1[500] += 0.01
     data2[500] += 0.01
     with pytest.raises(AssertionError) as excinfo:
-        num_regression.check(
-            {"data1": data1, "data2": data2},
+        dataframe_regression.check(
+            pd.DataFrame.from_dict({"data1": data1, "data2": data2}),
             tolerances={
                 "data1": dict(atol=1e-1, rtol=1e-17),
                 "data2": dict(atol=1e-17, rtol=1e-17),
@@ -155,82 +160,56 @@ def test_common_cases(num_regression, no_regen):
     )
 
 
-def test_different_data_types(num_regression, no_regen):
+def test_different_data_types(dataframe_regression, no_regen):
     data1 = np.ones(10)
     # Smoke test: Should not raise any exception
-    num_regression.check({"data1": data1})
+    dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
     data2 = np.array([True] * 10)
     with pytest.raises(
         AssertionError,
         match="Data type for data data1 of obtained and expected are not the same.",
     ):
-        num_regression.check({"data1": data2})
+        dataframe_regression.check(pd.DataFrame.from_dict({"data1": data2}))
 
 
-def test_n_dimensions(num_regression, no_regen):
-    data1 = np.ones(shape=(10, 10), dtype=np.int)
+def test_n_dimensions(dataframe_regression, no_regen):
+    A = np.array([1, 1, 2, 2, 3, 3])
+    B = np.array([0, 1] * 3)
+    C = [np.random.randint(10, 99, 6)] * 6
+    # C contains an array of integer arrays, it have non-numeric dtype is ('object')
+    data1 = pd.DataFrame(zip(A, B, C), columns=["A", "B", "C"])
+    data1.set_index(["A", "B"], inplace=True)
+
     with pytest.raises(
         AssertionError,
-        match="Only 1D arrays are supported on num_data_regression fixture.",
+        match="Only numeric data is supported on dataframe_regression fixture.",
     ):
-        num_regression.check({"data1": data1})
+        dataframe_regression.check(data1)
 
 
-def test_arrays_with_different_sizes(num_regression, no_regen):
+def test_arrays_with_different_sizes(dataframe_regression, no_regen):
     data1 = np.ones(10, dtype=np.float64)
     with pytest.raises(
         AssertionError, match="Obtained and expected data shape are not the same."
     ):
-        num_regression.check({"data1": data1})
+        dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
-def test_integer_values_smoke_test(num_regression, no_regen):
+def test_integer_values_smoke_test(dataframe_regression, no_regen):
     data1 = np.ones(11, dtype=np.int)
-    num_regression.check({"data1": data1})
+    dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
-def test_number_formats(num_regression, no_regen):
+def test_number_formats(dataframe_regression, no_regen):
     data1 = np.array([1.2345678e50, 1.2345678e-50, 0.0])
-    num_regression.check({"data1": data1})
+    dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
-def test_fill_different_shape_with_nan(num_regression, no_regen):
-    data1 = np.ones(5, dtype=np.float64)
-    data2 = np.ones(2, dtype=np.float32)
-    data3 = np.ones(6, dtype=np.float16)
-    num_regression.check({"data1": data1, "data2": data2, "data3": data3})
-
-
-def test_fill_different_shape_with_nan_false(num_regression, no_regen):
-    data1 = np.ones(5, dtype=np.float64)
-    data2 = np.ones(2, dtype=np.float32)
-    data3 = np.ones(6, dtype=np.float16)
-    with pytest.raises(
-        AssertionError,
-        match="Data dict with different array lengths will not be accepted.",
-    ):
-        num_regression.check(
-            {"data1": data1, "data2": data2, "data3": data3},
-            fill_different_shape_with_nan=False,
-        )
-
-
-def test_fill_different_shape_with_nan_for_non_float_array(num_regression, no_regen):
-    data1 = np.ones(5, dtype=np.int32)
-    data2 = np.ones(2, dtype=np.float64)
-    data3 = np.ones(6, dtype=np.float64)
-    with pytest.raises(
-        TypeError,
-        match="Checking multiple arrays with different shapes are not supported for non-float arrays",
-    ):
-        num_regression.check({"data1": data1, "data2": data2, "data3": data3})
-
-
-def test_bool_array(num_regression, no_regen):
+def test_bool_array(dataframe_regression, no_regen):
     data1 = np.array([True, True, True], dtype=np.bool)
     with pytest.raises(AssertionError) as excinfo:
-        num_regression.check({"data1": data1})
+        dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
     obtained_error_msg = str(excinfo.value)
     expected = "\n".join(
         [
@@ -251,9 +230,30 @@ def test_bool_array(num_regression, no_regen):
     assert expected in obtained_error_msg
 
 
-def test_arrays_of_same_size(num_regression):
+def test_arrays_of_same_size(dataframe_regression):
     same_size_int_arrays = {
         "hello": np.zeros((1,), dtype=np.int),
         "world": np.zeros((1,), dtype=np.int),
     }
-    num_regression.check(same_size_int_arrays)
+    dataframe_regression.check(pd.DataFrame.from_dict(same_size_int_arrays))
+
+
+def test_string_array(dataframe_regression):
+    with pytest.raises(
+        AssertionError,
+        match="Only numeric data is supported on dataframe_regression fixture.",
+    ):
+        dataframe_regression.check(
+            pd.DataFrame.from_dict(
+                {"potato": np.array(["delicious", "nutritive", "nice"])}
+            )
+        )
+
+
+def test_non_pandas_dataframe(dataframe_regression):
+    data = np.ones(shape=(10, 10))
+    with pytest.raises(
+        AssertionError,
+        match="Only pandas DataFrames are supported on on dataframe_regression fixture.",
+    ):
+        dataframe_regression.check(data)

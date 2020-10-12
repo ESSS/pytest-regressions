@@ -8,6 +8,12 @@ data_regression
 .. automethod:: pytest_regressions.data_regression.DataRegressionFixture.check
 
 
+dataframe_regression
+--------------------
+
+.. automethod:: pytest_regressions.dataframe_regression.DataFrameRegressionFixture.check
+
+
 file_regression
 ---------------
 
