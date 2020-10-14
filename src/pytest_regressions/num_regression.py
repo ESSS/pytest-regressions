@@ -72,6 +72,8 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
         except ModuleNotFoundError:
             raise ModuleNotFoundError(import_error_message("Pandas"))
 
+        __tracebackhide__ = True
+
         data_shapes = []
         for obj in data_dict.values():
             assert type(obj) in [

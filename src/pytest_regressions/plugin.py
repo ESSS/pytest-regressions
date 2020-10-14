@@ -56,7 +56,6 @@ def dataframe_regression(datadir, original_datadir, request):
                     'P': Pa_to_bar(P),
                 }
             ),
-            data_index=positions,
             default_tolerance=dict(atol=1e-8, rtol=1e-8)
         )
 

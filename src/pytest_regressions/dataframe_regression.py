@@ -223,19 +223,15 @@ class DataFrameRegressionFixture:
 
         assert type(data_frame) is pd.DataFrame, (
             "Only pandas DataFrames are supported on on dataframe_regression fixture.\n"
-            "Object with type %s was given." % (str(type(data_frame)),)
+            "Object with type '%s' was given." % (str(type(data_frame)),)
         )
 
         for column in data_frame.columns:
             array = data_frame[column]
-            assert len(array.shape) == 1, (
-                "Only 1D arrays are supported on dataframe_regression fixture.\n"
-                "Array with shape %s was given.\n" % (array.shape,)
-            )
             # Rejected: timedelta, datetime, objects, zero-terminated bytes, unicode strings and raw data
             assert array.dtype not in ["m", "M", "O", "S", "a", "U", "V"], (
                 "Only numeric data is supported on dataframe_regression fixture.\n"
-                "Array with type %s was given.\n" % (str(array.dtype),)
+                "Array with type '%s' was given.\n" % (str(array.dtype),)
             )
 
         if tolerances is None:

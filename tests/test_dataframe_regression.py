@@ -81,11 +81,6 @@ def test_common_cases(dataframe_regression, no_regen):
             "500  1.20000000000000018  1.10000000000000009  0.10000000000000009",
         ]
     )
-    # prints used to debug #3
-    print()
-    print(expected)
-    print("-" * 200)
-    print(obtained_error_msg)
     assert expected in obtained_error_msg
 
     # Assertion error case 2: More than one invalid data
@@ -161,29 +156,29 @@ def test_common_cases(dataframe_regression, no_regen):
 
 
 def test_different_data_types(dataframe_regression, no_regen):
-    data1 = np.ones(10)
-    # Smoke test: Should not raise any exception
-    dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
-
-    data2 = np.array([True] * 10)
+    # Original CSV file contains integer data
+    data1 = np.array([True] * 10)
     with pytest.raises(
         AssertionError,
         match="Data type for data data1 of obtained and expected are not the same.",
     ):
-        dataframe_regression.check(pd.DataFrame.from_dict({"data1": data2}))
+        dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
-def test_n_dimensions(dataframe_regression, no_regen):
-    A = np.array([1, 1, 2, 2, 3, 3])
-    B = np.array([0, 1] * 3)
-    C = [np.random.randint(10, 99, 6)] * 6
-    # C contains an array of integer arrays, it have non-numeric dtype is ('object')
-    data1 = pd.DataFrame(zip(A, B, C), columns=["A", "B", "C"])
-    data1.set_index(["A", "B"], inplace=True)
-
+@pytest.mark.parametrize(
+    "array",
+    [
+        [np.random.randint(10, 99, 6)] * 6,
+        np.array(["dataframe", "pytest", "regressions"]),
+    ],
+)
+def test_non_numeric_data(dataframe_regression, array, no_regen):
+    data1 = pd.DataFrame()
+    data1["data1"] = array
     with pytest.raises(
         AssertionError,
-        match="Only numeric data is supported on dataframe_regression fixture.",
+        match="Only numeric data is supported on dataframe_regression fixture.\n"
+        "  Array with type '%s' was given." % (str(data1["data1"].dtype),),
     ):
         dataframe_regression.check(data1)
 
@@ -238,22 +233,11 @@ def test_arrays_of_same_size(dataframe_regression):
     dataframe_regression.check(pd.DataFrame.from_dict(same_size_int_arrays))
 
 
-def test_string_array(dataframe_regression):
-    with pytest.raises(
-        AssertionError,
-        match="Only numeric data is supported on dataframe_regression fixture.",
-    ):
-        dataframe_regression.check(
-            pd.DataFrame.from_dict(
-                {"potato": np.array(["delicious", "nutritive", "nice"])}
-            )
-        )
-
-
 def test_non_pandas_dataframe(dataframe_regression):
     data = np.ones(shape=(10, 10))
     with pytest.raises(
         AssertionError,
-        match="Only pandas DataFrames are supported on on dataframe_regression fixture.",
+        match="Only pandas DataFrames are supported on on dataframe_regression fixture.\n"
+        "  Object with type '%s' was given." % (str(type(data)),),
     ):
         dataframe_regression.check(data)
