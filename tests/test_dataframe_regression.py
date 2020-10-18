@@ -165,12 +165,13 @@ def test_different_data_types(dataframe_regression, no_regen):
         dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
+class Foo:
+    def __init__(self, bar):
+        self.bar = bar
+
+
 @pytest.mark.parametrize(
-    "array",
-    [
-        [np.random.randint(10, 99, 6)] * 6,
-        np.array(["dataframe", "pytest", "regressions"]),
-    ],
+    "array", [[np.random.randint(10, 99, 6)] * 6, [Foo(i) for i in range(4)]]
 )
 def test_non_numeric_data(dataframe_regression, array, no_regen):
     data1 = pd.DataFrame()
@@ -231,6 +232,11 @@ def test_arrays_of_same_size(dataframe_regression):
         "world": np.zeros((1,), dtype=np.int),
     }
     dataframe_regression.check(pd.DataFrame.from_dict(same_size_int_arrays))
+
+
+def test_string_array(dataframe_regression):
+    data1 = {"potato": ["delicious", "nutritive", "yummy"]}
+    dataframe_regression.check(pd.DataFrame.from_dict(data1))
 
 
 def test_non_pandas_dataframe(dataframe_regression):

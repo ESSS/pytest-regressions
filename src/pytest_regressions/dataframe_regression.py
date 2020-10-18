@@ -228,6 +228,9 @@ class DataFrameRegressionFixture:
 
         for column in data_frame.columns:
             array = data_frame[column]
+            # Skip assertion if an array of strings
+            if (array.dtype == "O") and (type(array[0]) is str):
+                continue
             # Rejected: timedelta, datetime, objects, zero-terminated bytes, unicode strings and raw data
             assert array.dtype not in ["m", "M", "O", "S", "a", "U", "V"], (
                 "Only numeric data is supported on dataframe_regression fixture.\n"

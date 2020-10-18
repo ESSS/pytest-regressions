@@ -160,7 +160,7 @@ def test_different_data_types(num_regression, no_regen):
     # Smoke test: Should not raise any exception
     num_regression.check({"data1": data1})
 
-    data2 = np.array([True] * 10)
+    data2 = np.array(["a"] * 10)
     with pytest.raises(
         AssertionError,
         match="Data type for data data1 of obtained and expected are not the same.",
