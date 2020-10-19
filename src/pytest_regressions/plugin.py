@@ -41,6 +41,35 @@ def data_regression(datadir, original_datadir, request):
 
 
 @pytest.fixture
+def dataframe_regression(datadir, original_datadir, request):
+    """
+    Example usage:
+
+    def testSomeData(num_regression):
+        dataframe_regression.check(
+            pandas.DataFrame.from_dict(
+                {
+                    'U_gas': U[0],
+                    'U_liquid': U[1],
+                    'gas_vol_frac [-]': α[0],
+                    'liquid_vol_frac [-]': α[1],
+                    'P': Pa_to_bar(P),
+                }
+            ),
+            default_tolerance=dict(atol=1e-8, rtol=1e-8)
+        )
+
+    :type embed_data: _EmbedDataFixture
+    :type request: FixtureRequest
+    :rtype: DataRegressionFixture
+    :return: Data regression fixture.
+    """
+    from .dataframe_regression import DataFrameRegressionFixture
+
+    return DataFrameRegressionFixture(datadir, original_datadir, request)
+
+
+@pytest.fixture
 def file_regression(datadir, original_datadir, request):
     """
     Very similar to `data_regression`, but instead of saving data to YAML file it saves to an
