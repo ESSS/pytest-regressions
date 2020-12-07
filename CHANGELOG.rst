@@ -1,4 +1,4 @@
-2.1.0 (UNRELEASED)
+2.1.0 (2020-12-7)
 ------------------
 
 * `#35 <https://github.com/ESSS/pytest-regressions/pull/35>`__: New ``dataframe_regression`` fixture to check pandas DataFrames directly.
