@@ -13,13 +13,8 @@ pytest-regressions
     :target: https://pypi.org/project/pytest-regressions
     :alt: Python versions
 
-.. image:: https://travis-ci.com/ESSS/pytest-regressions.svg?branch=master
-    :target: https://travis-ci.com/ESSS/pytest-regressions
-    :alt: See Build Status on Travis CI
-
-.. image:: https://ci.appveyor.com/api/projects/status/oq3udklexcx38sc0/branch/master
-    :target: https://ci.appveyor.com/project/ESSS/pytest-regressions/branch/master
-    :alt: See Build Status on AppVeyor
+.. image:: https://github.com/ESSS/pytest-regressions/workflows/build/badge.svg
+  :target: https://github.com/ESSS/pytest-regressions/actions?query=workflow%3Abuild
 
 .. image:: https://img.shields.io/readthedocs/pytest-regressions.svg
   :target: https://pytest-regressions.readthedocs.io/en/latest
