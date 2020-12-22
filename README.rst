@@ -14,13 +14,17 @@ pytest-regressions
     :alt: Python versions
 
 .. image:: https://github.com/ESSS/pytest-regressions/workflows/build/badge.svg
-  :target: https://github.com/ESSS/pytest-regressions/actions?query=workflow%3Abuild
+    :target: https://github.com/ESSS/pytest-regressions/actions?query=workflow%3Abuild
 
 .. image:: https://img.shields.io/readthedocs/pytest-regressions.svg
-  :target: https://pytest-regressions.readthedocs.io/en/latest
+    :target: https://pytest-regressions.readthedocs.io/en/latest
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-  :target: https://github.com/ambv/black
+    :target: https://github.com/ambv/black
+
+.. image:: https://results.pre-commit.ci/badge/github/ESSS/pytest-regressions/master.svg
+    :target: https://results.pre-commit.ci/latest/github/ESSS/pytest-regressions/master
+    :alt: pre-commit.ci status
 
 Fixtures to write regression tests.
 
