@@ -1,6 +1,9 @@
 from pytest_regressions.common import perform_regression_check, import_error_message
 
 
+some_bad_format = [1,2,
+34,45,5,
+                    4,]
 class DataFrameRegressionFixture:
     """
     Pandas DataFrame Regression fixture implementation used on dataframe_regression fixture.
