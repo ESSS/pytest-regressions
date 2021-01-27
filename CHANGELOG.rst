@@ -1,3 +1,8 @@
+2.2.0 (UNRELEASED)
+------------------
+
+* `#45 <https://github.com/ESSS/pytest-regressions/pull/45>`__: ``num_regression.check`` now accepts any object that can be coerced to a 1d ``numpy`` array with numeric ``dtype`` (e.g. list, tuple, etc).
+
 2.1.1 (2020-12-7)
 ------------------
 

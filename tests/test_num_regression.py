@@ -257,3 +257,39 @@ def test_arrays_of_same_size(num_regression):
         "world": np.zeros((1,), dtype=np.int),
     }
     num_regression.check(same_size_int_arrays)
+
+
+def test_simple_numbers(num_regression, data_regression):
+    data1 = 1.1
+    data2 = 2
+    num_regression.check({"data1": data1, "data2": data2})
+    data_regression.check({"data1": data1, "data2": data2})
+    data1 += 0.00000001
+    num_regression.check({"data1": data1, "data2": data2})  # passes, within tol
+    with pytest.raises(
+        AssertionError,
+        match="FILES DIFFER.*",
+    ):
+        data_regression.check({"data1": data1, "data2": data2})  # fails, must be exact
+
+
+def test_simple_list_of_numbers(num_regression):
+    data1 = [1.1, 1.1, 1.1]
+    data2 = [2, 2, 2]
+    num_regression.check({"data1": data1, "data2": data2})
+
+
+def test_simple_tuple_of_numbers(num_regression):
+    data1 = (1.1, 1.1, 1.1)
+    data2 = (2, 2, 2)
+    num_regression.check({"data1": data1, "data2": data2})
+
+
+def test_simple_list_of_mostly_numbers(num_regression):
+    data1 = [1.1, "not a number", 1.1]
+    data2 = [2, 2, 2]
+    with pytest.raises(
+        AssertionError,
+        match="Only objects that can be coerced to numpy arrays are valid for numeric_data_regression fixture.",
+    ):
+        num_regression.check({"data1": data1, "data2": data2})
