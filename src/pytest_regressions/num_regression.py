@@ -19,7 +19,7 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
     ):
         """
         Checks the given dict against a previously recorded version, or generate a new file.
-        The dict must map from user-defined keys to 1d numpy arrays.
+        The dict must map from user-defined keys to 1d numpy arrays or array-like values.
 
         Example::
 
@@ -31,7 +31,8 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
                 'P': Pa_to_bar(P)[positions],
             })
 
-        :param dict data_dict: dict mapping keys to numpy arrays.
+        :param dict data_dict: dict mapping keys to numpy arrays, or objects that can be
+            coerced to 1d numpy arrays with a numeric dtype (e.g. list, tuple, etc).
 
         :param str basename: basename of the file to test/record. If not given the name
             of the test is used.
@@ -75,13 +76,9 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
 
         for k, obj in data_dict.items():
             if not isinstance(obj, np.ndarray):
-                try:
-                    arr = np.atleast_1d(np.asarray(obj))
-                except:
-                    raise
-                else:
-                    if np.issubdtype(arr.dtype, np.number):
-                        data_dict[k] = arr
+                arr = np.atleast_1d(np.asarray(obj))
+                if np.issubdtype(arr.dtype, np.number):
+                    data_dict[k] = arr
 
         data_shapes = []
         for obj in data_dict.values():
