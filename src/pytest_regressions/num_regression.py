@@ -73,11 +73,21 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
 
         __tracebackhide__ = True
 
+        for k, obj in data_dict.items():
+            if not isinstance(obj, np.ndarray):
+                try:
+                    arr = np.atleast_1d(np.asarray(obj))
+                except:
+                    raise
+                else:
+                    if np.issubdtype(arr.dtype, np.number):
+                        data_dict[k] = arr
+
         data_shapes = []
         for obj in data_dict.values():
             assert type(obj) in [
                 np.ndarray
-            ], "Only numpy arrays are valid for numeric_data_regression fixture.\n"
+            ], "Only objects that can be coerced to numpy arrays are valid for numeric_data_regression fixture.\n"
             shape = obj.shape
 
             assert len(shape) == 1, (
