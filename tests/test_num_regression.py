@@ -265,12 +265,12 @@ def test_simple_numbers(num_regression, data_regression):
     num_regression.check({"data1": data1, "data2": data2})
     data_regression.check({"data1": data1, "data2": data2})
     data1 += 0.00000001
-    num_regression.check({"data1": data1, "data2": data2}) # passes, within tol
+    num_regression.check({"data1": data1, "data2": data2})  # passes, within tol
     with pytest.raises(
         AssertionError,
         match="FILES DIFFER.*",
     ):
-        data_regression.check({"data1": data1, "data2": data2}) # fails, must be exact
+        data_regression.check({"data1": data1, "data2": data2})  # fails, must be exact
 
 
 def test_simple_list_of_numbers(num_regression):
