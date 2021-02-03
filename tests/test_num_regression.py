@@ -169,7 +169,7 @@ def test_different_data_types(num_regression, no_regen):
 
 
 def test_n_dimensions(num_regression, no_regen):
-    data1 = np.ones(shape=(10, 10), dtype=np.int)
+    data1 = np.ones(shape=(10, 10), dtype=int)
     with pytest.raises(
         AssertionError,
         match="Only 1D arrays are supported on num_data_regression fixture.",
@@ -186,7 +186,7 @@ def test_arrays_with_different_sizes(num_regression, no_regen):
 
 
 def test_integer_values_smoke_test(num_regression, no_regen):
-    data1 = np.ones(11, dtype=np.int)
+    data1 = np.ones(11, dtype=int)
     num_regression.check({"data1": data1})
 
 
@@ -228,7 +228,7 @@ def test_fill_different_shape_with_nan_for_non_float_array(num_regression, no_re
 
 
 def test_bool_array(num_regression, no_regen):
-    data1 = np.array([True, True, True], dtype=np.bool)
+    data1 = np.array([True, True, True], dtype=bool)
     with pytest.raises(AssertionError) as excinfo:
         num_regression.check({"data1": data1})
     obtained_error_msg = str(excinfo.value)
@@ -253,8 +253,8 @@ def test_bool_array(num_regression, no_regen):
 
 def test_arrays_of_same_size(num_regression):
     same_size_int_arrays = {
-        "hello": np.zeros((1,), dtype=np.int),
-        "world": np.zeros((1,), dtype=np.int),
+        "hello": np.zeros((1,), dtype=int),
+        "world": np.zeros((1,), dtype=int),
     }
     num_regression.check(same_size_int_arrays)
 

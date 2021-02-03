@@ -193,7 +193,7 @@ def test_arrays_with_different_sizes(dataframe_regression, no_regen):
 
 
 def test_integer_values_smoke_test(dataframe_regression, no_regen):
-    data1 = np.ones(11, dtype=np.int)
+    data1 = np.ones(11, dtype=int)
     dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
@@ -203,7 +203,7 @@ def test_number_formats(dataframe_regression, no_regen):
 
 
 def test_bool_array(dataframe_regression, no_regen):
-    data1 = np.array([True, True, True], dtype=np.bool)
+    data1 = np.array([True, True, True], dtype=bool)
     with pytest.raises(AssertionError) as excinfo:
         dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
     obtained_error_msg = str(excinfo.value)
@@ -228,8 +228,8 @@ def test_bool_array(dataframe_regression, no_regen):
 
 def test_arrays_of_same_size(dataframe_regression):
     same_size_int_arrays = {
-        "hello": np.zeros((1,), dtype=np.int),
-        "world": np.zeros((1,), dtype=np.int),
+        "hello": np.zeros((1,), dtype=int),
+        "world": np.zeros((1,), dtype=int),
     }
     dataframe_regression.check(pd.DataFrame.from_dict(same_size_int_arrays))
 
