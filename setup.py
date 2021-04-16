@@ -39,14 +39,8 @@ setup(
             "numpy",
             "pandas",
         ],
-        "image": [
-            "pillow",
-            "numpy"
-        ],
-        "dataframe": [
-            "numpy",
-            "pandas"
-        ],
+        "image": ["pillow", "numpy"],
+        "dataframe": ["numpy", "pandas"],
     },
     install_requires=["pytest-datadir>=1.2.0", "pytest>=3.5.0", "pyyaml"],
     classifiers=[
