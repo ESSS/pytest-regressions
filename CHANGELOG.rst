@@ -1,3 +1,8 @@
+2.2.1 (UNRELEASED)
+------------------
+
+* `#54 <https://github.com/ESSS/pytest-regressions/pull/54>`__: Fix a bug regarding ignoring test class names when composing the expected and obtained data filenames. Adds the optional command-line parameter ``--without-test-class-names``, which can be used to specify whether the test session should ignore such names, useful for keeping old tests (which depend on this behavior) working without changes.
+
 2.2.0 (2020-01-27)
 ------------------
 

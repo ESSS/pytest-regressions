@@ -23,6 +23,7 @@ class DataFrameRegressionFixture:
         self.datadir = datadir
         self.original_datadir = original_datadir
         self._force_regen = False
+        self._without_test_class_names = False
 
         self._pandas_display_options = (
             "display.precision",
@@ -258,4 +259,5 @@ class DataFrameRegressionFixture:
                 basename=basename,
                 fullpath=fullpath,
                 force_regen=self._force_regen,
+                without_test_class_names=self._without_test_class_names,
             )
