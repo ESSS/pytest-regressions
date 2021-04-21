@@ -26,10 +26,11 @@ class TestClass:
         num_regression.check(data)
 
         expected_filename = f"{TestClass.__name__}_{TestClass.test_foo.__name__}.csv"
-        obtained_filename = f"{TestClass.__name__}_{TestClass.test_foo.__name__}.obtained.csv"
+        obtained_filename = (
+            f"{TestClass.__name__}_{TestClass.test_foo.__name__}.obtained.csv"
+        )
         assert (datadir / expected_filename).exists()
         assert (datadir / obtained_filename).exists()
-
 
 
 class TestClassWithIgnoredName:

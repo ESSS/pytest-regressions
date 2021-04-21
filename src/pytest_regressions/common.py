@@ -115,7 +115,9 @@ def perform_regression_check(
 
     __tracebackhide__ = True
 
-    without_test_class_names = without_test_class_names or request.config.getoption("without_test_class_names")
+    without_test_class_names = without_test_class_names or request.config.getoption(
+        "without_test_class_names"
+    )
     if basename is None:
         if (request.node.cls is not None) and (not without_test_class_names):
             basename = re.sub(r"[\W]", "_", request.node.cls.__name__) + "_"
