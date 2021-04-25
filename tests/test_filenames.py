@@ -23,6 +23,9 @@ class TestClass:
         This tests asserts this behavior.
         """
         data = {"twos": [2, 2, 2, 2], "threes": [3, 3, 3, 3]}
+
+        # equivalent to use "--with-test-class-names" parameter
+        num_regression._with_test_class_names = True
         num_regression.check(data)
 
         expected_filename = f"{TestClass.__name__}_{TestClass.test_foo.__name__}.csv"
@@ -41,9 +44,6 @@ class TestClassWithIgnoredName:
         data is different.
         """
         data = {"fours": [4, 4, 4, 4], "fives": [5, 5, 5, 5]}
-
-        # equivalent to use "--without-test-class-names" parameter
-        num_regression._without_test_class_names = True
 
         # Trying to compare this data with `test_foo` expected data.
         with pytest.raises(AssertionError):

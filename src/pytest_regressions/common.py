@@ -79,7 +79,7 @@ def perform_regression_check(
     basename=None,
     fullpath=None,
     force_regen=False,
-    without_test_class_names=False,
+    with_test_class_names=False,
     obtained_filename=None,
     dump_aux_fn=lambda filename: [],
 ):
@@ -103,7 +103,7 @@ def perform_regression_check(
         3d views and plots to compare later). Must return the list of file names written (used to display).
     :param str extension: Extension of files compared by this check.
     :param bool force_regen: if true it will regenerate expected file.
-    :param bool without_test_class_names: if true it will not use the test class name (if any) to compose
+    :param bool with_test_class_names: if true it will use the test class name (if any) to compose
         the basename.
     :param str obtained_filename: complete path to use to write the obtained file. By
         default will prepend `.obtained` before the file extension.
@@ -115,11 +115,11 @@ def perform_regression_check(
 
     __tracebackhide__ = True
 
-    without_test_class_names = without_test_class_names or request.config.getoption(
-        "without_test_class_names"
+    with_test_class_names = with_test_class_names or request.config.getoption(
+        "with_test_class_names"
     )
     if basename is None:
-        if (request.node.cls is not None) and (not without_test_class_names):
+        if (request.node.cls is not None) and (with_test_class_names):
             basename = re.sub(r"[\W]", "_", request.node.cls.__name__) + "_"
         else:
             basename = ""

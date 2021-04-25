@@ -10,10 +10,10 @@ def pytest_addoption(parser):
         help="Re-generate all data_regression fixture data files.",
     )
     group.addoption(
-        "--without-test-class-names",
+        "--with-test-class-names",
         action="store_true",
         default=False,
-        help="Ignore the names of the test classes when composing the name of the regression data files.",
+        help="Do not ignore the names of the test classes when composing the name of the regression data files.",
     )
 
 
