@@ -19,6 +19,7 @@ class ImageRegressionFixture:
         self.datadir = datadir
         self.original_datadir = original_datadir
         self.force_regen = False
+        self.with_test_class_names = False
 
     def _load_image(self, filename):
         """
@@ -163,4 +164,5 @@ class ImageRegressionFixture:
             extension=".png",
             basename=basename,
             force_regen=self.force_regen,
+            with_test_class_names=self.with_test_class_names,
         )

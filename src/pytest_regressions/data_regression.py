@@ -20,6 +20,7 @@ class DataRegressionFixture:
         self.datadir = datadir
         self.original_datadir = original_datadir
         self.force_regen = False
+        self.with_test_class_names = False
 
     def check(self, data_dict, basename=None, fullpath=None):
         """
@@ -64,6 +65,7 @@ class DataRegressionFixture:
             basename=basename,
             fullpath=fullpath,
             force_regen=self.force_regen,
+            with_test_class_names=self.with_test_class_names,
         )
 
     # non-PEP 8 alias used internally at ESSS

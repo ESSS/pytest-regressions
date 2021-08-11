@@ -9,6 +9,12 @@ def pytest_addoption(parser):
         default=False,
         help="Re-generate all data_regression fixture data files.",
     )
+    group.addoption(
+        "--with-test-class-names",
+        action="store_true",
+        default=False,
+        help="Do not ignore the names of the test classes when composing the name of the regression data files.",
+    )
 
 
 @pytest.fixture

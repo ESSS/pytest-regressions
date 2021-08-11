@@ -18,6 +18,7 @@ class FileRegressionFixture:
         self.datadir = datadir
         self.original_datadir = original_datadir
         self.force_regen = False
+        self.with_test_class_names = False
 
     def check(
         self,
@@ -98,6 +99,7 @@ class FileRegressionFixture:
             basename=basename,
             fullpath=fullpath,
             force_regen=self.force_regen,
+            with_test_class_names=self.with_test_class_names,
             obtained_filename=obtained_filename,
         )
 
