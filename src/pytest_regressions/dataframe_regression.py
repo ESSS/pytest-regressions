@@ -177,7 +177,7 @@ class DataFrameRegressionFixture:
         default_tolerance=None,
     ):
         """
-        Checks the given pandas dataframe against a previously recorded version, or generate a new file.
+        Checks a pandas dataframe, containing only numeric data, against a previously recorded version, or generate a new file.
 
         Example::
 
