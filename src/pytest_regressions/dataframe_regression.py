@@ -42,7 +42,7 @@ class DataFrameRegressionFixture:
         try:
             import numpy as np
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(import_error_message("Numpy"))
+            raise ModuleNotFoundError(import_error_message("NumPy"))
 
         __tracebackhide__ = True
         obtained_data_type = obtained_column.values.dtype
@@ -89,7 +89,7 @@ class DataFrameRegressionFixture:
         try:
             import numpy as np
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(import_error_message("Numpy"))
+            raise ModuleNotFoundError(import_error_message("NumPy"))
         try:
             import pandas as pd
         except ModuleNotFoundError:
@@ -199,7 +199,7 @@ class DataFrameRegressionFixture:
             will ignore embed_data completely, being useful if a reference file is located
             in the session data dir for example.
 
-        :param dict tolerances: dict mapping keys from the data_dict to tolerance settings for the
+        :param dict tolerances: dict mapping keys from the data_frame to tolerance settings for the
             given data. Example::
 
                 tolerances={'U': Tolerance(atol=1e-2)}
@@ -223,7 +223,7 @@ class DataFrameRegressionFixture:
         __tracebackhide__ = True
 
         assert type(data_frame) is pd.DataFrame, (
-            "Only pandas DataFrames are supported on on dataframe_regression fixture.\n"
+            "Only pandas DataFrames are supported on dataframe_regression fixture.\n"
             "Object with type '%s' was given." % (str(type(data_frame)),)
         )
 
@@ -235,7 +235,7 @@ class DataFrameRegressionFixture:
             # Rejected: timedelta, datetime, objects, zero-terminated bytes, unicode strings and raw data
             assert array.dtype not in ["m", "M", "O", "S", "a", "U", "V"], (
                 "Only numeric data is supported on dataframe_regression fixture.\n"
-                "Array with type '%s' was given.\n" % (str(array.dtype),)
+                "Array with type '%s' was given." % (str(array.dtype),)
             )
 
         if tolerances is None:

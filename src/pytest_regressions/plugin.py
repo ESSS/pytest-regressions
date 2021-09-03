@@ -51,7 +51,7 @@ def dataframe_regression(datadir, original_datadir, request):
     """
     Example usage:
 
-    def testSomeData(num_regression):
+    def testSomeData(dataframe_regression):
         dataframe_regression.check(
             pandas.DataFrame.from_dict(
                 {
@@ -73,6 +73,35 @@ def dataframe_regression(datadir, original_datadir, request):
     from .dataframe_regression import DataFrameRegressionFixture
 
     return DataFrameRegressionFixture(datadir, original_datadir, request)
+
+
+@pytest.fixture
+def ndarrays_regression(datadir, original_datadir, request):
+    """
+    Similar to num_regression, but supports numpy arrays with arbitrary shape. The
+    dictionary is stored as an NPZ file. The values of the dictionary must be accepted
+    by ``np.asarray``.
+
+    Example::
+
+        def test_some_data(ndarrays_regression):
+            points, values = some_function()
+            ndarrays_regression.check(
+                {
+                    'points': points,  # array with shape (100, 3)
+                    'values': values,  # array with shape (100,)
+                },
+                default_tolerance=dict(atol=1e-8, rtol=1e-8)
+            )
+
+    :type embed_data: _EmbedDataFixture
+    :type request: FixtureRequest
+    :rtype: DataRegressionFixture
+    :return: Data regression fixture.
+    """
+    from .ndarrays_regression import NDArraysRegressionFixture
+
+    return NDArraysRegressionFixture(datadir, original_datadir, request)
 
 
 @pytest.fixture
