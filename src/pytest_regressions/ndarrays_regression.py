@@ -7,7 +7,7 @@ class NDArraysRegressionFixture:
     """
 
     THRESHOLD = 100
-    ROWFORMAT = "{:>10s}  {:>20s}  {:>20s}  {:>20s}\n"
+    ROWFORMAT = "{:>15s}  {:>20s}  {:>20s}  {:>20s}\n"
 
     def __init__(self, datadir, original_datadir, request):
         """
@@ -36,21 +36,24 @@ class NDArraysRegressionFixture:
 
         __tracebackhide__ = True
 
-        obtained_data_type = obtained_array.dtype
-        expected_data_type = expected_array.dtype
-        if obtained_data_type != expected_data_type:
+        if obtained_array.dtype != expected_array.dtype:
             # Check if both data types are comparable as numbers (float, int, short, bytes, etc...)
-            if np.issubdtype(obtained_data_type, np.number) and np.issubdtype(
-                expected_data_type, np.number
+            if np.issubdtype(obtained_array.dtype, np.number) and np.issubdtype(
+                expected_array.dtype, np.number
+            ):
+                return
+            # Check if both data types are comparable as strings
+            if np.issubdtype(obtained_array.dtype, str) and np.issubdtype(
+                expected_array.dtype, str
             ):
                 return
 
             # In case they are not, assume they are not comparable
             error_msg = (
                 "Data types are not the same.\n"
-                "key: %s\n"
-                "Obtained: %s\n"
-                "Expected: %s\n" % (key, obtained_data_type, expected_data_type)
+                f"key: {key}\n"
+                f"Obtained: {obtained_array.dtype}\n"
+                f"Expected: {expected_array.dtype}\n"
             )
             raise AssertionError(error_msg)
 
@@ -61,14 +64,12 @@ class NDArraysRegressionFixture:
         """
         __tracebackhide__ = True
 
-        obtained_data_shape = obtained_array.shape
-        expected_data_shape = expected_array.shape
-        if obtained_data_shape != expected_data_shape:
+        if obtained_array.shape != expected_array.shape:
             error_msg = (
                 "Shapes are not the same.\n"
-                "Key: %s\n"
-                "Obtained: %s\n"
-                "Expected: %s\n" % (key, obtained_data_shape, expected_data_shape)
+                f"Key: {key}\n"
+                f"Obtained: {obtained_array.shape}\n"
+                f"Expected: {expected_array.shape}\n"
             )
             raise AssertionError(error_msg)
 
@@ -90,31 +91,33 @@ class NDArraysRegressionFixture:
         obtained_data = dict(np.load(str(obtained_filename)))
         expected_data = dict(np.load(str(expected_filename)))
 
+        # Check mismatches in the keys.
+        if set(obtained_data) != set(expected_data):
+            error_msg = (
+                "They keys in the obtained results differ from the expected results.\n"
+            )
+            error_msg += "  Matching keys: "
+            error_msg += str(list(set(obtained_data) & set(expected_data)))
+            error_msg += "\n"
+            error_msg += "  New in obtained: "
+            error_msg += str(list(set(obtained_data) - set(expected_data)))
+            error_msg += "\n"
+            error_msg += "  Missing from obtained: "
+            error_msg += str(list(set(expected_data) - set(obtained_data)))
+            error_msg += "\n"
+            error_msg += "To update values, use --force-regen option.\n\n"
+            raise AssertionError(error_msg)
+
+        # Compare the contents of the arrays.
         comparison_tables_dict = {}
-        for k in obtained_data.keys():
-            obtained_array = obtained_data[k]
+        for k, obtained_array in obtained_data.items():
             expected_array = expected_data.get(k)
-
-            if expected_array is None:
-                error_msg = f"Could not find key '{k}' in the expected results.\n"
-                error_msg += "Keys in the obtained data table: ["
-                for k in obtained_data.keys():
-                    error_msg += f"'{k}', "
-                error_msg += "]\n"
-                error_msg += "Keys in the expected data table: ["
-                for k in expected_data.keys():
-                    error_msg += f"'{k}', "
-                error_msg += "]\n"
-                error_msg += "To update values, use --force-regen option.\n\n"
-                raise AssertionError(error_msg)
-
             tolerance_args = self._tolerances_dict.get(k, self._default_tolerance)
 
             self._check_data_types(k, obtained_array, expected_array)
             self._check_data_shapes(k, obtained_array, expected_array)
 
-            data_type = obtained_array.dtype
-            if data_type in [float, np.float16, np.float32, np.float64]:
+            if np.issubdtype(obtained_array.dtype, np.inexact):
                 not_close_mask = ~np.isclose(
                     obtained_array,
                     expected_array,
@@ -125,27 +128,77 @@ class NDArraysRegressionFixture:
                 not_close_mask = obtained_array != expected_array
 
             if np.any(not_close_mask):
-                diff_ids = np.nonzero(not_close_mask)
+                if not_close_mask.ndim == 0:
+                    diff_ids = [()]
+                else:
+                    diff_ids = np.array(np.nonzero(not_close_mask)).T
                 comparison_tables_dict[k] = (
-                    np.array(diff_ids).T,
-                    obtained_array[diff_ids],
-                    expected_array[diff_ids],
+                    expected_array.size,
+                    expected_array.shape,
+                    diff_ids,
+                    obtained_array[not_close_mask],
+                    expected_array[not_close_mask],
                 )
 
         if len(comparison_tables_dict) > 0:
             error_msg = "Values are not sufficiently close.\n"
             error_msg += "To update values, use --force-regen option.\n\n"
             for k, (
+                size,
+                shape,
                 diff_ids,
                 obtained_array,
                 expected_array,
             ) in comparison_tables_dict.items():
+                # Summary
+                error_msg += f"{k}:\n  Shape: {shape}\n"
+                pct = 100 * len(diff_ids) / size
+                error_msg += (
+                    f"  Number of differences: {len(diff_ids)} / {size} ({pct:.1f}%)\n"
+                )
+                if np.issubdtype(obtained_array.dtype, np.number) and len(diff_ids) > 1:
+                    error_msg += (
+                        "  Statistics are computed for differing elements only.\n"
+                    )
+
+                    abs_errors = abs(obtained_array - expected_array)
+                    error_msg += "  Stats for abs(obtained - expected):\n"
+                    error_msg += f"    Max:     {abs_errors.max()}\n"
+                    error_msg += f"    Mean:    {abs_errors.mean()}\n"
+                    error_msg += f"    Median:  {np.median(abs_errors)}\n"
+
+                    error_msg += (
+                        f"  Stats for abs(obtained - expected) / abs(expected):\n"
+                    )
+                    expected_nonzero = np.array(np.nonzero(expected_array)).T
+                    rel_errors = abs(
+                        (
+                            obtained_array[expected_nonzero]
+                            - expected_array[expected_nonzero]
+                        )
+                        / expected_array[expected_nonzero]
+                    )
+                    if len(rel_errors) != len(abs_errors):
+                        pct = 100 * len(rel_errors) / len(abs_errors)
+                        error_msg += f"    Number of (differing) non-zero expected results: {len(rel_errors)} / {len(abs_errors)} ({pct:.1f}%)\n"
+                        error_msg += f"    Relative errors are computed for the non-zero expected results.\n"
+                    else:
+                        rel_errors = abs(
+                            (obtained_array - expected_array) / expected_array
+                        )
+                    error_msg += f"    Max:     {rel_errors.max()}\n"
+                    error_msg += f"    Mean:    {rel_errors.mean()}\n"
+                    error_msg += f"    Median:  {np.median(rel_errors)}\n"
+
+                # Details results
+                error_msg += "  Individual errors:\n"
                 if len(diff_ids) > self.THRESHOLD:
-                    error_msg += f"Only showing first {self.THRESHOLD} mismatches.\n"
+                    error_msg += (
+                        f"    Only showing first {self.THRESHOLD} mismatches.\n"
+                    )
                     diff_ids = diff_ids[: self.THRESHOLD]
                     obtained_array = obtained_array[: self.THRESHOLD]
                     expected_array = expected_array[: self.THRESHOLD]
-                error_msg += f"{k}:\n"
                 error_msg += self.ROWFORMAT.format(
                     "Index",
                     "Obtained",
@@ -155,15 +208,18 @@ class NDArraysRegressionFixture:
                 for diff_id, obtained, expected in zip(
                     diff_ids, obtained_array, expected_array
                 ):
+                    diff_id_str = ", ".join(str(i) for i in diff_id)
+                    if len(diff_id) != 1:
+                        diff_id_str = f"({diff_id_str})"
                     error_msg += self.ROWFORMAT.format(
-                        ",".join(str(i) for i in diff_id),
+                        diff_id_str,
                         str(obtained),
                         str(expected),
                         str(obtained - expected)
                         if isinstance(obtained, np.number)
                         else "",
                     )
-                error_msg += "\n\n"
+                error_msg += "\n"
             raise AssertionError(error_msg)
 
     def _dump_fn(self, data_object, filename):
@@ -249,22 +305,12 @@ class NDArraysRegressionFixture:
             data_dict[key] = np.asarray(array)
 
         for key, array in data_dict.items():
-            # Skip assertion if an array of strings
-            if (array.dtype == "O") and (type(array[0]) is str):
-                continue
-            # Rejected: timedelta, datetime, objects, zero-terminated bytes, unicode strings and raw data
-            assert array.dtype not in [
-                "m",
-                "M",
-                "O",
-                "S",
-                "a",
-                "U",
-                "V",
-            ], "Only numeric data is supported on ndarrays_regression fixture.\n" "Array '%s' with type '%s' was given.\n" % (
-                key,
-                str(array.dtype),
-            )
+            # Rejected: timedelta, datetime, objects, zero-terminated bytes and raw data
+            if array.dtype in ["m", "M", "O", "S", "a", "V"]:
+                raise TypeError(
+                    "Only numeric data is supported on ndarrays_regression fixture.\n"
+                    f"Array '{key}' with type '{array.dtype}' was given.\n"
+                )
 
         if tolerances is None:
             tolerances = {}

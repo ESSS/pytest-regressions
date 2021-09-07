@@ -123,8 +123,7 @@ class DataFrameRegressionFixture:
             self._check_data_types(k, obtained_column, expected_column)
             self._check_data_shapes(obtained_column, expected_column)
 
-            data_type = obtained_column.values.dtype
-            if data_type in [float, np.float16, np.float32, np.float64]:
+            if np.issubdtype(obtained_column.values.dtype, np.inexact):
                 not_close_mask = ~np.isclose(
                     obtained_column.values,
                     expected_column.values,
@@ -138,7 +137,7 @@ class DataFrameRegressionFixture:
                 diff_ids = np.where(not_close_mask)[0]
                 diff_obtained_data = obtained_column[diff_ids]
                 diff_expected_data = expected_column[diff_ids]
-                if data_type == bool:
+                if obtained_column.values.dtype == bool:
                     diffs = np.logical_xor(obtained_column, expected_column)[diff_ids]
                 else:
                     diffs = np.abs(obtained_column - expected_column)[diff_ids]
