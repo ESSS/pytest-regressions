@@ -167,9 +167,6 @@ class NDArraysRegressionFixture:
                     error_msg += f"    Mean:    {abs_errors.mean()}\n"
                     error_msg += f"    Median:  {np.median(abs_errors)}\n"
 
-                    error_msg += (
-                        f"  Stats for abs(obtained - expected) / abs(expected):\n"
-                    )
                     expected_nonzero = np.array(np.nonzero(expected_array)).T
                     rel_errors = abs(
                         (
@@ -178,17 +175,23 @@ class NDArraysRegressionFixture:
                         )
                         / expected_array[expected_nonzero]
                     )
-                    if len(rel_errors) != len(abs_errors):
-                        pct = 100 * len(rel_errors) / len(abs_errors)
-                        error_msg += f"    Number of (differing) non-zero expected results: {len(rel_errors)} / {len(abs_errors)} ({pct:.1f}%)\n"
-                        error_msg += f"    Relative errors are computed for the non-zero expected results.\n"
+                    if len(rel_errors) == 0:
+                        error_msg += "  Relative errors are not reported because all expected values are zero.\n"
                     else:
-                        rel_errors = abs(
-                            (obtained_array - expected_array) / expected_array
+                        error_msg += (
+                            f"  Stats for abs(obtained - expected) / abs(expected):\n"
                         )
-                    error_msg += f"    Max:     {rel_errors.max()}\n"
-                    error_msg += f"    Mean:    {rel_errors.mean()}\n"
-                    error_msg += f"    Median:  {np.median(rel_errors)}\n"
+                        if len(rel_errors) != len(abs_errors):
+                            pct = 100 * len(rel_errors) / len(abs_errors)
+                            error_msg += f"    Number of (differing) non-zero expected results: {len(rel_errors)} / {len(abs_errors)} ({pct:.1f}%)\n"
+                            error_msg += f"    Relative errors are computed for the non-zero expected results.\n"
+                        else:
+                            rel_errors = abs(
+                                (obtained_array - expected_array) / expected_array
+                            )
+                        error_msg += f"    Max:     {rel_errors.max()}\n"
+                        error_msg += f"    Mean:    {rel_errors.mean()}\n"
+                        error_msg += f"    Median:  {np.median(rel_errors)}\n"
 
                 # Details results
                 error_msg += "  Individual errors:\n"
@@ -291,11 +294,12 @@ class NDArraysRegressionFixture:
 
         __tracebackhide__ = True
 
-        assert isinstance(data_dict, dict), (
-            "Only dictionaries with NumPy arrays or array-like objects are "
-            "supported on ndarray_regression fixture.\n"
-            "Object with type '%s' was given. " % (str(type(data_dict)),)
-        )
+        if not isinstance(data_dict, dict):
+            raise TypeError(
+                "Only dictionaries with NumPy arrays or array-like objects are "
+                "supported on ndarray_regression fixture.\n"
+                "Object with type '{}' was given.".format(str(type(data_dict)))
+            )
         for key, array in data_dict.items():
             assert isinstance(
                 key, str
@@ -305,11 +309,23 @@ class NDArraysRegressionFixture:
             data_dict[key] = np.asarray(array)
 
         for key, array in data_dict.items():
-            # Rejected: timedelta, datetime, objects, zero-terminated bytes and raw data
-            if array.dtype in ["m", "M", "O", "S", "a", "V"]:
+            # Accepted:
+            #  - b: boolean
+            #  - i: signed integer
+            #  - u: unsigned integer
+            #  - f: floating-point number
+            #  - c: complex floating-point number
+            #  - U: unicode string
+            # Rejected:
+            #  - m: timedelta
+            #  - M: datetime
+            #  - O: objects
+            #  - S: zero-terminated bytes
+            #  - V: void (raw data, structured arrays)
+            if array.dtype.kind not in ["b", "i", "u", "f", "c", "U"]:
                 raise TypeError(
-                    "Only numeric data is supported on ndarrays_regression fixture.\n"
-                    f"Array '{key}' with type '{array.dtype}' was given.\n"
+                    "Only numeric or unicode data is supported on ndarrays_regression "
+                    f"fixture.\nArray '{key}' with type '{array.dtype}' was given."
                 )
 
         if tolerances is None:

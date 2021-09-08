@@ -246,6 +246,44 @@ def test_common_case_nd(ndarrays_regression, no_regen):
     assert expected in obtained_error_msg
 
 
+def test_common_case_zero_expected(ndarrays_regression, no_regen):
+    # Most common case: Data is valid, is present and should pass
+    data = {"data1": np.array([0, 0, 2, 3, 0, 5, 0, 7])}
+    ndarrays_regression.check(data)
+
+    # Assertion error case: Only some zeros are not reproduced.
+    data = {"data1": np.array([1, 5, 2, 3, 0, 5, 3, 7])}
+    with pytest.raises(AssertionError) as excinfo:
+        ndarrays_regression.check(data)
+    obtained_error_msg = str(excinfo.value)
+    expected = "\n".join(
+        [
+            "Values are not sufficiently close.",
+            "To update values, use --force-regen option.",
+        ]
+    )
+    assert expected in obtained_error_msg
+    expected = "\n".join(
+        [
+            "data1:",
+            "  Shape: (8,)",
+            "  Number of differences: 3 / 8 (37.5%)",
+            "  Statistics are computed for differing elements only.",
+            "  Stats for abs(obtained - expected):",
+            "    Max:     5",
+            "    Mean:    3.0",
+            "    Median:  3.0",
+            "  Relative errors are not reported because all expected values are zero.",
+            "  Individual errors:",
+            "          Index              Obtained              Expected            Difference",
+            "              0                     1                     0                     1",
+            "              1                     5                     0                     5",
+            "              6                     3                     0                     3",
+        ]
+    )
+    assert expected in obtained_error_msg
+
+
 def test_different_data_types(ndarrays_regression, no_regen):
     # Original NPZ file contains integer data
     data1 = np.array([True] * 10)
@@ -265,8 +303,8 @@ def test_object_dtype(ndarrays_regression, no_regen):
     data1 = {"data1": np.array([Foo(i) for i in range(4)], dtype=object)}
     with pytest.raises(
         TypeError,
-        match="Only numeric data is supported on ndarrays_regression fixture.\n"
-        " *Array 'data1' with type '%s' was given." % (str(data1["data1"].dtype),),
+        match="Only numeric or unicode data is supported on ndarrays_regression fixture.\n"
+        "Array 'data1' with type 'object' was given.",
     ):
         ndarrays_regression.check(data1)
 
@@ -479,12 +517,31 @@ def test_string_array(ndarrays_regression):
 def test_non_dict(ndarrays_regression):
     data = np.ones(shape=(10, 10))
     with pytest.raises(
-        AssertionError,
+        TypeError,
         match="Only dictionaries with NumPy arrays or array-like objects are supported "
-        "on ndarray_regression fixture.\n *Object with type '%s' was given."
+        "on ndarray_regression fixture.\nObject with type '%s' was given."
         % (str(type(data)),),
     ):
         ndarrays_regression.check(data)
+
+
+def test_structured_array(ndarrays_regression):
+    data = {
+        "array": np.array(
+            [("spam", 1, 3.0), ("egg", 0, 4.3)],
+            dtype=[("item", "U5"), ("count", "i4"), ("price", "f8")],
+        )
+    }
+    with pytest.raises(TypeError) as excinfo:
+        ndarrays_regression.check(data)
+    obtained_error_msg = str(excinfo.value)
+    expected = "\n".join(
+        [
+            "Only numeric or unicode data is supported on ndarrays_regression fixture.",
+            "Array 'array' with type '{}' was given.".format(data["array"].dtype),
+        ]
+    )
+    assert expected in obtained_error_msg
 
 
 def test_new_obtained(ndarrays_regression):
