@@ -285,13 +285,17 @@ def test_common_case_zero_expected(ndarrays_regression, no_regen):
 
 
 def test_different_data_types(ndarrays_regression, no_regen):
-    # Original NPZ file contains integer data
-    data1 = np.array([True] * 10)
+    # Generate data with integer array.
+    data = {"data1": np.array([1] * 10)}
+    ndarrays_regression.check(data)
+
+    # Run check with incompatible type.
+    data = {"data1": np.array([True] * 10)}
     with pytest.raises(
         AssertionError,
         match="Data types are not the same.\nkey: data1\nObtained: bool\nExpected: int64\n",
     ):
-        ndarrays_regression.check({"data1": data1})
+        ndarrays_regression.check(data)
 
 
 class Foo:
@@ -314,7 +318,7 @@ def test_integer_values_smoke_test(ndarrays_regression, no_regen):
     ndarrays_regression.check({"data1": data1})
 
 
-def test_number_formats(ndarrays_regression):
+def test_float_values_smoke_test(ndarrays_regression):
     data1 = np.array([1.2345678e50, 1.2345678e-50, 0.0])
     ndarrays_regression.check({"data1": data1})
 
@@ -383,21 +387,24 @@ def test_complex_array(ndarrays_regression, no_regen):
 
 
 def test_arrays_of_same_size_1d(ndarrays_regression):
-    same_size_int_arrays = {
+    data = {
         "hello": np.zeros((1,), dtype=int),
         "world": np.zeros((1,), dtype=int),
     }
-    ndarrays_regression.check(same_size_int_arrays)
+    ndarrays_regression.check(data)
 
 
 def test_arrays_with_different_sizes_1d(ndarrays_regression, no_regen):
+    data = {"data1": np.ones(11, dtype=np.float64)}
+    ndarrays_regression.check(data)
+
     # Original NPY file contains 11 elements.
-    data1 = np.ones(10, dtype=np.float64)
+    data = {"data1": np.ones(10, dtype=np.float64)}
     expected = re.escape(
         "Shapes are not the same.\nKey: data1\nObtained: (10,)\nExpected: (11,)\n"
     )
     with pytest.raises(AssertionError, match=expected):
-        ndarrays_regression.check({"data1": data1})
+        ndarrays_regression.check(data)
 
 
 def test_arrays_of_same_shape(ndarrays_regression):
@@ -410,12 +417,14 @@ def test_arrays_of_same_shape(ndarrays_regression):
 
 
 def test_arrays_with_different_shapes(ndarrays_regression):
-    same_size_int_arrays = {
-        # Originally with shape (3, 4)
-        "2d": np.zeros((3, 2), dtype=int),
-    }
+    # Prepare data with one shape.
+    data = {"2d": np.zeros((3, 4), dtype=int)}
+    ndarrays_regression.check(data)
+
+    # Check with other shape.
+    data = {"2d": np.zeros((3, 2), dtype=int)}
     with pytest.raises(AssertionError) as excinfo:
-        ndarrays_regression.check(same_size_int_arrays)
+        ndarrays_regression.check(data)
     obtained_error_msg = str(excinfo.value)
     expected = "\n".join(
         [
@@ -429,9 +438,11 @@ def test_arrays_with_different_shapes(ndarrays_regression):
 
 
 def test_scalars(ndarrays_regression):
+    # Initial data with scalars.
     data = {"data1": 4.0, "data2": 42}
     ndarrays_regression.check(data)
 
+    # Run check with non-scalar data.
     data = {"data1": np.array([4.0]), "data2": np.array([42, 21])}
     with pytest.raises(AssertionError) as excinfo:
         ndarrays_regression.check(data)
@@ -446,6 +457,7 @@ def test_scalars(ndarrays_regression):
     )
     assert expected in obtained_error_msg
 
+    # Other test case.
     data = {"data1": 5.0, "data2": 21}
     with pytest.raises(AssertionError) as excinfo:
         ndarrays_regression.check(data)
@@ -475,10 +487,11 @@ def test_scalars(ndarrays_regression):
 
 
 def test_string_array(ndarrays_regression):
+    # Initial data.
     data1 = {"potato": ["delicious", "nutritive", "yummy"]}
     ndarrays_regression.check(data1)
 
-    # Try wrong data
+    # Run check with wrong data.
     data1 = {"potato": ["delicious", "nutritive", "yikes"]}
     with pytest.raises(AssertionError) as excinfo:
         ndarrays_regression.check(data1)
@@ -545,10 +558,14 @@ def test_structured_array(ndarrays_regression):
 
 
 def test_new_obtained(ndarrays_regression):
-    # The original array only contains ar1.
-    data1 = {"ar1": np.array([2.3, 9.4]), "ar2": np.array([3, 4, 9])}
+    # Prepare data with one array.
+    data = {"ar1": np.array([2.3, 9.4])}
+    ndarrays_regression.check(data)
+
+    # Run check with two arrays.
+    data = {"ar1": np.array([2.3, 9.4]), "ar2": np.array([3, 4, 9])}
     with pytest.raises(AssertionError) as excinfo:
-        ndarrays_regression.check(data1)
+        ndarrays_regression.check(data)
     obtained_error_msg = str(excinfo.value)
     expected = "\n".join(
         [
@@ -562,10 +579,14 @@ def test_new_obtained(ndarrays_regression):
 
 
 def test_missing_obtained(ndarrays_regression):
-    # The original array also contains ar2.
-    data1 = {"ar1": np.array([2.3, 9.4])}  # , "ar2": np.array([3, 4, 9])}
+    # Prepare data with two arrays.
+    data = {"ar1": np.array([2.3, 9.4]), "ar2": np.array([3, 4, 9])}
+    ndarrays_regression.check(data)
+
+    # Run check with just one array.
+    data = {"ar1": np.array([2.3, 9.4])}
     with pytest.raises(AssertionError) as excinfo:
-        ndarrays_regression.check(data1)
+        ndarrays_regression.check(data)
     obtained_error_msg = str(excinfo.value)
     expected = "\n".join(
         [
