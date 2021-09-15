@@ -97,8 +97,8 @@ class DataFrameRegressionFixture:
 
         __tracebackhide__ = True
 
-        obtained_data = pd.read_csv(str(obtained_filename))
-        expected_data = pd.read_csv(str(expected_filename))
+        obtained_data = pd.read_csv(str(obtained_filename), keep_default_na=False)
+        expected_data = pd.read_csv(str(expected_filename), keep_default_na=False)
 
         comparison_tables_dict = {}
         for k in obtained_data.keys():

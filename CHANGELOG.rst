@@ -2,6 +2,7 @@
 ------------------
 
 * `#54 <https://github.com/ESSS/pytest-regressions/pull/54>`__: New ``--with-test-class-names`` command-line flag to consider test class names when composing the expected and obtained data filenames. Needed when the same module contains different classes with the same method names.
+* `#74 <https://github.com/ESSS/pytest-regressions/pull/74>`__: Fix ``empty string bug`` on dataframe regression
 
 2.2.0 (2020-01-27)
 ------------------
