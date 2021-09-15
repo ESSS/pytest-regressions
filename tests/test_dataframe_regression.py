@@ -255,15 +255,11 @@ def test_non_pandas_dataframe(dataframe_regression):
 
 
 def test_frame(dataframe_regression):
-    df = pd.DataFrame.from_records([
-        {
-            'a': 'a',
-            'b': 'b'
-        },
-        {
-            'a': 'a1',
-            'b': ''
-        },
-    ])
+    df = pd.DataFrame.from_records(
+        [
+            {"a": "a", "b": "b"},
+            {"a": "a1", "b": ""},
+        ]
+    )
 
     dataframe_regression.check(df)
