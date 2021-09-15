@@ -53,9 +53,9 @@ class NDArraysRegressionFixture:
             # In case they are not, assume they are not comparable
             error_msg = (
                 "Data types are not the same.\n"
-                f"key: {key}\n"
-                f"Obtained: {obtained_array.dtype}\n"
-                f"Expected: {expected_array.dtype}\n"
+                f"  key: {key}\n"
+                f"  Obtained: {obtained_array.dtype}\n"
+                f"  Expected: {expected_array.dtype}\n"
             )
             raise AssertionError(error_msg)
 
@@ -69,9 +69,9 @@ class NDArraysRegressionFixture:
         if obtained_array.shape != expected_array.shape:
             error_msg = (
                 "Shapes are not the same.\n"
-                f"Key: {key}\n"
-                f"Obtained: {obtained_array.shape}\n"
-                f"Expected: {expected_array.shape}\n"
+                f"  Key: {key}\n"
+                f"  Obtained: {obtained_array.shape}\n"
+                f"  Expected: {expected_array.shape}\n"
             )
             raise AssertionError(error_msg)
 
@@ -328,10 +328,9 @@ class NDArraysRegressionFixture:
                 "Object with type '{}' was given.".format(str(type(data_dict)))
             )
         for key, array in data_dict.items():
-            assert isinstance(
-                key, str
-            ), "The dictionary keys must be strings. " "Found key with type '%s'" % (
-                str(type(key))
+            assert isinstance(key, str), (
+                "The dictionary keys must be strings. "
+                "Found key with type '{}'".format(str(type(key)))
             )
             data_dict[key] = np.asarray(array)
 
