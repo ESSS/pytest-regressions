@@ -252,3 +252,14 @@ def test_non_pandas_dataframe(dataframe_regression):
         " *Object with type '%s' was given." % (str(type(data)),),
     ):
         dataframe_regression.check(data)
+
+
+def test_frame(dataframe_regression):
+    df = pd.DataFrame.from_records(
+        [
+            {"a": "a", "b": "b"},
+            {"a": "a1", "b": ""},
+        ]
+    )
+
+    dataframe_regression.check(df)
