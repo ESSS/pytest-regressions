@@ -1,3 +1,4 @@
+import os
 import re
 
 import numpy as np
@@ -596,4 +597,20 @@ def test_missing_obtained(ndarrays_regression):
             "  Missing from obtained: ['ar2']",
         ]
     )
+    assert expected in obtained_error_msg
+
+
+@pytest.mark.parametrize("prefix", [True, False])
+def test_corrupt_npz(ndarrays_regression, tmpdir, prefix):
+    data = {"data1": np.array([4, 5])}
+    fn_npz = os.path.join(tmpdir, "corrupt.npz")
+    # Write random bytes to a file
+    with open(fn_npz, "wb") as f:
+        if prefix:
+            f.write(b"PK\x03\x04")
+        np.random.randint(0, 256, 1000, dtype=np.ubyte).tofile(f)
+    with pytest.raises(IOError) as excinfo:
+        ndarrays_regression.check(data, fullpath=fn_npz)
+    obtained_error_msg = str(excinfo.value)
+    expected = f"NPZ file {fn_npz} could not be loaded. Corrupt file?"
     assert expected in obtained_error_msg

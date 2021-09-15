@@ -1,3 +1,5 @@
+import zipfile
+
 from pytest_regressions.common import perform_regression_check, import_error_message
 
 
@@ -88,8 +90,8 @@ class NDArraysRegressionFixture:
         __tracebackhide__ = True
 
         # Turn result of np.load into a dictionary, such that the files are closed immediately.
-        obtained_data = dict(np.load(str(obtained_filename)))
-        expected_data = dict(np.load(str(expected_filename)))
+        expected_data = self._load_fn(expected_filename)
+        obtained_data = self._load_fn(obtained_filename)
 
         # Check mismatches in the keys.
         if set(obtained_data) != set(expected_data):
@@ -223,11 +225,35 @@ class NDArraysRegressionFixture:
                         else "",
                     )
                 error_msg += "\n"
+
             raise AssertionError(error_msg)
+
+    def _load_fn(self, filename):
+        """
+        Load dict contents from the given filename.
+
+        :param str filename"
+        """
+        try:
+            import numpy as np
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(import_error_message("NumPy"))
+
+        try:
+            # Open the file with a context manager manually, because np.load does not
+            # follow such good practices internally, causing avoidable error messages
+            # in the unit tests.
+            with open(filename, "rb") as f:
+                result = dict(np.load(f))
+        except (zipfile.BadZipFile, ValueError) as e:
+            raise IOError(
+                f"NPZ file {filename} could not be loaded. Corrupt file?"
+            ) from e
+        return result
 
     def _dump_fn(self, data_object, filename):
         """
-        Dump dict contents to the given filename
+        Dump dict contents to the given filename.
 
         :param Dict[str, np.ndarray] data_object:
         :param str filename:
@@ -236,6 +262,7 @@ class NDArraysRegressionFixture:
             import numpy as np
         except ModuleNotFoundError:
             raise ModuleNotFoundError(import_error_message("NumPy"))
+
         np.savez_compressed(str(filename), **data_object)
 
     def check(
