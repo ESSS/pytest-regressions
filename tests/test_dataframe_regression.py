@@ -179,7 +179,7 @@ def test_non_numeric_data(dataframe_regression, array, no_regen):
     with pytest.raises(
         AssertionError,
         match="Only numeric data is supported on dataframe_regression fixture.\n"
-        "  Array with type '%s' was given." % (str(data1["data1"].dtype),),
+        " *Array with type '%s' was given." % (str(data1["data1"].dtype),),
     ):
         dataframe_regression.check(data1)
 
@@ -238,12 +238,17 @@ def test_string_array(dataframe_regression):
     data1 = {"potato": ["delicious", "nutritive", "yummy"]}
     dataframe_regression.check(pd.DataFrame.from_dict(data1))
 
+    # TODO: The following fails with a confusing error message.
+    # Try wrong data
+    # data1 = {"potato": ["delicious", "nutritive", "yikes"]}
+    # dataframe_regression.check(pd.DataFrame.from_dict(data1))
+
 
 def test_non_pandas_dataframe(dataframe_regression):
     data = np.ones(shape=(10, 10))
     with pytest.raises(
         AssertionError,
-        match="Only pandas DataFrames are supported on on dataframe_regression fixture.\n"
-        "  Object with type '%s' was given." % (str(type(data)),),
+        match="Only pandas DataFrames are supported on dataframe_regression fixture.\n"
+        " *Object with type '%s' was given." % (str(type(data)),),
     ):
         dataframe_regression.check(data)

@@ -42,7 +42,7 @@ class DataFrameRegressionFixture:
         try:
             import numpy as np
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(import_error_message("Numpy"))
+            raise ModuleNotFoundError(import_error_message("NumPy"))
 
         __tracebackhide__ = True
         obtained_data_type = obtained_column.values.dtype
@@ -89,7 +89,7 @@ class DataFrameRegressionFixture:
         try:
             import numpy as np
         except ModuleNotFoundError:
-            raise ModuleNotFoundError(import_error_message("Numpy"))
+            raise ModuleNotFoundError(import_error_message("NumPy"))
         try:
             import pandas as pd
         except ModuleNotFoundError:
@@ -123,8 +123,7 @@ class DataFrameRegressionFixture:
             self._check_data_types(k, obtained_column, expected_column)
             self._check_data_shapes(obtained_column, expected_column)
 
-            data_type = obtained_column.values.dtype
-            if data_type in [float, np.float16, np.float32, np.float64]:
+            if np.issubdtype(obtained_column.values.dtype, np.inexact):
                 not_close_mask = ~np.isclose(
                     obtained_column.values,
                     expected_column.values,
@@ -138,7 +137,7 @@ class DataFrameRegressionFixture:
                 diff_ids = np.where(not_close_mask)[0]
                 diff_obtained_data = obtained_column[diff_ids]
                 diff_expected_data = expected_column[diff_ids]
-                if data_type == bool:
+                if obtained_column.values.dtype == bool:
                     diffs = np.logical_xor(obtained_column, expected_column)[diff_ids]
                 else:
                     diffs = np.abs(obtained_column - expected_column)[diff_ids]
@@ -199,7 +198,7 @@ class DataFrameRegressionFixture:
             will ignore embed_data completely, being useful if a reference file is located
             in the session data dir for example.
 
-        :param dict tolerances: dict mapping keys from the data_dict to tolerance settings for the
+        :param dict tolerances: dict mapping keys from the data_frame to tolerance settings for the
             given data. Example::
 
                 tolerances={'U': Tolerance(atol=1e-2)}
@@ -223,7 +222,7 @@ class DataFrameRegressionFixture:
         __tracebackhide__ = True
 
         assert type(data_frame) is pd.DataFrame, (
-            "Only pandas DataFrames are supported on on dataframe_regression fixture.\n"
+            "Only pandas DataFrames are supported on dataframe_regression fixture.\n"
             "Object with type '%s' was given." % (str(type(data_frame)),)
         )
 
@@ -235,7 +234,7 @@ class DataFrameRegressionFixture:
             # Rejected: timedelta, datetime, objects, zero-terminated bytes, unicode strings and raw data
             assert array.dtype not in ["m", "M", "O", "S", "a", "U", "V"], (
                 "Only numeric data is supported on dataframe_regression fixture.\n"
-                "Array with type '%s' was given.\n" % (str(array.dtype),)
+                "Array with type '%s' was given." % (str(array.dtype),)
             )
 
         if tolerances is None:
