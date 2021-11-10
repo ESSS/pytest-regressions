@@ -1,4 +1,5 @@
-from pytest_regressions.common import perform_regression_check, import_error_message
+from pytest_regressions.common import import_error_message
+from pytest_regressions.common import perform_regression_check
 from pytest_regressions.dataframe_regression import DataFrameRegressionFixture
 
 

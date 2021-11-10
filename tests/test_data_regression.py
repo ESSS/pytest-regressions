@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 from textwrap import dedent
 
 from pytest_regressions.testing import check_regression_fixture_workflow
