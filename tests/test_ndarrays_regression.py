@@ -1,3 +1,4 @@
+import os
 import re
 
 import numpy as np
@@ -291,11 +292,18 @@ def test_different_data_types(ndarrays_regression, no_regen):
 
     # Run check with incompatible type.
     data = {"data1": np.array([True] * 10)}
-    with pytest.raises(
-        AssertionError,
-        match="Data types are not the same.\nkey: data1\nObtained: bool\nExpected: int64\n",
-    ):
+    with pytest.raises(AssertionError) as excinfo:
         ndarrays_regression.check(data)
+    obtained_error_msg = str(excinfo.value)
+    expected = "\n".join(
+        [
+            "Data types are not the same.",
+            "  key: data1",
+            "  Obtained: bool",
+            "  Expected: int64",
+        ]
+    )
+    assert expected in obtained_error_msg
 
 
 class Foo:
@@ -305,12 +313,16 @@ class Foo:
 
 def test_object_dtype(ndarrays_regression, no_regen):
     data1 = {"data1": np.array([Foo(i) for i in range(4)], dtype=object)}
-    with pytest.raises(
-        TypeError,
-        match="Only numeric or unicode data is supported on ndarrays_regression fixture.\n"
-        "Array 'data1' with type 'object' was given.",
-    ):
+    with pytest.raises(TypeError) as excinfo:
         ndarrays_regression.check(data1)
+    obtained_error_msg = str(excinfo.value)
+    expected = "\n".join(
+        [
+            "Only numeric or unicode data is supported on ndarrays_regression fixture.",
+            "Array 'data1' with type 'object' was given.",
+        ]
+    )
+    assert expected in obtained_error_msg
 
 
 def test_integer_values_smoke_test(ndarrays_regression, no_regen):
@@ -400,20 +412,27 @@ def test_arrays_with_different_sizes_1d(ndarrays_regression, no_regen):
 
     # Original NPY file contains 11 elements.
     data = {"data1": np.ones(10, dtype=np.float64)}
-    expected = re.escape(
-        "Shapes are not the same.\nKey: data1\nObtained: (10,)\nExpected: (11,)\n"
-    )
-    with pytest.raises(AssertionError, match=expected):
+    with pytest.raises(AssertionError) as excinfo:
         ndarrays_regression.check(data)
+    obtained_error_msg = str(excinfo.value)
+    expected = "\n".join(
+        [
+            "Shapes are not the same.",
+            "  Key: data1",
+            "  Obtained: (10,)",
+            "  Expected: (11,)",
+        ]
+    )
+    assert expected in obtained_error_msg
 
 
 def test_arrays_of_same_shape(ndarrays_regression):
-    same_size_int_arrays = {
+    data = {
         "2d": np.zeros((3, 4), dtype=int),
         "3d": np.ones((7, 8, 9), dtype=float),
         "4d": np.full((2, 1, 1, 4), 3, dtype=int),
     }
-    ndarrays_regression.check(same_size_int_arrays)
+    ndarrays_regression.check(data)
 
 
 def test_arrays_with_different_shapes(ndarrays_regression):
@@ -429,9 +448,9 @@ def test_arrays_with_different_shapes(ndarrays_regression):
     expected = "\n".join(
         [
             "Shapes are not the same.",
-            "Key: 2d",
-            "Obtained: (3, 2)",
-            "Expected: (3, 4)",
+            "  Key: 2d",
+            "  Obtained: (3, 2)",
+            "  Expected: (3, 4)",
         ]
     )
     assert expected in obtained_error_msg
@@ -450,9 +469,9 @@ def test_scalars(ndarrays_regression):
     expected = "\n".join(
         [
             "Shapes are not the same.",
-            "Key: data1",
-            "Obtained: (1,)",
-            "Expected: ()",
+            "  Key: data1",
+            "  Obtained: (1,)",
+            "  Expected: ()",
         ]
     )
     assert expected in obtained_error_msg
@@ -529,13 +548,19 @@ def test_string_array(ndarrays_regression):
 
 def test_non_dict(ndarrays_regression):
     data = np.ones(shape=(10, 10))
-    with pytest.raises(
-        TypeError,
-        match="Only dictionaries with NumPy arrays or array-like objects are supported "
-        "on ndarray_regression fixture.\nObject with type '%s' was given."
-        % (str(type(data)),),
-    ):
+    with pytest.raises(TypeError) as excinfo:
         ndarrays_regression.check(data)
+    obtained_error_msg = str(excinfo.value)
+    expected = "\n".join(
+        [
+            "Only dictionaries with NumPy arrays or array-like objects are supported "
+            "on ndarray_regression fixture.",
+            "Object with type '{}' was given.".format(
+                str(type(data)),
+            ),
+        ]
+    )
+    assert expected in obtained_error_msg
 
 
 def test_structured_array(ndarrays_regression):
@@ -596,4 +621,20 @@ def test_missing_obtained(ndarrays_regression):
             "  Missing from obtained: ['ar2']",
         ]
     )
+    assert expected in obtained_error_msg
+
+
+@pytest.mark.parametrize("prefix", [True, False])
+def test_corrupt_npz(ndarrays_regression, tmpdir, prefix):
+    data = {"data1": np.array([4, 5])}
+    fn_npz = os.path.join(tmpdir, "corrupt.npz")
+    # Write random bytes to a file
+    with open(fn_npz, "wb") as f:
+        if prefix:
+            f.write(b"PK\x03\x04")
+        np.random.randint(0, 256, 1000, dtype=np.ubyte).tofile(f)
+    with pytest.raises(IOError) as excinfo:
+        ndarrays_regression.check(data, fullpath=fn_npz)
+    obtained_error_msg = str(excinfo.value)
+    expected = f"NPZ file {fn_npz} could not be loaded. Corrupt file?"
     assert expected in obtained_error_msg
