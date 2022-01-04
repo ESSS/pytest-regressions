@@ -1,9 +1,8 @@
-from __future__ import unicode_literals
 import textwrap
-from pytest_regressions.common import Path
 
 import pytest
 
+from pytest_regressions.common import Path
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 

@@ -1,4 +1,4 @@
-2.3.0 (UNRELEASED)
+2.3.0 (2022-01-04)
 ------------------
 
 * `#54 <https://github.com/ESSS/pytest-regressions/pull/54>`__: New ``--with-test-class-names`` command-line flag to consider test class names when composing the expected and obtained data filenames. Needed when the same module contains different classes with the same method names.

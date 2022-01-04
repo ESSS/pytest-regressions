@@ -1,8 +1,7 @@
 import difflib
-import pytest
-
-
 from pathlib import Path
+
+import pytest
 
 
 def import_error_message(libname):

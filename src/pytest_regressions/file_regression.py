@@ -1,6 +1,7 @@
 from functools import partial
 
-from .common import perform_regression_check, check_text_files
+from .common import check_text_files
+from .common import perform_regression_check
 
 
 class FileRegressionFixture:
