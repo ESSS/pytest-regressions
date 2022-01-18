@@ -238,10 +238,14 @@ def test_string_array(dataframe_regression):
     data1 = {"potato": ["delicious", "nutritive", "yummy"]}
     dataframe_regression.check(pd.DataFrame.from_dict(data1))
 
-    # TODO: The following fails with a confusing error message.
-    # Try wrong data
-    # data1 = {"potato": ["delicious", "nutritive", "yikes"]}
-    # dataframe_regression.check(pd.DataFrame.from_dict(data1))
+    data1 = {"potato": ["delicious", "nutritive", "yikes"]}
+    with pytest.raises(AssertionError) as excinfo:
+        dataframe_regression.check(pd.DataFrame.from_dict(data1))
+    obtained_error_msg = str(excinfo.value)
+    assert "Values are not sufficiently close." in obtained_error_msg
+    assert "To update values, use --force-regen option." in obtained_error_msg
+    assert "2           yikes           yummy    ?" in obtained_error_msg
+    assert "WARNING: diffs for this kind of data type cannot be computed" in obtained_error_msg
 
 
 def test_non_pandas_dataframe(dataframe_regression):
@@ -254,7 +258,7 @@ def test_non_pandas_dataframe(dataframe_regression):
         dataframe_regression.check(data)
 
 
-def test_frame(dataframe_regression):
+def test_dataframe_with_empty_strings(dataframe_regression):
     df = pd.DataFrame.from_records(
         [
             {"a": "a", "b": "b"},
