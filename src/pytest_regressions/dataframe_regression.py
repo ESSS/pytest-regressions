@@ -134,7 +134,11 @@ class DataFrameRegressionFixture:
             else:
                 not_close_mask = obtained_column.values != expected_column.values
                 # If Empty/NaN data is expected, then the values are equal:
-                not_close_mask[np.logical_and(pd.isna(obtained_column.values), pd.isna(expected_column.values))] = False
+                not_close_mask[
+                    np.logical_and(
+                        pd.isna(obtained_column.values), pd.isna(expected_column.values)
+                    )
+                ] = False
 
             if np.any(not_close_mask):
                 diff_ids = np.where(not_close_mask)[0]
@@ -144,7 +148,7 @@ class DataFrameRegressionFixture:
                     diffs = np.logical_xor(obtained_column, expected_column)[diff_ids]
                 elif obtained_column.values.dtype == object:
                     diffs = diff_obtained_data.copy()
-                    diffs[:] = '?'
+                    diffs[:] = "?"
                 else:
                     diffs = np.abs(obtained_column - expected_column)[diff_ids]
 
@@ -160,7 +164,9 @@ class DataFrameRegressionFixture:
             for k, comparison_table in comparison_tables_dict.items():
                 error_msg += f"{k}:\n{comparison_table}\n\n"
             if obtained_column.values.dtype == object:
-                error_msg += "WARNING: diffs for this kind of data type cannot be computed."
+                error_msg += (
+                    "WARNING: diffs for this kind of data type cannot be computed."
+                )
             raise AssertionError(error_msg)
 
     def _dump_fn(self, data_object, filename):

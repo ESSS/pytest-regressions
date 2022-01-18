@@ -245,7 +245,10 @@ def test_string_array(dataframe_regression):
     assert "Values are not sufficiently close." in obtained_error_msg
     assert "To update values, use --force-regen option." in obtained_error_msg
     assert "2           yikes           yummy    ?" in obtained_error_msg
-    assert "WARNING: diffs for this kind of data type cannot be computed" in obtained_error_msg
+    assert (
+        "WARNING: diffs for this kind of data type cannot be computed"
+        in obtained_error_msg
+    )
 
 
 def test_non_pandas_dataframe(dataframe_regression):
