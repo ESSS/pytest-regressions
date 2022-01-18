@@ -1,3 +1,8 @@
+2.3.1 (2022-01-18)
+------------------
+
+* `#84 <https://github.com/ESSS/pytest-regressions/pull/84>`__: (Bugfix) Properly handle empty and NaN values on num_regression and dataframe_regression.
+
 2.3.0 (2022-01-04)
 ------------------
 
