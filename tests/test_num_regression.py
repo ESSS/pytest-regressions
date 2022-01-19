@@ -293,3 +293,14 @@ def test_simple_list_of_mostly_numbers(num_regression):
         match="Only objects that can be coerced to numpy arrays are valid for numeric_data_regression fixture.",
     ):
         num_regression.check({"data1": data1, "data2": data2})
+
+
+def test_array_dtype_stored_correctly(num_regression):
+    """
+    Related to bug #84, where data type was being stored incorrectly due to np.nan values in array.
+    Problem would only occur if the compared data has any difference, when evaluated as string.
+
+    ..see: https://github.com/ESSS/pytest-regressions/issues/84
+    """
+    data1 = np.array([1.100001, np.nan, 1.1])
+    num_regression.check({"data1": data1})
