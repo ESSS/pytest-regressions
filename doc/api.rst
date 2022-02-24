@@ -30,3 +30,9 @@ image_regression
 ----------------
 
 .. automethod:: pytest_regressions.image_regression.ImageRegressionFixture.check
+
+
+ndarrays_regression
+-------------------
+
+.. automethod:: pytest_regressions.ndarrays_regression.NDArraysRegressionFixture.check
