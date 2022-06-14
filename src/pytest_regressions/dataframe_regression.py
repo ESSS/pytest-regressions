@@ -124,7 +124,7 @@ class DataFrameRegressionFixture:
             self._check_data_types(k, obtained_column, expected_column)
             self._check_data_shapes(obtained_column, expected_column)
 
-            if np.issubdtype(obtained_column.values.dtype, np.inexact):
+            if np.issubdtype(obtained_column.values.dtype, np.number):
                 not_close_mask = ~np.isclose(
                     obtained_column.values,
                     expected_column.values,
