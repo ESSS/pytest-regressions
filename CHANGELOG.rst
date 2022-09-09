@@ -1,3 +1,9 @@
+2.4.0 (2022-09-09)
+------------------
+
+* New ``--regen-all`` flag, which regenerates all files without failing the tests. Useful to regenerate all files in
+  the test suite with a single run.
+
 2.3.1 (2022-01-18)
 ------------------
 

@@ -122,15 +122,29 @@ This file should be committed to version control.
 The next time you run this test, it will compare the results of ``summary_grids()`` with the contents of the YAML file.
 If they match, the test passes. If they don't match the test will fail, showing a nice diff of the text differences.
 
+``--force-regen``
+~~~~~~~~~~~~~~~~~
+
 If the test fails because the new data is correct (the implementation might be returning more information about the
 grids for example), then you can use the ``--force-regen`` flag to update the expected file::
 
     $ pytest --force-regen
 
 
-and commit the updated file.
+This will fail the same test but with a different message saying that the file has been updated. Commit the new file.
 
 This workflow makes it very simple to keep the files up to date and to check all the information we need.
+
+``--regen-all``
+~~~~~~~~~~~~~~~~~
+
+If a single change will fail several regression tests, you can also use the ``--regen-all`` command-line flag::
+
+    $ pytest --regen-all
+
+
+With this flag, the regression fixtures will regenerate all files but will not fail the tests themselves. This make it very
+easy to update all regression files in a single pytest run when individual tests contain multiple regressions.
 
 
 Parametrized tests
