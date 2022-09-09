@@ -62,6 +62,6 @@ def test_image_regression_workflow(pytester, monkeypatch, datadir):
         data_modifier=lambda: monkeypatch.setattr(
             sys, "get_image", partial(get_image, "black"), raising=False
         ),
-        expected_data_1=partial(get_image, "white"),
-        expected_data_2=partial(get_image, "black"),
+        expected_data_1=get_image("white"),
+        expected_data_2=get_image("black"),
     )

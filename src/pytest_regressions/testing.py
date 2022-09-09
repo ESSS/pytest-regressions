@@ -1,5 +1,4 @@
 # mypy: disallow-untyped-defs
-import operator
 from typing import Any
 from typing import Callable
 from typing import Optional
@@ -14,7 +13,7 @@ def check_regression_fixture_workflow(
     data_modifier: Callable[[], Any],
     expected_data_1: Any,
     expected_data_2: Any,
-    compare_fn: Optional[Callable[[object, object], bool]] = None,
+    compare_fn: Optional[Callable[[object, object], None]] = None,
 ) -> None:
     """
     Helper method to test regression fixtures like `data_regression`. Offers a basic template/script
@@ -51,21 +50,23 @@ def check_regression_fixture_workflow(
     ```
 
     :param pytester: pytester fixture.
-    :param str source: Source code using regression fixture.
-    :param callable data_getter: Function without arguments that returns contents of file
+    :param source: Source code using regression fixture.
+    :param data_getter: Function without arguments that returns contents of file
         created by regression test when it fails first time (i.e. the expected file for future
         runs).
-    :param callable data_modifier: Function without arguments that must change data compared by
+    :param data_modifier: Function without arguments that must change data compared by
         regression fixture so it fails in next comparison.
-    :param object expected_data_1: Expected data in expected file for first state of data.
-    :param object expected_data_2: Expected data in expected file for second state of data.
-    :param callable compare_fn: function with signature (obtained, expected) used to ensure
-        both data are equal. By default uses operator.eq, but can customized (for example
-        to compare numpy arrays).
+    :param expected_data_1: Expected data in expected file for first state of data.
+    :param expected_data_2: Expected data in expected file for second state of data.
+    :param compare_fn: function with signature (obtained, expected) used to ensure
+        both data are equal. Should raise an assertion error if both objects are not equal.
     """
     if compare_fn is None:
-        # TODO review this.
-        compare_fn = operator.eq
+
+        def compare_fn(x: object, y: object) -> None:
+            assert x == y
+
+    assert compare_fn is not None
     pytester.makepyfile(test_file=source)
 
     # First run fails because there's no expected file yet
