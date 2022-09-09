@@ -1,4 +1,4 @@
-import os
+import sys
 
 import numpy as np
 import pytest
@@ -12,14 +12,7 @@ def no_regen(ndarrays_regression, request):
         pytest.fail("--force-regen should not be used on this test.")
 
 
-def test_usage_workflow(testdir, monkeypatch):
-    """
-    :type testdir: _pytest.pytester.TmpTestdir
-
-    :type monkeypatch: _pytest.monkeypatch.monkeypatch
-    """
-
-    import sys
+def test_usage_workflow(pytester, monkeypatch):
 
     monkeypatch.setattr(
         sys, "testing_get_data", lambda: {"data": 1.1 * np.ones(50)}, raising=False
@@ -32,14 +25,14 @@ def test_usage_workflow(testdir, monkeypatch):
     """
 
     def get_npz_contents():
-        filename = testdir.tmpdir / "test_file" / "test_1.npz"
+        filename = pytester.path / "test_file" / "test_1.npz"
         return dict(np.load(str(filename)))
 
     def compare_arrays(obtained, expected):
         assert (obtained["data"] == expected["data"]).all()
 
     check_regression_fixture_workflow(
-        testdir,
+        pytester,
         source=source,
         data_getter=get_npz_contents,
         data_modifier=lambda: monkeypatch.setattr(
@@ -624,9 +617,9 @@ def test_missing_obtained(ndarrays_regression):
 
 
 @pytest.mark.parametrize("prefix", [True, False])
-def test_corrupt_npz(ndarrays_regression, tmpdir, prefix):
+def test_corrupt_npz(ndarrays_regression, tmp_path, prefix):
     data = {"data1": np.array([4, 5])}
-    fn_npz = os.path.join(tmpdir, "corrupt.npz")
+    fn_npz = tmp_path / "corrupt.npz"
     # Write random bytes to a file
     with open(fn_npz, "wb") as f:
         if prefix:

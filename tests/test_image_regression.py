@@ -1,6 +1,5 @@
 import io
 from functools import partial
-from pathlib import Path
 
 from pytest_regressions.testing import check_regression_fixture_workflow
 
@@ -33,11 +32,7 @@ def test_image_regression(image_regression, datadir):
     image_regression.check(image_filename.read_bytes(), diff_threshold=1.0)
 
 
-def test_image_regression_workflow(testdir, monkeypatch, datadir):
-    """
-    :type testdir: _pytest.pytester.TmpTestdir
-    :type monkeypatch: _pytest.monkeypatch.monkeypatch
-    """
+def test_image_regression_workflow(pytester, monkeypatch, datadir):
     import sys
     from PIL import Image
 
@@ -56,12 +51,12 @@ def test_image_regression_workflow(testdir, monkeypatch, datadir):
     """
 
     def get_file_contents():
-        fn = Path(str(testdir.tmpdir)) / "test_file" / "test_1.png"
+        fn = pytester.path / "test_file" / "test_1.png"
         assert fn.is_file()
         return fn.read_bytes()
 
     check_regression_fixture_workflow(
-        testdir,
+        pytester,
         source,
         data_getter=get_file_contents,
         data_modifier=lambda: monkeypatch.setattr(

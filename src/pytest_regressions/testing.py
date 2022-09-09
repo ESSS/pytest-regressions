@@ -1,15 +1,21 @@
+# mypy: disallow-untyped-defs
 import operator
+from typing import Any
+from typing import Callable
+from typing import Optional
+
+import pytest
 
 
 def check_regression_fixture_workflow(
-    testdir,
-    source,
-    data_getter,
-    data_modifier,
-    expected_data_1,
-    expected_data_2,
-    compare_fn=None,
-):
+    pytester: pytest.Pytester,
+    source: str,
+    data_getter: Callable[[], Any],
+    data_modifier: Callable[[], Any],
+    expected_data_1: Any,
+    expected_data_2: Any,
+    compare_fn: Optional[Callable[[object, object], bool]] = None,
+) -> None:
     """
     Helper method to test regression fixtures like `data_regression`. Offers a basic template/script
     able to validate main behaviors expected by regression fixtures.
@@ -35,7 +41,7 @@ def check_regression_fixture_workflow(
             return f.read()
 
     check_regression_fixture_workflow(
-        testdir,
+        pytester,
         source,
         data_getter=get_data,
         data_modifier=lambda: monkeypatch.setattr(sys, 'get_data', lambda: 'bar', raising=False),
@@ -44,7 +50,7 @@ def check_regression_fixture_workflow(
     )
     ```
 
-    :param Testdir testdir: `testdir` fixture. Requires pytest's `pytester` to be installed.
+    :param pytester: pytester fixture.
     :param str source: Source code using regression fixture.
     :param callable data_getter: Function without arguments that returns contents of file
         created by regression test when it fails first time (i.e. the expected file for future
@@ -58,30 +64,31 @@ def check_regression_fixture_workflow(
         to compare numpy arrays).
     """
     if compare_fn is None:
+        # TODO review this.
         compare_fn = operator.eq
-    testdir.makepyfile(test_file=source)
+    pytester.makepyfile(test_file=source)
 
     # First run fails because there's no expected file yet
-    result = testdir.inline_run()
+    result = pytester.inline_run()
     result.assertoutcome(failed=1)
 
     # ensure now that the file was generated and the test passes
     xx = data_getter()
     compare_fn(xx, expected_data_1)
-    result = testdir.inline_run()
+    result = pytester.inline_run()
     result.assertoutcome(passed=1)
 
     # changing the regression data makes the test fail (file remains unchanged)
     data_modifier()
-    result = testdir.inline_run()
+    result = pytester.inline_run()
     result.assertoutcome(failed=1)
     compare_fn(data_getter(), expected_data_1)
 
     # force regeneration (test fails again)
-    result = testdir.inline_run("--force-regen")
+    result = pytester.inline_run("--force-regen")
     result.assertoutcome(failed=1)
     compare_fn(data_getter(), expected_data_2)
 
     # test should pass again
-    result = testdir.inline_run()
+    result = pytester.inline_run()
     result.assertoutcome(passed=1)

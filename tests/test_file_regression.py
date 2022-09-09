@@ -1,5 +1,5 @@
+import sys
 import textwrap
-from pathlib import Path
 
 import pytest
 
@@ -26,12 +26,7 @@ def test_binary_and_text_error(file_regression):
         file_regression.check("", encoding="UTF-8", binary=True)
 
 
-def test_file_regression_workflow(testdir, monkeypatch):
-    """
-    :type testdir: _pytest.pytester.TmpTestdir
-    :type monkeypatch: _pytest.monkeypatch.monkeypatch
-    """
-    import sys
+def test_file_regression_workflow(pytester, monkeypatch):
 
     monkeypatch.setattr(sys, "get_data", lambda: "foo", raising=False)
     source = """
@@ -42,12 +37,12 @@ def test_file_regression_workflow(testdir, monkeypatch):
     """
 
     def get_file_contents():
-        fn = Path(str(testdir.tmpdir)) / "test_file" / "test_1.test"
+        fn = pytester.path / "test_file" / "test_1.test"
         assert fn.is_file()
         return fn.read_text()
 
     check_regression_fixture_workflow(
-        testdir,
+        pytester,
         source,
         data_getter=get_file_contents,
         data_modifier=lambda: monkeypatch.setattr(
