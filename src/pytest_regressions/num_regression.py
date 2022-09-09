@@ -4,6 +4,7 @@ from typing import Any
 from typing import Dict
 from typing import Optional
 from typing import Sequence
+from typing import Union
 
 from .common import import_error_message
 from .dataframe_regression import DataFrameRegressionFixture
@@ -18,7 +19,7 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
         self,
         data_dict: Dict[str, Any],
         basename: Optional[str] = None,
-        fullpath: Optional[Path] = None,
+        fullpath: Optional[Union[Path, str]] = None,
         tolerances: Optional[Dict[str, Dict[str, float]]] = None,
         default_tolerance: Optional[Dict[str, float]] = None,
         data_index: Optional[Sequence[int]] = None,

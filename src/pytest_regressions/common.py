@@ -87,10 +87,10 @@ def perform_regression_check(
     dump_fn: Callable[[Path], None],
     extension: str,
     basename: Optional[str] = None,
-    fullpath: Optional[Path] = None,
+    fullpath: Optional[Union[Path, str]] = None,
     force_regen: bool = False,
     with_test_class_names: bool = False,
-    obtained_filename: Optional[Path] = None,
+    obtained_filename: Optional[Union[Path, str]] = None,
     dump_aux_fn: Callable[[Path], List[str]] = lambda filename: [],
 ) -> None:
     """
@@ -172,10 +172,10 @@ def perform_regression_check(
             else:
                 obtained_filename = filename.with_suffix(".obtained" + extension)
 
-        dump_fn(obtained_filename)
+        dump_fn(Path(obtained_filename))
 
         try:
-            check_fn(obtained_filename, filename)
+            check_fn(Path(obtained_filename), Path(filename))
         except AssertionError:
             if force_regen:
                 dump_fn(source_filename)
@@ -187,5 +187,5 @@ def perform_regression_check(
                 )
                 pytest.fail(msg)
             else:
-                dump_aux_fn(obtained_filename)
+                dump_aux_fn(Path(obtained_filename))
                 raise

@@ -32,9 +32,9 @@ class FileRegressionFixture:
         extension: str = ".txt",
         newline: Optional[str] = None,
         basename: Optional[str] = None,
-        fullpath: Optional[Path] = None,
+        fullpath: Optional[Union[Path, str]] = None,
         binary: bool = False,
-        obtained_filename: Optional[Path] = None,
+        obtained_filename: Optional[Union[Path, str]] = None,
         check_fn: Optional[Callable[[Path, Path], None]] = None,
     ) -> None:
         """
