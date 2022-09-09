@@ -14,7 +14,10 @@ def read(fname):
 setup(
     name="pytest-regressions",
     use_scm_version=True,
-    setup_requires=["setuptools_scm"],
+    setup_requires=[
+        "setuptools_scm; python_version>'3.6'",
+        "setuptools_scm <7.0; python_version=='3.6'",
+    ],
     author="ESSS",
     author_email="foss@esss.co",
     maintainer="Bruno Oliveira",
