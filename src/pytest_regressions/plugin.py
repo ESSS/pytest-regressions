@@ -7,7 +7,13 @@ def pytest_addoption(parser):
         "--force-regen",
         action="store_true",
         default=False,
-        help="Re-generate all data_regression fixture data files.",
+        help="Regenerate regression data files, failing tests with different data.",
+    )
+    group.addoption(
+        "--regen-all",
+        action="store_true",
+        default=False,
+        help="Regenerate all files, letting tests pass (use to regenerate everything in one run).",
     )
     group.addoption(
         "--with-test-class-names",

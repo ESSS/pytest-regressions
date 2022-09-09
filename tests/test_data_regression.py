@@ -189,3 +189,52 @@ def test_not_create_file_on_error(testdir):
 
     yaml_file = testdir.tmpdir.join("test_file", "test.yml")
     assert not yaml_file.isfile()
+
+
+def test_regen_all(pytester, tmp_path):
+    source = """
+        def test_1(data_regression):
+            contents = {"contents": "Foo", "value": 11}
+            data_regression.check(contents, basename="test_1_a")
+
+            contents = {"contents": "Bar", "value": 12}
+            data_regression.check(contents, basename="test_1_b")
+
+        def test_2(data_regression):
+            contents = {"contents": "Baz", "value": 33}
+            data_regression.check(contents, basename="test_2_a")
+
+            contents = {"contents": "BazFoo", "value": 34}
+            data_regression.check(contents, basename="test_2_b")
+    """
+    pytester.makepyfile(source)
+    result = pytester.runpytest("--regen-all")
+
+    result.stdout.fnmatch_lines("* 2 passed *")
+    data_dir = pytester.path.joinpath("test_regen_all")
+    assert {x.name for x in data_dir.iterdir()} == {
+        "test_1_a.yml",
+        "test_1_b.yml",
+        "test_2_a.yml",
+        "test_2_b.yml",
+    }
+
+    result = pytester.runpytest("--regen-all")
+    result.stdout.fnmatch_lines("* 2 passed *")
+    data_dir = pytester.path.joinpath("test_regen_all")
+    assert {x.name for x in data_dir.iterdir()} == {
+        "test_1_a.yml",
+        "test_1_b.yml",
+        "test_2_a.yml",
+        "test_2_b.yml",
+    }
+
+    result = pytester.runpytest()
+    result.stdout.fnmatch_lines("* 2 passed *")
+    data_dir = pytester.path.joinpath("test_regen_all")
+    assert {x.name for x in data_dir.iterdir()} == {
+        "test_1_a.yml",
+        "test_1_b.yml",
+        "test_2_a.yml",
+        "test_2_b.yml",
+    }

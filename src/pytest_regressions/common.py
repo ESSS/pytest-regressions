@@ -138,7 +138,12 @@ def perform_regression_check(
         return "\n".join(msg)
 
     force_regen = force_regen or request.config.getoption("force_regen")
-    if not filename.is_file():
+    regen_all = request.config.getoption("regen_all")
+    if regen_all:
+        source_filename.parent.mkdir(parents=True, exist_ok=True)
+        dump_fn(source_filename)
+        dump_aux_fn(source_filename)
+    elif not filename.is_file():
         source_filename.parent.mkdir(parents=True, exist_ok=True)
         dump_fn(source_filename)
         aux_created = dump_aux_fn(source_filename)
