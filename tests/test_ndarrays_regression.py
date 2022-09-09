@@ -1,5 +1,4 @@
 import os
-import re
 
 import numpy as np
 import pytest
@@ -375,7 +374,7 @@ def test_complex_array(ndarrays_regression, no_regen):
     data1 = np.array([3.0 + 2.5j, 0.5, -1.879])
     with pytest.raises(AssertionError) as excinfo:
         ndarrays_regression.check({"data1": data1})
-    obtained_error_msg = str(excinfo.value)
+    str(excinfo.value)
     expected = "\n".join(
         [
             "data1:",
@@ -458,13 +457,13 @@ def test_arrays_with_different_shapes(ndarrays_regression):
 
 def test_scalars(ndarrays_regression):
     # Initial data with scalars.
-    data = {"data1": 4.0, "data2": 42}
-    ndarrays_regression.check(data)
+    data1 = {"data1": 4.0, "data2": 42}
+    ndarrays_regression.check(data1)
 
     # Run check with non-scalar data.
-    data = {"data1": np.array([4.0]), "data2": np.array([42, 21])}
+    data2 = {"data1": np.array([4.0]), "data2": np.array([42, 21])}
     with pytest.raises(AssertionError) as excinfo:
-        ndarrays_regression.check(data)
+        ndarrays_regression.check(data2)
     obtained_error_msg = str(excinfo.value)
     expected = "\n".join(
         [
@@ -477,9 +476,9 @@ def test_scalars(ndarrays_regression):
     assert expected in obtained_error_msg
 
     # Other test case.
-    data = {"data1": 5.0, "data2": 21}
+    data3 = {"data1": 5.0, "data2": 21}
     with pytest.raises(AssertionError) as excinfo:
-        ndarrays_regression.check(data)
+        ndarrays_regression.check(data3)
     obtained_error_msg = str(excinfo.value)
     expected = "\n".join(
         [

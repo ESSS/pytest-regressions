@@ -1,14 +1,12 @@
-#!/usr/bin/env python
-import codecs
-import os
+from pathlib import Path
 
 from setuptools import find_packages
 from setuptools import setup
 
 
-def read(fname):
-    file_path = os.path.join(os.path.dirname(__file__), fname)
-    return codecs.open(file_path, encoding="utf-8").read()
+def read(fname: str) -> str:
+    file_path = Path(__file__).parent / fname
+    return file_path.read_text(encoding="UTF-8")
 
 
 setup(
@@ -32,6 +30,7 @@ setup(
     extras_require={
         "dev": [
             "matplotlib",
+            "mypy",
             "numpy",
             "pandas",
             "pillow",

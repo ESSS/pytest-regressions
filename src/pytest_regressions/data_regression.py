@@ -3,7 +3,6 @@ from functools import partial
 import yaml
 
 from pytest_regressions.common import check_text_files
-from pytest_regressions.common import Path
 from pytest_regressions.common import perform_regression_check
 
 

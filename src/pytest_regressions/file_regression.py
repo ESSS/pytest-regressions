@@ -68,8 +68,6 @@ class FileRegressionFixture:
                 type(contents).__name__
             )
 
-        import io
-
         if check_fn is None:
 
             if binary:

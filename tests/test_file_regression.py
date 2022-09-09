@@ -1,8 +1,8 @@
 import textwrap
+from pathlib import Path
 
 import pytest
 
-from pytest_regressions.common import Path
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 

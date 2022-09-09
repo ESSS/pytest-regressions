@@ -1,4 +1,5 @@
 import zipfile
+from typing import Any
 
 from pytest_regressions.common import import_error_message
 from pytest_regressions.common import perform_regression_check
@@ -131,6 +132,7 @@ class NDArraysRegressionFixture:
                 not_close_mask = obtained_array != expected_array
 
             if np.any(not_close_mask):
+                diff_ids: Any
                 if not_close_mask.ndim == 0:
                     diff_ids = [()]
                 else:

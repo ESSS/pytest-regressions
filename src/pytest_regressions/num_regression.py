@@ -1,5 +1,4 @@
 from pytest_regressions.common import import_error_message
-from pytest_regressions.common import perform_regression_check
 from pytest_regressions.dataframe_regression import DataFrameRegressionFixture
 
 
@@ -81,7 +80,7 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
                 if np.issubdtype(arr.dtype, np.number):
                     data_dict[k] = arr
 
-        data_shapes = []
+        data_shapes1 = []
         for obj in data_dict.values():
             assert type(obj) in [
                 np.ndarray
@@ -92,10 +91,10 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
                 "Only 1D arrays are supported on num_data_regression fixture.\n"
                 "Array with shape %s was given.\n" % (shape,)
             )
-            data_shapes.append(shape[0])
+            data_shapes1.append(shape[0])
 
-        data_shapes = np.array(data_shapes)
-        if not np.all(data_shapes == data_shapes[0]):
+        data_shapes2 = np.array(data_shapes1)
+        if not np.all(data_shapes2 == data_shapes2[0]):
             if not fill_different_shape_with_nan:
                 assert (
                     False
@@ -107,7 +106,7 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
                     "Checking multiple arrays with different shapes are not supported for non-float arrays"
                 )
             else:
-                max_size = max(data_shapes)
+                max_size = max(data_shapes2)
                 for k, obj in data_dict.items():
                     new_data = np.empty(shape=(max_size,), dtype=obj.dtype)
                     new_data[: len(obj)] = obj
