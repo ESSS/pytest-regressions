@@ -1,10 +1,10 @@
 # mypy: disallow-untyped-defs
 import difflib
+import os
 from pathlib import Path
 from typing import Callable
 from typing import List
 from typing import Optional
-from typing import Union
 
 import pytest
 
@@ -14,8 +14,8 @@ def import_error_message(libname: str) -> str:
 
 
 def check_text_files(
-    obtained_fn: Union[Path, str],
-    expected_fn: Union[Path, str],
+    obtained_fn: "os.PathLike[str]",
+    expected_fn: "os.PathLike[str]",
     fix_callback: Callable[[List[str]], List[str]] = lambda x: x,
     encoding: Optional[str] = None,
 ) -> None:
@@ -87,10 +87,10 @@ def perform_regression_check(
     dump_fn: Callable[[Path], None],
     extension: str,
     basename: Optional[str] = None,
-    fullpath: Optional[Union[Path, str]] = None,
+    fullpath: Optional["os.PathLike[str]"] = None,
     force_regen: bool = False,
     with_test_class_names: bool = False,
-    obtained_filename: Optional[Union[Path, str]] = None,
+    obtained_filename: Optional["os.PathLike[str]"] = None,
     dump_aux_fn: Callable[[Path], List[str]] = lambda filename: [],
 ) -> None:
     """

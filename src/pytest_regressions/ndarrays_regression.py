@@ -1,10 +1,10 @@
 # mypy: disallow-untyped-defs
+import os
 import zipfile
 from pathlib import Path
 from typing import Any
 from typing import Dict
 from typing import Optional
-from typing import Union
 
 import pytest
 
@@ -274,7 +274,7 @@ class NDArraysRegressionFixture:
         self,
         data_dict: Dict[str, Any],
         basename: Optional[str] = None,
-        fullpath: Optional[Union[Path, str]] = None,
+        fullpath: Optional["os.PathLike[str]"] = None,
         tolerances: Optional[Dict[str, Dict[str, float]]] = None,
         default_tolerance: Optional[Dict[str, float]] = None,
     ) -> None:

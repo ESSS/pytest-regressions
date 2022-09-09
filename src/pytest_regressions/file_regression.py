@@ -1,4 +1,5 @@
 # mypy: disallow-untyped-defs
+import os
 from functools import partial
 from pathlib import Path
 from typing import Callable
@@ -32,9 +33,9 @@ class FileRegressionFixture:
         extension: str = ".txt",
         newline: Optional[str] = None,
         basename: Optional[str] = None,
-        fullpath: Optional[Union[Path, str]] = None,
+        fullpath: Optional["os.PathLike[str]"] = None,
         binary: bool = False,
-        obtained_filename: Optional[Union[Path, str]] = None,
+        obtained_filename: Optional["os.PathLike[str]"] = None,
         check_fn: Optional[Callable[[Path, Path], None]] = None,
     ) -> None:
         """

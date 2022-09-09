@@ -1,11 +1,11 @@
 # mypy: disallow-untyped-defs
+import os
 from functools import partial
 from pathlib import Path
 from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import Optional
-from typing import Union
 
 import pytest
 import yaml
@@ -32,7 +32,7 @@ class DataRegressionFixture:
         self,
         data_dict: Dict[str, Any],
         basename: Optional[str] = None,
-        fullpath: Optional[Union[Path, str]] = None,
+        fullpath: Optional["os.PathLike[str]"] = None,
     ) -> None:
         """
         Checks the given dict against a previously recorded version, or generate a new file.

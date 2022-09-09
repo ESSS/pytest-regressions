@@ -1,10 +1,10 @@
 # mypy: disallow-untyped-defs
 import io
+import os
 from functools import partial
 from pathlib import Path
 from typing import Any
 from typing import Optional
-from typing import Union
 
 import pytest
 
@@ -26,7 +26,7 @@ class ImageRegressionFixture:
         self.force_regen = False
         self.with_test_class_names = False
 
-    def _load_image(self, filename: Union[Path, str]) -> Any:
+    def _load_image(self, filename: "os.PathLike[str]") -> Any:
         """
         Reads the image from the given file and convert it to RGB if necessary.
         This is necessary to be used with the ImageChops module operations.
