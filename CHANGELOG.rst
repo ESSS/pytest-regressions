@@ -3,6 +3,8 @@
 
 * New ``--regen-all`` flag, which regenerates all files without failing the tests. Useful to regenerate all files in
   the test suite with a single run.
+* The public API is now fully type annotated.
+* ``pytest>=6.2`` is now required.
 
 2.3.1 (2022-01-18)
 ------------------
