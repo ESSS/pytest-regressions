@@ -1,5 +1,12 @@
-from pytest_regressions.common import import_error_message
-from pytest_regressions.dataframe_regression import DataFrameRegressionFixture
+# mypy: disallow-untyped-defs
+from pathlib import Path
+from typing import Any
+from typing import Dict
+from typing import Optional
+from typing import Sequence
+
+from .common import import_error_message
+from .dataframe_regression import DataFrameRegressionFixture
 
 
 class NumericRegressionFixture(DataFrameRegressionFixture):
@@ -9,14 +16,14 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
 
     def check(
         self,
-        data_dict,
-        basename=None,
-        fullpath=None,
-        tolerances=None,
-        default_tolerance=None,
-        data_index=None,
-        fill_different_shape_with_nan=True,
-    ):
+        data_dict: Dict[str, Any],
+        basename: Optional[str] = None,
+        fullpath: Optional[Path] = None,
+        tolerances: Optional[Dict[str, Dict[str, float]]] = None,
+        default_tolerance: Optional[Dict[str, float]] = None,
+        data_index: Optional[Sequence[int]] = None,
+        fill_different_shape_with_nan: bool = True,
+    ) -> None:
         """
         Checks the given dict against a previously recorded version, or generate a new file.
         The dict must map from user-defined keys to 1d numpy arrays or array-like values.
@@ -31,32 +38,32 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
                 'P': Pa_to_bar(P)[positions],
             })
 
-        :param dict data_dict: dict mapping keys to numpy arrays, or objects that can be
+        :param data_dict: dict mapping keys to numpy arrays, or objects that can be
             coerced to 1d numpy arrays with a numeric dtype (e.g. list, tuple, etc).
 
-        :param str basename: basename of the file to test/record. If not given the name
+        :param basename: basename of the file to test/record. If not given the name
             of the test is used.
 
-        :param str fullpath: complete path to use as a reference file. This option
+        :param fullpath: complete path to use as a reference file. This option
             will ignore embed_data completely, being useful if a reference file is located
             in the session data dir for example.
 
-        :param dict tolerances: dict mapping keys from the data_dict to tolerance settings for the
+        :param tolerances: dict mapping keys from the data_dict to tolerance settings for the
             given data. Example::
 
                 tolerances={'U': Tolerance(atol=1e-2)}
 
-        :param dict default_tolerance: dict mapping the default tolerance for the current check
+        :param default_tolerance: dict mapping the default tolerance for the current check
             call. Example::
 
                 default_tolerance=dict(atol=1e-7, rtol=1e-18).
 
             If not provided, will use defaults from numpy's ``isclose`` function.
 
-        :param list data_index: If set, will override the indexes shown in the outputs. Default
+        :param data_index: If set, will override the indexes shown in the outputs. Default
             is panda's default, which is ``range(0, len(data))``.
 
-        :param bool fill_different_shape_with_nan: If set, all the data provided in the data_dict
+        :param fill_different_shape_with_nan: If set, all the data provided in the data_dict
             that has size lower than the bigger size will be filled with ``np.NaN``, in order to save
             the data in a CSV file.
 

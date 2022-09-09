@@ -1,25 +1,35 @@
+# mypy: disallow-untyped-defs
 import difflib
 from pathlib import Path
+from typing import Callable
+from typing import List
+from typing import Optional
+from typing import Union
 
 import pytest
 
 
-def import_error_message(libname):
+def import_error_message(libname: str) -> str:
     return f"'{libname}' library is an optional dependency and must be installed explicitly when the fixture 'check' is used"
 
 
-def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encoding=None):
+def check_text_files(
+    obtained_fn: Union[Path, str],
+    expected_fn: Union[Path, str],
+    fix_callback: Callable[[List[str]], List[str]] = lambda x: x,
+    encoding: Optional[str] = None,
+) -> None:
     """
     Compare two files contents. If the files differ, show the diff and write a nice HTML
     diff file into the data directory.
 
-    :param Path obtained_fn: path to obtained file during current testing.
+    :param obtained_fn: path to obtained file during current testing.
 
-    :param Path expected_fn: path to the expected file, obtained from previous testing.
+    :param expected_fn: path to the expected file, obtained from previous testing.
 
-    :param str encoding: encoding used to open the files.
+    :param encoding: encoding used to open the files.
 
-    :param callable fix_callback:
+    :param fix_callback:
         A callback to "fix" the contents of the obtained (first) file.
         This callback receives a list of strings (lines) and must also return a list of lines,
         changed as needed.
@@ -42,17 +52,18 @@ def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encodin
                 differ = difflib.HtmlDiff()
                 html_diff = differ.make_file(
                     fromlines=expected_lines,
-                    fromdesc=expected_fn,
+                    fromdesc=str(expected_fn),
                     tolines=obtained_lines,
-                    todesc=obtained_fn,
+                    todesc=str(obtained_fn),
                 )
             except Exception as e:
-                html_fn = "(failed to generate html diff: %s)" % e
+                html_msg = "(failed to generate html diff: %s)" % e
             else:
                 html_fn.write_text(html_diff, encoding="UTF-8")
+                html_msg = str(html_fn)
 
             diff = ["FILES DIFFER:", str(expected_fn), str(obtained_fn)]
-            diff += ["HTML DIFF: %s" % html_fn]
+            diff += ["HTML DIFF: %s" % html_msg]
             diff += diff_lines
             raise AssertionError("\n".join(diff))
         else:
@@ -69,42 +80,42 @@ def check_text_files(obtained_fn, expected_fn, fix_callback=lambda x: x, encodin
 
 
 def perform_regression_check(
-    datadir,
-    original_datadir,
-    request,
-    check_fn,
-    dump_fn,
-    extension,
-    basename=None,
-    fullpath=None,
-    force_regen=False,
-    with_test_class_names=False,
-    obtained_filename=None,
-    dump_aux_fn=lambda filename: [],
-):
+    datadir: Path,
+    original_datadir: Path,
+    request: pytest.FixtureRequest,
+    check_fn: Callable[[Path, Path], None],
+    dump_fn: Callable[[Path], None],
+    extension: str,
+    basename: Optional[str] = None,
+    fullpath: Optional[Path] = None,
+    force_regen: bool = False,
+    with_test_class_names: bool = False,
+    obtained_filename: Optional[Path] = None,
+    dump_aux_fn: Callable[[Path], List[str]] = lambda filename: [],
+) -> None:
     """
     First run of this check will generate a expected file. Following attempts will always try to
     match obtained files with that expected file.
 
     If expected file needs to be updated, just enable `force_regen` argument.
 
-    :param Path datadir: Fixture embed_data.
-    :param Path original_datadir: Fixture embed_data.
-    :param SubRequest request: Pytest request object.
-    :param callable check_fn: A function that receives as arguments, respectively, absolute path to
+    :param datadir: Fixture embed_data.
+    :param original_datadir: Fixture embed_data.
+    :param request: Pytest request object.
+    :param check_fn: A function that receives as arguments, respectively, absolute path to
         obtained file and absolute path to expected file. It must assert if contents of file match.
         Function can safely assume that obtained file is already dumped and only care about
         comparison.
-    :param callable dump_fn: A function that receive an absolute file path as argument. Implementor
+    :param dump_fn: A function that receive an absolute file path as argument. Implementor
         must dump file in this path.
-    :param callable dump_aux_fn: A function that receives the same file path as ``dump_fn``, but may
+    :param dump_aux_fn: A function that receives the same file path as ``dump_fn``, but may
         dump additional files to help diagnose this regression later (for example dumping image of
         3d views and plots to compare later). Must return the list of file names written (used to display).
-    :param str extension: Extension of files compared by this check.
-    :param bool force_regen: if true it will regenerate expected file.
-    :param bool with_test_class_names: if true it will use the test class name (if any) to compose
+    :param extension: Extension of files compared by this check.
+    :param force_regen: if true it will regenerate expected file.
+    :param with_test_class_names: if true it will use the test class name (if any) to compose
         the basename.
-    :param str obtained_filename: complete path to use to write the obtained file. By
+    :param obtained_filename: complete path to use to write the obtained file. By
         default will prepend `.obtained` before the file extension.
     ..see: `data_regression.Check` for `basename` and `fullpath` arguments.
     """
@@ -130,7 +141,7 @@ def perform_regression_check(
         filename = datadir / (basename + extension)
         source_filename = original_datadir / (basename + extension)
 
-    def make_location_message(banner, filename, aux_files):
+    def make_location_message(banner: str, filename: Path, aux_files: List[str]) -> str:
         msg = [banner, f"- {filename}"]
         if aux_files:
             msg.append("Auxiliary:")

@@ -1,8 +1,14 @@
+# mypy: disallow-untyped-defs
 import zipfile
+from pathlib import Path
 from typing import Any
+from typing import Dict
+from typing import Optional
 
-from pytest_regressions.common import import_error_message
-from pytest_regressions.common import perform_regression_check
+import pytest
+
+from .common import import_error_message
+from .common import perform_regression_check
 
 
 class NDArraysRegressionFixture:
@@ -13,14 +19,11 @@ class NDArraysRegressionFixture:
     THRESHOLD = 100
     ROWFORMAT = "{:>15s}  {:>20s}  {:>20s}  {:>20s}\n"
 
-    def __init__(self, datadir, original_datadir, request):
-        """
-        :type datadir: Path
-        :type original_datadir: Path
-        :type request: FixtureRequest
-        """
-        self._tolerances_dict = {}
-        self._default_tolerance = {}
+    def __init__(
+        self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    ) -> None:
+        self._tolerances_dict: Dict[str, Dict[str, float]] = {}
+        self._default_tolerance: Dict[str, float] = {}
 
         self.request = request
         self.datadir = datadir
@@ -28,7 +31,9 @@ class NDArraysRegressionFixture:
         self._force_regen = False
         self._with_test_class_names = False
 
-    def _check_data_types(self, key, obtained_array, expected_array):
+    def _check_data_types(
+        self, key: Any, obtained_array: Any, expected_array: Any
+    ) -> None:
         """
         Check if data type of obtained and expected arrays are the same. Fail if not.
         Helper method used in _check_fn method.
@@ -61,7 +66,9 @@ class NDArraysRegressionFixture:
             )
             raise AssertionError(error_msg)
 
-    def _check_data_shapes(self, key, obtained_array, expected_array):
+    def _check_data_shapes(
+        self, key: Any, obtained_array: Any, expected_array: Any
+    ) -> None:
         """
         Check if obtained and expected arrays have the same size.
         Helper method used in _check_fn method.
@@ -77,12 +84,9 @@ class NDArraysRegressionFixture:
             )
             raise AssertionError(error_msg)
 
-    def _check_fn(self, obtained_filename, expected_filename):
+    def _check_fn(self, obtained_filename: Path, expected_filename: Path) -> None:
         """
         Check if dict contents dumped to a file match the contents in expected file.
-
-        :param str obtained_filename:
-        :param str expected_filename:
         """
         try:
             import numpy as np
@@ -115,7 +119,7 @@ class NDArraysRegressionFixture:
         # Compare the contents of the arrays.
         comparison_tables_dict = {}
         for k, obtained_array in obtained_data.items():
-            expected_array = expected_data.get(k)
+            expected_array = expected_data[k]
             tolerance_args = self._tolerances_dict.get(k, self._default_tolerance)
 
             self._check_data_types(k, obtained_array, expected_array)
@@ -136,7 +140,9 @@ class NDArraysRegressionFixture:
                 if not_close_mask.ndim == 0:
                     diff_ids = [()]
                 else:
-                    diff_ids = np.array(np.nonzero(not_close_mask)).T
+                    diff_ids = np.array(
+                        np.nonzero(not_close_mask)
+                    ).T  # type:ignore[unreachable]
                 comparison_tables_dict[k] = (
                     expected_array.size,
                     expected_array.shape,
@@ -231,11 +237,9 @@ class NDArraysRegressionFixture:
 
             raise AssertionError(error_msg)
 
-    def _load_fn(self, filename):
+    def _load_fn(self, filename: Path) -> Dict[str, Any]:
         """
         Load dict contents from the given filename.
-
-        :param str filename"
         """
         try:
             import numpy as np
@@ -254,28 +258,25 @@ class NDArraysRegressionFixture:
             ) from e
         return result
 
-    def _dump_fn(self, data_object, filename):
+    def _dump_fn(self, data_dict: Dict[str, Any], filename: Path) -> None:
         """
         Dump dict contents to the given filename.
-
-        :param Dict[str, np.ndarray] data_object:
-        :param str filename:
         """
         try:
             import numpy as np
         except ModuleNotFoundError:
             raise ModuleNotFoundError(import_error_message("NumPy"))
 
-        np.savez_compressed(str(filename), **data_object)
+        np.savez_compressed(str(filename), **data_dict)
 
     def check(
         self,
-        data_dict,
-        basename=None,
-        fullpath=None,
-        tolerances=None,
-        default_tolerance=None,
-    ):
+        data_dict: Dict[str, Any],
+        basename: Optional[str] = None,
+        fullpath: Optional[Path] = None,
+        tolerances: Optional[Dict[str, Dict[str, float]]] = None,
+        default_tolerance: Optional[Dict[str, float]] = None,
+    ) -> None:
         """
         Checks a dictionary of NumPy ndarrays, containing only numeric data, against a previously recorded version, or generate a new file.
 
@@ -291,22 +292,22 @@ class NDArraysRegressionFixture:
                     default_tolerance=dict(atol=1e-8, rtol=1e-8)
                 )
 
-        :param Dict[str, numpy.ndarray] data_dict: dictionary of NumPy ndarrays containing
+        :param data_dict: dictionary of NumPy ndarrays containing
             data for regression check. The arrays can have any shape.
 
-        :param str basename: basename of the file to test/record. If not given the name
+        :param basename: basename of the file to test/record. If not given the name
             of the test is used.
 
-        :param str fullpath: complete path to use as a reference file. This option
+        :param fullpath: complete path to use as a reference file. This option
             will ignore embed_data completely, being useful if a reference file is located
             in the session data dir for example.
 
-        :param dict tolerances: dict mapping keys from the data_dict to tolerance settings
+        :param tolerances: dict mapping keys from the data_dict to tolerance settings
             for the given data. Example::
 
                 tolerances={'U': Tolerance(atol=1e-2)}
 
-        :param dict default_tolerance: dict mapping the default tolerance for the current
+        :param default_tolerance: dict mapping the default tolerance for the current
             check call. Example::
 
                 default_tolerance=dict(atol=1e-7, rtol=1e-18).
