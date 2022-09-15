@@ -1,4 +1,3 @@
-# mypy: disallow-untyped-defs
 import io
 import os
 from functools import partial

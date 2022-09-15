@@ -1,4 +1,3 @@
-# mypy: disallow-untyped-defs
 from pathlib import Path
 from typing import TYPE_CHECKING
 

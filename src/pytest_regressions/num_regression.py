@@ -1,4 +1,3 @@
-# mypy: disallow-untyped-defs
 import os
 from typing import Any
 from typing import Dict

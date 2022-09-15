@@ -1,4 +1,3 @@
-# mypy: disallow-untyped-defs
 import difflib
 import os
 from pathlib import Path

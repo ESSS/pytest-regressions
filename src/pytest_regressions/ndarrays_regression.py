@@ -1,4 +1,3 @@
-# mypy: disallow-untyped-defs
 import os
 import zipfile
 from pathlib import Path

@@ -1,4 +1,7 @@
-def add_custom_yaml_representer(data_type, representer_fn):
+from typing import Any
+
+
+def add_custom_yaml_representer(data_type: type, representer_fn: Any) -> None:
     """
     Add custom representer to regression YAML dumper. It is polymorphic, so it works also for
     subclasses of `data_type`.
