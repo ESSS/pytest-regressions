@@ -1,5 +1,13 @@
-from pytest_regressions.common import import_error_message
-from pytest_regressions.common import perform_regression_check
+import os
+from pathlib import Path
+from typing import Any
+from typing import Dict
+from typing import Optional
+
+import pytest
+
+from .common import import_error_message
+from .common import perform_regression_check
 
 
 class DataFrameRegressionFixture:
@@ -11,14 +19,11 @@ class DataFrameRegressionFixture:
     DISPLAY_WIDTH = 1000  # Max. Chars on outputs
     DISPLAY_MAX_COLUMNS = 1000  # Max. Number of columns (see #3)
 
-    def __init__(self, datadir, original_datadir, request):
-        """
-        :type datadir: Path
-        :type original_datadir: Path
-        :type request: FixtureRequest
-        """
-        self._tolerances_dict = {}
-        self._default_tolerance = {}
+    def __init__(
+        self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    ) -> None:
+        self._tolerances_dict: Dict[str, Dict[str, float]] = {}
+        self._default_tolerance: Dict[str, float] = {}
 
         self.request = request
         self.datadir = datadir
@@ -35,7 +40,9 @@ class DataFrameRegressionFixture:
             DataFrameRegressionFixture.DISPLAY_MAX_COLUMNS,
         )
 
-    def _check_data_types(self, key, obtained_column, expected_column):
+    def _check_data_types(
+        self, key: Any, obtained_column: Any, expected_column: Any
+    ) -> None:
         """
         Check if data type of obtained and expected columns are the same. Fail if not.
         Helper method used in _check_fn method.
@@ -63,7 +70,7 @@ class DataFrameRegressionFixture:
             )
             raise AssertionError(error_msg)
 
-    def _check_data_shapes(self, obtained_column, expected_column):
+    def _check_data_shapes(self, obtained_column: Any, expected_column: Any) -> None:
         """
         Check if obtained and expected columns have the same size.
         Helper method used in _check_fn method.
@@ -80,12 +87,9 @@ class DataFrameRegressionFixture:
             )
             raise AssertionError(error_msg)
 
-    def _check_fn(self, obtained_filename, expected_filename):
+    def _check_fn(self, obtained_filename: Path, expected_filename: Path) -> None:
         """
         Check if dict contents dumped to a file match the contents in expected file.
-
-        :param str obtained_filename:
-        :param str expected_filename:
         """
         try:
             import numpy as np
@@ -169,12 +173,9 @@ class DataFrameRegressionFixture:
                 )
             raise AssertionError(error_msg)
 
-    def _dump_fn(self, data_object, filename):
+    def _dump_fn(self, data_object: Any, filename: Path) -> None:
         """
         Dump dict contents to the given filename
-
-        :param pd.DataFrame data_object:
-        :param str filename:
         """
         data_object.to_csv(
             str(filename),
@@ -183,12 +184,12 @@ class DataFrameRegressionFixture:
 
     def check(
         self,
-        data_frame,
-        basename=None,
-        fullpath=None,
-        tolerances=None,
-        default_tolerance=None,
-    ):
+        data_frame: Any,
+        basename: Optional[str] = None,
+        fullpath: Optional["os.PathLike[str]"] = None,
+        tolerances: Optional[Dict[str, Dict[str, float]]] = None,
+        default_tolerance: Optional[Dict[str, float]] = None,
+    ) -> None:
         """
         Checks a pandas dataframe, containing only numeric data, against a previously recorded version, or generate a new file.
 
@@ -203,21 +204,21 @@ class DataFrameRegressionFixture:
             })
             dataframe_regression.check(data_frame)
 
-        :param pandas.DataFrame data_frame: pandas DataFrame containing data for regression check.
+        :param data_frame: pandas DataFrame containing data for regression check.
 
-        :param str basename: basename of the file to test/record. If not given the name
+        :param basename: basename of the file to test/record. If not given the name
             of the test is used.
 
-        :param str fullpath: complete path to use as a reference file. This option
+        :param fullpath: complete path to use as a reference file. This option
             will ignore embed_data completely, being useful if a reference file is located
             in the session data dir for example.
 
-        :param dict tolerances: dict mapping keys from the data_frame to tolerance settings for the
+        :param tolerances: dict mapping keys from the data_frame to tolerance settings for the
             given data. Example::
 
-                tolerances={'U': Tolerance(atol=1e-2)}
+                tolerances={'U': dict(atol=1e-2)}
 
-        :param dict default_tolerance: dict mapping the default tolerance for the current check
+        :param default_tolerance: dict mapping the default tolerance for the current check
             call. Example::
 
                 default_tolerance=dict(atol=1e-7, rtol=1e-18).

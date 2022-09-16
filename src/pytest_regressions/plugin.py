@@ -1,7 +1,18 @@
+from pathlib import Path
+from typing import TYPE_CHECKING
+
 import pytest
 
+if TYPE_CHECKING:
+    from .data_regression import DataRegressionFixture
+    from .dataframe_regression import DataFrameRegressionFixture
+    from .ndarrays_regression import NDArraysRegressionFixture
+    from .file_regression import FileRegressionFixture
+    from .num_regression import NumericRegressionFixture
+    from .image_regression import ImageRegressionFixture
 
-def pytest_addoption(parser):
+
+def pytest_addoption(parser: pytest.Parser) -> None:
     group = parser.getgroup("regressions")
     group.addoption(
         "--force-regen",
@@ -24,7 +35,9 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture
-def data_regression(datadir, original_datadir, request):
+def data_regression(
+    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+) -> "DataRegressionFixture":
     """
     Fixture used to test arbitrary data against known versions previously
     recorded by this same fixture. Useful to test 3rd party APIs or where testing directly
@@ -41,11 +54,6 @@ def data_regression(datadir, original_datadir, request):
     the new changes are expected and not regressions.
 
     The dict may be anything serializable by the `yaml` library.
-
-    :type datadir: Path
-    :type request: FixtureRequest
-    :rtype: DataRegressionFixture
-    :return: Data regression fixture.
     """
     from .data_regression import DataRegressionFixture
 
@@ -53,7 +61,9 @@ def data_regression(datadir, original_datadir, request):
 
 
 @pytest.fixture
-def dataframe_regression(datadir, original_datadir, request):
+def dataframe_regression(
+    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+) -> "DataFrameRegressionFixture":
     """
     Example usage:
 
@@ -70,11 +80,6 @@ def dataframe_regression(datadir, original_datadir, request):
             ),
             default_tolerance=dict(atol=1e-8, rtol=1e-8)
         )
-
-    :type embed_data: _EmbedDataFixture
-    :type request: FixtureRequest
-    :rtype: DataRegressionFixture
-    :return: Data regression fixture.
     """
     from .dataframe_regression import DataFrameRegressionFixture
 
@@ -82,7 +87,9 @@ def dataframe_regression(datadir, original_datadir, request):
 
 
 @pytest.fixture
-def ndarrays_regression(datadir, original_datadir, request):
+def ndarrays_regression(
+    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+) -> "NDArraysRegressionFixture":
     """
     Similar to num_regression, but supports numpy arrays with arbitrary shape. The
     dictionary is stored as an NPZ file. The values of the dictionary must be accepted
@@ -99,11 +106,6 @@ def ndarrays_regression(datadir, original_datadir, request):
                 },
                 default_tolerance=dict(atol=1e-8, rtol=1e-8)
             )
-
-    :type embed_data: _EmbedDataFixture
-    :type request: FixtureRequest
-    :rtype: DataRegressionFixture
-    :return: Data regression fixture.
     """
     from .ndarrays_regression import NDArraysRegressionFixture
 
@@ -111,17 +113,14 @@ def ndarrays_regression(datadir, original_datadir, request):
 
 
 @pytest.fixture
-def file_regression(datadir, original_datadir, request):
+def file_regression(
+    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+) -> "FileRegressionFixture":
     """
     Very similar to `data_regression`, but instead of saving data to YAML file it saves to an
     arbitrary format.
 
     Useful when used to compare contents of files of specific format (like documents, for instance).
-
-    :type embed_data: _EmbedDataFixture
-    :type request: FixtureRequest
-    :rtype: FileRegressionFixture
-    :return: File regression fixture.
     """
     from .file_regression import FileRegressionFixture
 
@@ -129,7 +128,9 @@ def file_regression(datadir, original_datadir, request):
 
 
 @pytest.fixture
-def num_regression(datadir, original_datadir, request):
+def num_regression(
+    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+) -> "NumericRegressionFixture":
     """
     Example usage:
 
@@ -145,11 +146,6 @@ def num_regression(datadir, original_datadir, request):
             data_index=positions,
             default_tolerance=dict(atol=1e-8, rtol=1e-8)
         )
-
-    :type embed_data: _EmbedDataFixture
-    :type request: FixtureRequest
-    :rtype: DataRegressionFixture
-    :return: Data regression fixture.
     """
     from .num_regression import NumericRegressionFixture
 
@@ -157,7 +153,9 @@ def num_regression(datadir, original_datadir, request):
 
 
 @pytest.fixture
-def image_regression(datadir, original_datadir, request):
+def image_regression(
+    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+) -> "ImageRegressionFixture":
     """
     Regression checks for images, accounting for small differences between them.
 

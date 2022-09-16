@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -11,15 +13,7 @@ def no_regen(dataframe_regression, request):
         pytest.fail("--force-regen should not be used on this test.")
 
 
-def test_usage_workflow(testdir, monkeypatch):
-    """
-    :type testdir: _pytest.pytester.TmpTestdir
-
-    :type monkeypatch: _pytest.monkeypatch.monkeypatch
-    """
-
-    import sys
-
+def test_usage_workflow(pytester, monkeypatch):
     monkeypatch.setattr(
         sys, "testing_get_data", lambda: {"data": 1.1 * np.ones(50)}, raising=False
     )
@@ -32,7 +26,7 @@ def test_usage_workflow(testdir, monkeypatch):
     """
 
     def get_csv_contents():
-        filename = testdir.tmpdir / "test_file" / "test_1.csv"
+        filename = pytester.path / "test_file" / "test_1.csv"
         frame = pd.read_csv(str(filename))
         return {"data": frame["data"].values}
 
@@ -40,7 +34,7 @@ def test_usage_workflow(testdir, monkeypatch):
         assert (obtained["data"] == expected["data"]).all()
 
     check_regression_fixture_workflow(
-        testdir,
+        pytester,
         source=source,
         data_getter=get_csv_contents,
         data_modifier=lambda: monkeypatch.setattr(

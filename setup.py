@@ -1,14 +1,12 @@
-#!/usr/bin/env python
-import codecs
-import os
+from pathlib import Path
 
 from setuptools import find_packages
 from setuptools import setup
 
 
-def read(fname):
-    file_path = os.path.join(os.path.dirname(__file__), fname)
-    return codecs.open(file_path, encoding="utf-8").read()
+def read(fname: str) -> str:
+    file_path = Path(__file__).parent / fname
+    return file_path.read_text(encoding="UTF-8")
 
 
 setup(
@@ -29,9 +27,13 @@ setup(
     packages=find_packages("src"),
     package_dir={"": "src"},
     python_requires=">=3.6",
+    package_data={
+        "pytest_regressions": ["py.typed"],
+    },
     extras_require={
         "dev": [
             "matplotlib",
+            "mypy",
             "numpy",
             "pandas",
             "pillow",
@@ -46,7 +48,7 @@ setup(
         "image": ["pillow", "numpy"],
         "dataframe": ["numpy", "pandas"],
     },
-    install_requires=["pytest-datadir>=1.2.0", "pytest>=3.5.0", "pyyaml"],
+    install_requires=["pytest-datadir>=1.2.0", "pytest>=6.2.0", "pyyaml"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Pytest",

@@ -1,10 +1,16 @@
+import os
 from functools import partial
+from pathlib import Path
+from typing import Any
+from typing import Callable
+from typing import Dict
+from typing import Optional
 
+import pytest
 import yaml
 
-from pytest_regressions.common import check_text_files
-from pytest_regressions.common import Path
-from pytest_regressions.common import perform_regression_check
+from .common import check_text_files
+from .common import perform_regression_check
 
 
 class DataRegressionFixture:
@@ -12,29 +18,31 @@ class DataRegressionFixture:
     Implementation of `data_regression` fixture.
     """
 
-    def __init__(self, datadir, original_datadir, request):
-        """
-        :type datadir: Path
-        :type original_datadir: Path
-        :type request: FixtureRequest
-        """
+    def __init__(
+        self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    ) -> None:
         self.request = request
         self.datadir = datadir
         self.original_datadir = original_datadir
         self.force_regen = False
         self.with_test_class_names = False
 
-    def check(self, data_dict, basename=None, fullpath=None):
+    def check(
+        self,
+        data_dict: Dict[str, Any],
+        basename: Optional[str] = None,
+        fullpath: Optional["os.PathLike[str]"] = None,
+    ) -> None:
         """
         Checks the given dict against a previously recorded version, or generate a new file.
 
-        :param dict data_dict: any yaml serializable dict.
+        :param data_dict: any yaml serializable dict.
 
-        :param str basename: basename of the file to test/record. If not given the name
+        :param basename: basename of the file to test/record. If not given the name
             of the test is used.
             Use either `basename` or `fullpath`.
 
-        :param str fullpath: complete path to use as a reference file. This option
+        :param fullpath: complete path to use as a reference file. This option
             will ignore ``datadir`` fixture when reading *expected* files but will still use it to
             write *obtained* files. Useful if a reference file is located in the session data dir for example.
 
@@ -42,7 +50,7 @@ class DataRegressionFixture:
         """
         __tracebackhide__ = True
 
-        def dump(filename):
+        def dump(filename: Path) -> None:
             """Dump dict contents to the given filename"""
             import yaml
 
@@ -84,17 +92,19 @@ class RegressionYamlDumper(yaml.SafeDumper):
     (see http://pyyaml.org/ticket/91).
     """
 
-    def ignore_aliases(self, data):
+    def ignore_aliases(self, data: object) -> bool:
         return True
 
     @classmethod
-    def add_custom_yaml_representer(cls, data_type, representer_fn):
+    def add_custom_yaml_representer(
+        cls, data_type: type, representer_fn: Callable[[object, Any], None]
+    ) -> None:
         """
         Add custom representer to regression YAML dumper. It is polymorphic, so it works also for
         subclasses of `data_type`.
 
-        :param type data_type: Type of objects.
-        :param callable representer_fn: Function that receives ``(dumper, data)`` type as
+        :param data_type: Type of objects.
+        :param representer_fn: Function that receives ``(dumper, data)`` type as
             argument and must must return a YAML-convertible representation.
         """
         # Use multi-representer instead of simple-representer because it supports polymorphism.

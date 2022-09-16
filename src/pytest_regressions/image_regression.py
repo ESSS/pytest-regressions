@@ -1,8 +1,14 @@
 import io
+import os
 from functools import partial
+from pathlib import Path
+from typing import Any
+from typing import Optional
 
-from pytest_regressions.common import import_error_message
-from pytest_regressions.common import perform_regression_check
+import pytest
+
+from .common import import_error_message
+from .common import perform_regression_check
 
 
 class ImageRegressionFixture:
@@ -10,27 +16,21 @@ class ImageRegressionFixture:
     Regression test for image objects, accounting for small differences.
     """
 
-    def __init__(self, datadir, original_datadir, request):
-        """
-        :type datadir: Path
-        :type original_datadir: Path
-        :type request: FixtureRequest
-        """
+    def __init__(
+        self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    ) -> None:
         self.request = request
         self.datadir = datadir
         self.original_datadir = original_datadir
         self.force_regen = False
         self.with_test_class_names = False
 
-    def _load_image(self, filename):
+    def _load_image(self, filename: "os.PathLike[str]") -> Any:
         """
         Reads the image from the given file and convert it to RGB if necessary.
         This is necessary to be used with the ImageChops module operations.
         At this time, in this module, channel operations are only implemented
         for 8-bit images (e.g. "L" and "RGB").
-
-        :param Path filename:
-            The name of the file
         """
         try:
             from PIL import Image
@@ -43,11 +43,11 @@ class ImageRegressionFixture:
         else:
             return img
 
-    def _compute_manhattan_distance(self, diff_image):
+    def _compute_manhattan_distance(self, diff_image: Any) -> float:
         """
         Computes a percentage of similarity of the difference image given.
 
-        :param PIL.Image diff_image:
+        :param diff_image:
             An image in RGB mode computed from ImageChops.difference
         """
         try:
@@ -56,7 +56,7 @@ class ImageRegressionFixture:
             raise ModuleNotFoundError(import_error_message("Numpy"))
 
         number_of_pixels = diff_image.size[0] * diff_image.size[1]
-        return (
+        return float(
             # To obtain a number in 0.0 -> 100.0
             100.0
             * (
@@ -71,24 +71,28 @@ class ImageRegressionFixture:
         )
 
     def _check_images_manhattan_distance(
-        self, obtained_file, expected_file, expect_equal, diff_threshold
-    ):
+        self,
+        obtained_file: Path,
+        expected_file: Path,
+        expect_equal: bool,
+        diff_threshold: float,
+    ) -> None:
         """
         Compare two image by computing the differences spatially, pixel by pixel.
 
         The Manhattan Distance is used to compute how much two images differ.
 
-        :param str obtained_file:
+        :param obtained_file:
             The image with the obtained image
 
-        :param str expected_files:
+        :param expected_file:
             The image with the expected image
 
-        :param bool expected_equal:
+        :param expect_equal:
             If True, the images are expected to be equal, otherwise, they're expected to be
             different.
 
-        :param float diff_threshold:
+        :param diff_threshold:
             The maximum percentage of difference accepted.
             A value between 0.0 and 100.0
 
@@ -106,17 +110,16 @@ class ImageRegressionFixture:
         obtained_img = self._load_image(obtained_file)
         expected_img = self._load_image(expected_file)
 
-        def check_result(equal, manhattan_distance):
+        def check_result(equal: bool, manhattan_distance: Optional[float]) -> None:
             if equal != expect_equal:
-                params = manhattan_distance, expected_file, obtained_file
                 if expect_equal:
-                    assert 0, (
-                        "Difference between images too high: %.2f %%\n%s\n%s" % params
-                    )
+                    assert (
+                        False
+                    ), f"Difference between images too high: {manhattan_distance} %\n{expected_file}\n{obtained_file}"
                 else:
-                    assert 0, (
-                        "Difference between images too small: %.2f %%\n%s\n%s" % params
-                    )
+                    assert (
+                        False
+                    ), f"Difference between images too small: {manhattan_distance} %\n{expected_file}\n{obtained_file}"
 
         # 1st check: identical
         diff_img = ImageChops.difference(obtained_img, expected_img)
@@ -128,18 +131,23 @@ class ImageRegressionFixture:
         equal = manhattan_distance <= diff_threshold
         check_result(equal, manhattan_distance)
 
-    def check(self, image_data, diff_threshold=0.1, expect_equal=True, basename=None):
+    def check(
+        self,
+        image_data: bytes,
+        diff_threshold: float = 0.1,
+        expect_equal: bool = True,
+        basename: Optional[str] = None,
+    ) -> None:
         """
         Checks that the given image contents are comparable with the ones stored in the data directory.
 
-        :param bytes image_data: image data
-        :param str|None basename: basename to store the information in the data directory. If none, use the name
+        :param image_data: image data
+        :param basename: basename to store the information in the data directory. If none, use the name
             of the test function.
-        :param bool expect_equal: if the image should considered equal below of the given threshold. If False, the
+        :param expect_equal: if the image should considered equal below of the given threshold. If False, the
             image should be considered different at least above the threshold.
-        :param float diff_threshold:
-            Tolerage as a percentage (1 to 100) on how the images are allowed to differ.
-
+        :param diff_threshold:
+            Tolerance as a percentage (1 to 100) on how the images are allowed to differ.
         """
         __tracebackhide__ = True
 
@@ -148,7 +156,7 @@ class ImageRegressionFixture:
         except ModuleNotFoundError:
             raise ModuleNotFoundError(import_error_message("Pillow"))
 
-        def dump_fn(target):
+        def dump_fn(target: Path) -> None:
             image = Image.open(io.BytesIO(image_data))
             image.save(str(target), "PNG")
 

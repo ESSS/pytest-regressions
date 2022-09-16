@@ -1,5 +1,4 @@
-import os
-import re
+import sys
 
 import numpy as np
 import pytest
@@ -13,14 +12,7 @@ def no_regen(ndarrays_regression, request):
         pytest.fail("--force-regen should not be used on this test.")
 
 
-def test_usage_workflow(testdir, monkeypatch):
-    """
-    :type testdir: _pytest.pytester.TmpTestdir
-
-    :type monkeypatch: _pytest.monkeypatch.monkeypatch
-    """
-
-    import sys
+def test_usage_workflow(pytester, monkeypatch):
 
     monkeypatch.setattr(
         sys, "testing_get_data", lambda: {"data": 1.1 * np.ones(50)}, raising=False
@@ -33,14 +25,14 @@ def test_usage_workflow(testdir, monkeypatch):
     """
 
     def get_npz_contents():
-        filename = testdir.tmpdir / "test_file" / "test_1.npz"
+        filename = pytester.path / "test_file" / "test_1.npz"
         return dict(np.load(str(filename)))
 
     def compare_arrays(obtained, expected):
         assert (obtained["data"] == expected["data"]).all()
 
     check_regression_fixture_workflow(
-        testdir,
+        pytester,
         source=source,
         data_getter=get_npz_contents,
         data_modifier=lambda: monkeypatch.setattr(
@@ -375,7 +367,7 @@ def test_complex_array(ndarrays_regression, no_regen):
     data1 = np.array([3.0 + 2.5j, 0.5, -1.879])
     with pytest.raises(AssertionError) as excinfo:
         ndarrays_regression.check({"data1": data1})
-    obtained_error_msg = str(excinfo.value)
+    str(excinfo.value)
     expected = "\n".join(
         [
             "data1:",
@@ -458,13 +450,13 @@ def test_arrays_with_different_shapes(ndarrays_regression):
 
 def test_scalars(ndarrays_regression):
     # Initial data with scalars.
-    data = {"data1": 4.0, "data2": 42}
-    ndarrays_regression.check(data)
+    data1 = {"data1": 4.0, "data2": 42}
+    ndarrays_regression.check(data1)
 
     # Run check with non-scalar data.
-    data = {"data1": np.array([4.0]), "data2": np.array([42, 21])}
+    data2 = {"data1": np.array([4.0]), "data2": np.array([42, 21])}
     with pytest.raises(AssertionError) as excinfo:
-        ndarrays_regression.check(data)
+        ndarrays_regression.check(data2)
     obtained_error_msg = str(excinfo.value)
     expected = "\n".join(
         [
@@ -477,9 +469,9 @@ def test_scalars(ndarrays_regression):
     assert expected in obtained_error_msg
 
     # Other test case.
-    data = {"data1": 5.0, "data2": 21}
+    data3 = {"data1": 5.0, "data2": 21}
     with pytest.raises(AssertionError) as excinfo:
-        ndarrays_regression.check(data)
+        ndarrays_regression.check(data3)
     obtained_error_msg = str(excinfo.value)
     expected = "\n".join(
         [
@@ -625,9 +617,9 @@ def test_missing_obtained(ndarrays_regression):
 
 
 @pytest.mark.parametrize("prefix", [True, False])
-def test_corrupt_npz(ndarrays_regression, tmpdir, prefix):
+def test_corrupt_npz(ndarrays_regression, tmp_path, prefix):
     data = {"data1": np.array([4, 5])}
-    fn_npz = os.path.join(tmpdir, "corrupt.npz")
+    fn_npz = tmp_path / "corrupt.npz"
     # Write random bytes to a file
     with open(fn_npz, "wb") as f:
         if prefix:

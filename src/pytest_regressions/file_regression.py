@@ -1,4 +1,11 @@
+import os
 from functools import partial
+from pathlib import Path
+from typing import Callable
+from typing import Optional
+from typing import Union
+
+import pytest
 
 from .common import check_text_files
 from .common import perform_regression_check
@@ -9,12 +16,9 @@ class FileRegressionFixture:
     Implementation of `file_regression` fixture.
     """
 
-    def __init__(self, datadir, original_datadir, request):
-        """
-        :type datadir: Path
-        :type original_datadir: Path
-        :type request: FixtureRequest
-        """
+    def __init__(
+        self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    ) -> None:
         self.request = request
         self.datadir = datadir
         self.original_datadir = original_datadir
@@ -23,24 +27,24 @@ class FileRegressionFixture:
 
     def check(
         self,
-        contents,
-        encoding=None,
-        extension=".txt",
-        newline=None,
-        basename=None,
-        fullpath=None,
-        binary=False,
-        obtained_filename=None,
-        check_fn=None,
-    ):
+        contents: Union[str, bytes],
+        encoding: Optional[str] = None,
+        extension: str = ".txt",
+        newline: Optional[str] = None,
+        basename: Optional[str] = None,
+        fullpath: Optional["os.PathLike[str]"] = None,
+        binary: bool = False,
+        obtained_filename: Optional["os.PathLike[str]"] = None,
+        check_fn: Optional[Callable[[Path, Path], None]] = None,
+    ) -> None:
         """
         Checks the contents against a previously recorded version, or generate a new file.
 
-        :param str contents: content to be verified.
-        :param str|None encoding: Encoding used to write file, if any.
-        :param str extension: Extension of file.
-        :param str|None newline: See `io.open` docs.
-        :param bool binary: If the file is binary or text.
+        :param contents: content to be verified.
+        :param encoding: Encoding used to write file, if any.
+        :param extension: Extension of file.
+        :param newline: See `io.open` docs.
+        :param binary: If the file is binary or text.
         :param obtained_filename: ..see:: FileRegressionCheck
         :param check_fn: a function with signature ``(obtained_filename, expected_filename)`` that should raise
             AssertionError if both files differ.
@@ -68,13 +72,11 @@ class FileRegressionFixture:
                 type(contents).__name__
             )
 
-        import io
-
         if check_fn is None:
 
             if binary:
 
-                def check_fn(obtained_filename, expected_filename):
+                def check_fn(obtained_filename: Path, expected_filename: Path) -> None:
                     if obtained_filename.read_bytes() != expected_filename.read_bytes():
                         raise AssertionError(
                             "Binary files {} and {} differ.".format(
@@ -85,11 +87,12 @@ class FileRegressionFixture:
             else:
                 check_fn = partial(check_text_files, encoding=encoding)
 
-        def dump_fn(filename):
+        def dump_fn(filename: Path) -> None:
             mode = "wb" if binary else "w"
             with open(str(filename), mode, encoding=encoding, newline=newline) as f:
                 f.write(contents)
 
+        assert check_fn is not None
         perform_regression_check(
             datadir=self.datadir,
             original_datadir=self.original_datadir,

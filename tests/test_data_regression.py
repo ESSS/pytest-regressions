@@ -1,4 +1,7 @@
+import sys
 from textwrap import dedent
+
+import yaml
 
 from pytest_regressions.testing import check_regression_fixture_workflow
 
@@ -35,14 +38,7 @@ def test_custom_object(data_regression):
     data_regression.check(contents)
 
 
-def test_usage_workflow(testdir, monkeypatch):
-    """
-    :type testdir: _pytest.pytester.TmpTestdir
-
-    :type monkeypatch: _pytest.monkeypatch.monkeypatch
-    """
-    import sys
-    import yaml
+def test_usage_workflow(pytester, monkeypatch):
 
     monkeypatch.setattr(
         sys, "testing_get_data", lambda: {"contents": "Foo", "value": 10}, raising=False
@@ -55,13 +51,13 @@ def test_usage_workflow(testdir, monkeypatch):
     """
 
     def get_yaml_contents():
-        yaml_filename = testdir.tmpdir / "test_file" / "test_1.yml"
-        assert yaml_filename.check(file=1)
+        yaml_filename = pytester.path / "test_file" / "test_1.yml"
+        assert yaml_filename.is_file()
         with yaml_filename.open() as f:
             return yaml.safe_load(f)
 
     check_regression_fixture_workflow(
-        testdir,
+        pytester,
         source=source,
         data_getter=get_yaml_contents,
         data_modifier=lambda: monkeypatch.setattr(
@@ -75,14 +71,13 @@ def test_usage_workflow(testdir, monkeypatch):
     )
 
 
-def test_data_regression_full_path(testdir, tmpdir):
+def test_data_regression_full_path(pytester, tmp_path):
     """
     Test data_regression with ``fullpath`` parameter.
-
-    :type testdir: _pytest.pytester.TmpTestdir
     """
-    fullpath = tmpdir.join("full/path/to").ensure(dir=1).join("contents.yaml")
-    assert not fullpath.isfile()
+    fullpath = tmp_path.joinpath("full/path/to/contents.yaml")
+    fullpath.parent.mkdir(parents=True)
+    assert not fullpath.is_file()
 
     source = """
         def test(data_regression):
@@ -91,18 +86,18 @@ def test_data_regression_full_path(testdir, tmpdir):
     """ % (
         repr(str(fullpath))
     )
-    testdir.makepyfile(test_foo=source)
+    pytester.makepyfile(test_foo=source)
     # First run fails because there's no yml file yet
-    result = testdir.inline_run()
+    result = pytester.inline_run()
     result.assertoutcome(failed=1)
 
     # ensure now that the file was generated and the test passes
-    assert fullpath.isfile()
-    result = testdir.inline_run()
+    assert fullpath.is_file()
+    result = pytester.inline_run()
     result.assertoutcome(passed=1)
 
 
-def test_data_regression_no_aliases(testdir):
+def test_data_regression_no_aliases(pytester):
     """
     YAML standard supports aliases as can be seen here:
     http://pyyaml.org/wiki/PyYAMLDocumentation#Aliases.
@@ -112,8 +107,6 @@ def test_data_regression_no_aliases(testdir):
     contents.
 
     This test makes sure data regression never uses aliases when dumping expected file to YAML.
-
-    :type testdir: _pytest.pytester.TmpTestdir
     """
     source = """
         def test(data_regression):
@@ -131,12 +124,12 @@ def test_data_regression_no_aliases(testdir):
             }
             data_regression.Check(contents)
     """
-    testdir.makepyfile(test_file=source)
+    pytester.makepyfile(test_file=source)
 
-    result = testdir.inline_run()
+    result = pytester.inline_run()
     result.assertoutcome(failed=1)
 
-    yaml_file_contents = testdir.tmpdir.join("test_file", "test.yml").read()
+    yaml_file_contents = pytester.path.joinpath("test_file/test.yml").read_text()
     assert yaml_file_contents == dedent(
         """\
         color1:
@@ -165,11 +158,11 @@ def test_data_regression_no_aliases(testdir):
         - 255
         """
     )
-    result = testdir.inline_run()
+    result = pytester.inline_run()
     result.assertoutcome(passed=1)
 
 
-def test_not_create_file_on_error(testdir):
+def test_not_create_file_on_error(pytester):
     """Basic example where we serializing the object should throw an error and should not create the file"""
 
     source = """
@@ -182,13 +175,13 @@ def test_not_create_file_on_error(testdir):
             contents = {"scalar": Scalar(10, "m")}
             data_regression.Check(contents)
     """
-    testdir.makepyfile(test_file=source)
+    pytester.makepyfile(test_file=source)
 
-    result = testdir.inline_run()
+    result = pytester.inline_run()
     result.assertoutcome(failed=1)
 
-    yaml_file = testdir.tmpdir.join("test_file", "test.yml")
-    assert not yaml_file.isfile()
+    yaml_file = pytester.path.joinpath("test_file/test.yml")
+    assert not yaml_file.is_file()
 
 
 def test_regen_all(pytester, tmp_path):
