@@ -1,4 +1,4 @@
-2.4.0 (2022-09-09)
+2.4.0 (2022-09-16)
 ------------------
 
 * New ``--regen-all`` flag, which regenerates all files without failing the tests. Useful to regenerate all files in
