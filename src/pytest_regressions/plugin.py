@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 from typing import TYPE_CHECKING
 
 import pytest
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
     from .image_regression import ImageRegressionFixture
 
 
-def pytest_addoption(parser: pytest.Parser) -> None:
+def pytest_addoption(parser: Any) -> None:
     group = parser.getgroup("regressions")
     group.addoption(
         "--force-regen",
