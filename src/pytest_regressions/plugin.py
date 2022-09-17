@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from .image_regression import ImageRegressionFixture
 
 
-def pytest_addoption(parser: pytest.Parser) -> None:
+def pytest_addoption(parser: "pytest.Parser") -> None:
     group = parser.getgroup("regressions")
     group.addoption(
         "--force-regen",
