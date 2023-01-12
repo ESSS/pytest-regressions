@@ -186,6 +186,11 @@ def test_arrays_with_different_sizes(dataframe_regression, no_regen):
         dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
+def test_nonrange_index(dataframe_regression, no_regen):
+    data1 = pd.DataFrame({"b": ["a", "b", "c"]}, index=pd.Index([90, 91, 92], name="a"))
+    dataframe_regression.check(data1)
+
+
 def test_integer_values_smoke_test(dataframe_regression, no_regen):
     data1 = np.ones(11, dtype=int)
     dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
