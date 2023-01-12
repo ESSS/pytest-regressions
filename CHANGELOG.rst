@@ -1,3 +1,8 @@
+UNRELEASED
+----------
+
+* `#119 <https://github.com/ESSS/pytest-regressions/pull/119>`__: (Bugfix) Properly handle missing index ``0``.
+
 2.4.1 (2022-09-17)
 ------------------
 
