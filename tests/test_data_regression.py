@@ -39,7 +39,6 @@ def test_custom_object(data_regression):
 
 
 def test_usage_workflow(pytester, monkeypatch):
-
     monkeypatch.setattr(
         sys, "testing_get_data", lambda: {"contents": "Foo", "value": 10}, raising=False
     )

@@ -73,7 +73,6 @@ class FileRegressionFixture:
             )
 
         if check_fn is None:
-
             if binary:
 
                 def check_fn(obtained_filename: Path, expected_filename: Path) -> None:
