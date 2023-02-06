@@ -13,7 +13,6 @@ def no_regen(ndarrays_regression, request):
 
 
 def test_usage_workflow(pytester, monkeypatch):
-
     monkeypatch.setattr(
         sys, "testing_get_data", lambda: {"data": 1.1 * np.ones(50)}, raising=False
     )

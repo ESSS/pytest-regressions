@@ -27,7 +27,6 @@ def test_binary_and_text_error(file_regression):
 
 
 def test_file_regression_workflow(pytester, monkeypatch):
-
     monkeypatch.setattr(sys, "get_data", lambda: "foo", raising=False)
     source = """
         import sys
