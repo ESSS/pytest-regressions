@@ -171,7 +171,7 @@ instead of ``data0``, you can define more useful names such as ``short`` and ``l
 
 .. code-block:: python
 
-    @pytest.mark.parametrize('data', [summary_grids(), summary_grids_2()], ids=['short' 'long'])
+    @pytest.mark.parametrize('data', [summary_grids(), summary_grids_2()], ids=['short', 'long'])
     def test_grids3(data_regression, data):
         data_regression.check(data)
 
