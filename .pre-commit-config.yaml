@@ -6,7 +6,7 @@ repos:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
 -   repo: https://github.com/PyCQA/autoflake
-    rev: v2.1.1
+    rev: v2.2.0
     hooks:
     -   id: autoflake
         name: autoflake
