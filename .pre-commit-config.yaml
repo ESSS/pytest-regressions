@@ -23,7 +23,6 @@ repos:
     hooks:
     -   id: black
         args: [--safe, --quiet]
-        language_version: python3.7
 -   repo: local
     hooks:
     -   id: rst
