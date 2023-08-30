@@ -236,7 +236,7 @@ class DataFrameRegressionFixture:
 
         __tracebackhide__ = True
 
-        assert type(data_frame) is pd.DataFrame, (
+        assert isinstance(data_frame, pd.DataFrame), (
             "Only pandas DataFrames are supported on dataframe_regression fixture.\n"
             "Object with type '%s' was given." % (str(type(data_frame)),)
         )

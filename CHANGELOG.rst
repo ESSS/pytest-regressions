@@ -1,7 +1,7 @@
 UNRELEASED
 ----------
 
-
+* `#137 <https://github.com/ESSS/pytest-regressions/pull/137>`__: (Bugfix) Make ``dataframe_regression`` compatible with classes inheriting from ``pandas.DataFrame``.
 
 2.4.2 (2023-01-12)
 ------------------
