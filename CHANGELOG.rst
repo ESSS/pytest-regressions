@@ -1,3 +1,8 @@
+2.4.4 (2023-08-31)
+------------------
+
+* No code changes, testing GitHub release during deploy.
+
 2.4.3 (2023-08-30)
 ------------------
 
