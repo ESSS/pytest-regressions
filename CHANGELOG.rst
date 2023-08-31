@@ -1,3 +1,9 @@
+2.5.0 (2023-08-31)
+------------------
+
+* Dropped support for EOL Python 3.6 and Python 3.7.
+* Added support for Python 3.11.
+
 2.4.3 (2023-08-30)
 ------------------
 

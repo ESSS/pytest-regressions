@@ -12,10 +12,7 @@ def read(fname: str) -> str:
 setup(
     name="pytest-regressions",
     use_scm_version=True,
-    setup_requires=[
-        "setuptools_scm; python_version>'3.6'",
-        "setuptools_scm <7.0; python_version=='3.6'",
-    ],
+    setup_requires=["setuptools_scm"],
     author="ESSS",
     author_email="foss@esss.co",
     maintainer="Bruno Oliveira",
@@ -26,7 +23,7 @@ setup(
     long_description=read("README.rst"),
     packages=find_packages("src"),
     package_dir={"": "src"},
-    python_requires=">=3.6",
+    python_requires=">=3.8",
     package_data={
         "pytest_regressions": ["py.typed"],
     },
@@ -55,11 +52,10 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Testing",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Operating System :: OS Independent",
         "License :: OSI Approved :: MIT License",
