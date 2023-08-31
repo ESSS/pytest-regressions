@@ -253,7 +253,7 @@ class NDArraysRegressionFixture:
             with open(filename, "rb") as f:
                 result = dict(np.load(f))
         except (zipfile.BadZipFile, ValueError) as e:
-            raise IOError(
+            raise OSError(
                 f"NPZ file {filename} could not be loaded. Corrupt file?"
             ) from e
         return result
