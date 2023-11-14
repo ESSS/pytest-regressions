@@ -40,11 +40,11 @@ class FileRegressionFixture:
         """
         Checks the contents against a previously recorded version, or generate a new file.
 
-        :param contents: content to be verified.
+        :param contents: content of the file to be verified as text or bytes. 
         :param encoding: Encoding used to write file, if any.
         :param extension: Extension of file.
         :param newline: See `io.open` docs.
-        :param binary: If the file is binary or text.
+        :param binary: If the provided content is binary or text.
         :param obtained_filename: ..see:: FileRegressionCheck
         :param check_fn: a function with signature ``(obtained_filename, expected_filename)`` that should raise
             AssertionError if both files differ.
