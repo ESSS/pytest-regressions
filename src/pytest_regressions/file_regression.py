@@ -40,7 +40,7 @@ class FileRegressionFixture:
         """
         Checks the contents against a previously recorded version, or generate a new file.
 
-        :param contents: content of the file to be verified as text or bytes. 
+        :param contents: content of the file to be verified as text or bytes.
         :param encoding: Encoding used to write file, if any.
         :param extension: Extension of file.
         :param newline: See `io.open` docs.
