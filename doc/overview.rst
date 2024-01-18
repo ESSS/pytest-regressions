@@ -5,7 +5,8 @@ Overview
 generate lots of data or specific data files like images.
 
 This plugin uses a *data directory* (courtesy of `pytest-datadir <https://github.com/gabrielcnr/pytest-datadir>`_) to
-store expected data files, which are stored and used as baseline for future test runs.
+store expected data files, which are stored and used as baseline for future test runs.  You can also
+define your own *data directory* directly as described below.
 
 Example
 -------
@@ -176,3 +177,43 @@ instead of ``data0``, you can define more useful names such as ``short`` and ``l
         data_regression.check(data)
 
 which creates ``test_grids3_short.yml`` and ``test_grids3_long.yml`` respectively.
+
+Data directory path
+-------------------
+
+Optionally you can configure your own *data directory* paths by overriding
+the fixtures provided by `pytest-datadir <https://github.com/gabrielcnr/pytest-datadir>`:
+
+First, add the path parameters to `pytest.ini`:
+
+.. code-block:: ini
+
+    [pytest]
+    datadir = mydatadir
+    original_datadir = my_originaldatadir
+
+Next, register the path parameter options in `conftest.py`:
+
+.. code-block:: python
+
+    def pytest_addoption(parser):
+        parser.addini("datadir", "my own datadir for pytest-regressions")
+        parser.addini("original_datadir", "my own original_datadir for pytest-regressions")
+
+Finally, define test fixtures to use the new options.
+
+.. code-block:: python
+
+  import pytest
+  import pathlib
+
+  @pytest.fixture(scope="session")
+  def original_datadir(request) -> pathlib.Path:
+      config = request.config
+      return config.rootpath / config.getini('original_datadir')
+
+
+  @pytest.fixture(scope="session")
+  def datadir(request) -> pathlib.Path:
+      config = request.config
+      return config.rootpath / config.getini('datadir')
