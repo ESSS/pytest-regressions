@@ -1,5 +1,5 @@
-2.6.0 (2023-08-31)
-------------------
+UNRELEASED
+----------
 
 * `#132 <https://github.com/ESSS/pytest-regressions/pull/132>`__: Add documentation for specifying custom data directories.
 
