@@ -184,7 +184,7 @@ Data directory path
 Optionally you can configure your own *data directory* paths by overriding
 the fixtures provided by `pytest-datadir <https://github.com/gabrielcnr/pytest-datadir>`.
 
-The trick is to use the standard fixture override mechanism provided by pytest, to change the `original_datadir` and `datadir` to return 
+The trick is to use the standard fixture override mechanism provided by pytest, to change the `original_datadir` and `datadir` to return
 other paths customized to your test suite.
 
 For example, you can hard-code the paths like this:
@@ -195,12 +195,12 @@ For example, you can hard-code the paths like this:
     from pathlib import Path
     from myapp.config import PATH
 
-    
+
     @pytest.fixture(scope="session")
     def datadir() -> Path:
         return PATH.repo / "test-data-regression"
-    
-    
+
+
     @pytest.fixture(scope="session")
     def original_datadir() -> Path:
         return PATH.repo / "test-data-regression"
