@@ -182,9 +182,30 @@ Data directory path
 -------------------
 
 Optionally you can configure your own *data directory* paths by overriding
-the fixtures provided by `pytest-datadir <https://github.com/gabrielcnr/pytest-datadir>`:
+the fixtures provided by `pytest-datadir <https://github.com/gabrielcnr/pytest-datadir>`.
 
-First, add the path parameters to `pytest.ini`:
+The trick is to use the standard fixture override mechanism provided by pytest, to change the `original_datadir` and `datadir` to return 
+other paths customized to your test suite.
+
+For example, you can hard-code the paths like this:
+
+.. code-block:: python
+
+    import pytest
+    from pathlib import Path
+    from myapp.config import PATH
+
+    
+    @pytest.fixture(scope="session")
+    def datadir() -> Path:
+        return PATH.repo / "test-data-regression"
+    
+    
+    @pytest.fixture(scope="session")
+    def original_datadir() -> Path:
+        return PATH.repo / "test-data-regression"
+
+An alternative would be to configure this using the configuration file:
 
 .. code-block:: ini
 
@@ -200,7 +221,7 @@ Next, register the path parameter options in `conftest.py`:
         parser.addini("datadir", "my own datadir for pytest-regressions")
         parser.addini("original_datadir", "my own original_datadir for pytest-regressions")
 
-Finally, define test fixtures to use the new options.
+Finally, override the fixtures to use the new options.
 
 .. code-block:: python
 
