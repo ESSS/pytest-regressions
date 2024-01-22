@@ -34,6 +34,7 @@ setup(
             "numpy",
             "pandas",
             "pillow",
+            "pyarrow",
             "pre-commit",
             "restructuredtext-lint",
             "tox",
