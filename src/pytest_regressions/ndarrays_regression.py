@@ -229,9 +229,11 @@ class NDArraysRegressionFixture:
                         diff_id_str,
                         str(obtained),
                         str(expected),
-                        str(obtained - expected)
-                        if isinstance(obtained, np.number)
-                        else "",
+                        (
+                            str(obtained - expected)
+                            if isinstance(obtained, np.number)
+                            else ""
+                        ),
                     )
                 error_msg += "\n"
 
