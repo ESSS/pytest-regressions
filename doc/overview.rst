@@ -244,7 +244,7 @@ Finally, override the fixtures to use the new options.
 Generated Filenames
 -------------------
 
-Optionnally you can configure the generated filenames by using the ``basename`` parameter of the fixture. The name can be changed to anything as long as it does not conflict with other tests.
+Optionally you can configure the generated filenames by using the ``basename`` parameter of the fixture. The name can be changed to anything as long as it does not conflict with other tests.
 In the following example, the filename will be "my_custom_name.yml":
 
 .. code-block:: python
