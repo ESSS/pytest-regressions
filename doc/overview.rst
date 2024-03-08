@@ -182,7 +182,7 @@ Data directory path
 -------------------
 
 Optionally you can configure your own *data directory* paths by overriding
-the fixtures provided by `pytest-datadir <https://github.com/gabrielcnr/pytest-datadir>`.
+the fixtures provided by `pytest-datadir <https://github.com/gabrielcnr/pytest-datadir>`__.
 
 The trick is to use the standard fixture override mechanism provided by pytest, to change the `original_datadir` and `datadir` to return
 other paths customized to your test suite.
