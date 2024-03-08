@@ -118,7 +118,9 @@ The fixture will generate a ``test_grids2.yml`` file (same name as the test) in 
         min: 0.36
         name: Porosity
 
-This file should be committed to version control.
+.. important::
+
+    This file should be committed to version control.
 
 The next time you run this test, it will compare the results of ``summary_grids()`` with the contents of the YAML file.
 If they match, the test passes. If they don't match the test will fail, showing a nice diff of the text differences.
@@ -238,3 +240,25 @@ Finally, override the fixtures to use the new options.
   def datadir(request) -> pathlib.Path:
       config = request.config
       return config.rootpath / config.getini('datadir')
+
+Generated Filenames
+-------------------
+
+Optionnally you can configure the generated filenames by using the ``basename`` parameter of the fixture. The name can be changed to anything as long as it does not conflict with other tests.
+In the following example, the filename will be "my_custom_name.yml":
+
+.. code-block:: python
+
+    def test_grids3(data_regression, data):
+        data_regression.check(data, basename="my_custom_name")
+
+.. note::
+
+    If one wants to continue using the test name as the filename and only add prefix or suffixes,
+    It is possible to rely on the `request` fixture to get the test name and use it to generate the filename.
+
+    .. code-block:: python
+
+        def test_grids3(data_regression, data1, data2, request):
+            data_regression.check(data1, basename=f"{request.node.name}_data1")
+            data_regression.check(data2, basename=f"{request.node.name}_data2")
