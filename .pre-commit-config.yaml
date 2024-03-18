@@ -6,7 +6,7 @@ repos:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
 -   repo: https://github.com/PyCQA/autoflake
-    rev: v2.3.0
+    rev: v2.3.1
     hooks:
     -   id: autoflake
         name: autoflake
@@ -19,7 +19,7 @@ repos:
     -   id: reorder-python-imports
         args: ['--application-directories=.:src', --py36-plus]
 -   repo: https://github.com/psf/black
-    rev: 24.2.0
+    rev: 24.3.0
     hooks:
     -   id: black
         args: [--safe, --quiet]
