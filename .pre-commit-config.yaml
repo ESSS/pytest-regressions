@@ -14,12 +14,12 @@ repos:
         language: python
         files: \.py$
 -   repo: https://github.com/asottile/reorder-python-imports
-    rev: v3.13.0
+    rev: v3.14.0
     hooks:
     -   id: reorder-python-imports
         args: ['--application-directories=.:src', --py36-plus]
 -   repo: https://github.com/psf/black
-    rev: 24.8.0
+    rev: 24.10.0
     hooks:
     -   id: black
         args: [--safe, --quiet]
