@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Callable
 from typing import List
 from typing import Optional
+from typing import Union
 
 import pytest
 
@@ -188,3 +189,24 @@ def perform_regression_check(
             else:
                 dump_aux_fn(Path(obtained_filename))
                 raise
+
+
+def round_digits(data: Union[list, dict], prescision: int) -> Union[list, dict]:
+    """
+    Recusrsively Round the values of any float value in a collection to the given prescision.
+
+    :param data: The collection to round.
+    :param prescision: The number of decimal places to round to.
+    :return: The collection with all float values rounded to the given prescision.
+
+    """
+    # change the generator depending on the collection type
+    generator = enumerate(data) if isinstance(data, list) else data.items()
+    for k, v in generator:
+        if isinstance(v, (list, dict)):
+            data[k] = round_digits(v, prescision)
+        elif isinstance(v, float):
+            data[k] = round(v, prescision)
+        else:
+            data[k] = v
+    return data

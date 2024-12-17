@@ -38,6 +38,15 @@ def test_custom_object(data_regression):
     data_regression.check(contents)
 
 
+def test_round_digits(data_regression):
+    """Example including float numbers and check rounding capabilities."""
+    contents = {
+        "content": {"value1": "toto", "value": 1.123456789},
+        "value": 1.23456789,
+    }
+    data_regression.check(contents, prescision=2)
+
+
 def test_usage_workflow(pytester, monkeypatch):
     monkeypatch.setattr(
         sys, "testing_get_data", lambda: {"contents": "Foo", "value": 10}, raising=False
