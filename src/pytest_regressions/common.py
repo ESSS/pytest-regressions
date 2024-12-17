@@ -193,7 +193,7 @@ def perform_regression_check(
 
 def round_digits(data: Union[list, dict], prescision: int) -> Union[list, dict]:
     """
-    Recusrsively Round the values of any float value in a collection to the given prescision.
+    Recursively Round the values of any float value in a collection to the given precision.
 
     :param data: The collection to round.
     :param prescision: The number of decimal places to round to.
