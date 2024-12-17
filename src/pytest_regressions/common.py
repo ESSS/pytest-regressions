@@ -201,13 +201,13 @@ def round_digits(data: T, digits: int) -> T:
     """
     Recursively round the values of any float value in a collection to the given number of digits. The rounding is done in-place.
 
-    :param data: 
+    :param data:
         The collection to round.
 
-    :param digits: 
+    :param digits:
         The number of digits to round to.
-    
-    :return: 
+
+    :return:
         The collection with all float values rounded to the given precision.
         Note that the rounding is done in-place, so this return value only exists
         because we use the function recursively.

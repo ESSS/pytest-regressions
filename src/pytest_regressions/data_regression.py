@@ -11,7 +11,6 @@ import yaml
 
 from .common import check_text_files
 from .common import perform_regression_check
-from .common import round_digits
 
 
 class DataRegressionFixture:
@@ -48,7 +47,7 @@ class DataRegressionFixture:
             will ignore ``datadir`` fixture when reading *expected* files but will still use it to
             write *obtained* files. Useful if a reference file is located in the session data dir for example.
 
-        :param round_digits: 
+        :param round_digits:
             If given, round all floats in the dict to the given number of digits.
 
         ``basename`` and ``fullpath`` are exclusive.
