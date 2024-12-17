@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 from typing import Any
-from typing import Dict
 from typing import Optional
 
 import pytest
@@ -22,8 +21,8 @@ class DataFrameRegressionFixture:
     def __init__(
         self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
     ) -> None:
-        self._tolerances_dict: Dict[str, Dict[str, float]] = {}
-        self._default_tolerance: Dict[str, float] = {}
+        self._tolerances_dict: dict[str, dict[str, float]] = {}
+        self._default_tolerance: dict[str, float] = {}
 
         self.request = request
         self.datadir = datadir
@@ -187,8 +186,8 @@ class DataFrameRegressionFixture:
         data_frame: Any,
         basename: Optional[str] = None,
         fullpath: Optional["os.PathLike[str]"] = None,
-        tolerances: Optional[Dict[str, Dict[str, float]]] = None,
-        default_tolerance: Optional[Dict[str, float]] = None,
+        tolerances: Optional[dict[str, dict[str, float]]] = None,
+        default_tolerance: Optional[dict[str, float]] = None,
     ) -> None:
         """
         Checks a pandas dataframe, containing only numeric data, against a previously recorded version, or generate a new file.

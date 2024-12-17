@@ -1,10 +1,9 @@
 import difflib
 import os
+from collections.abc import MutableMapping
+from collections.abc import MutableSequence
 from pathlib import Path
 from typing import Callable
-from typing import List
-from typing import MutableMapping
-from typing import MutableSequence
 from typing import Optional
 from typing import TypeVar
 from typing import Union
@@ -19,7 +18,7 @@ def import_error_message(libname: str) -> str:
 def check_text_files(
     obtained_fn: "os.PathLike[str]",
     expected_fn: "os.PathLike[str]",
-    fix_callback: Callable[[List[str]], List[str]] = lambda x: x,
+    fix_callback: Callable[[list[str]], list[str]] = lambda x: x,
     encoding: Optional[str] = None,
 ) -> None:
     """
@@ -94,7 +93,7 @@ def perform_regression_check(
     force_regen: bool = False,
     with_test_class_names: bool = False,
     obtained_filename: Optional["os.PathLike[str]"] = None,
-    dump_aux_fn: Callable[[Path], List[str]] = lambda filename: [],
+    dump_aux_fn: Callable[[Path], list[str]] = lambda filename: [],
 ) -> None:
     """
     First run of this check will generate a expected file. Following attempts will always try to
@@ -144,7 +143,7 @@ def perform_regression_check(
         filename = datadir / (basename + extension)
         source_filename = original_datadir / (basename + extension)
 
-    def make_location_message(banner: str, filename: Path, aux_files: List[str]) -> str:
+    def make_location_message(banner: str, filename: Path, aux_files: list[str]) -> str:
         msg = [banner, f"- {filename}"]
         if aux_files:
             msg.append("Auxiliary:")

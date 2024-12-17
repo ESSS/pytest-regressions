@@ -3,7 +3,6 @@ from functools import partial
 from pathlib import Path
 from typing import Any
 from typing import Callable
-from typing import Dict
 from typing import Optional
 
 import pytest
@@ -30,7 +29,7 @@ class DataRegressionFixture:
 
     def check(
         self,
-        data_dict: Dict[str, Any],
+        data_dict: dict[str, Any],
         basename: Optional[str] = None,
         fullpath: Optional["os.PathLike[str]"] = None,
         round_digits: Optional[int] = None,
