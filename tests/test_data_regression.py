@@ -46,7 +46,7 @@ def test_round_digits(data_regression):
         "values": [1.12345, 2.34567],
         "value": 1.23456789,
     }
-    data_regression.check(contents, precision=2)
+    data_regression.check(contents, round_digits=2)
 
     with pytest.raises(AssertionError):
         contents = {
@@ -54,7 +54,7 @@ def test_round_digits(data_regression):
             "values": [1.13456, 2.45678],
             "value": 1.23456789,
         }
-        data_regression.check(contents, precision=2)
+        data_regression.check(contents, round_digits=2)
 
 
 def test_usage_workflow(pytester, monkeypatch):
