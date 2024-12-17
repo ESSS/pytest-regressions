@@ -197,7 +197,7 @@ def perform_regression_check(
 T = TypeVar("T", bound=Union[MutableSequence, MutableMapping])
 
 
-def round_digits(data: T, digits: int) -> T:
+def round_digits_in_data(data: T, digits: int) -> T:
     """
     Recursively round the values of any float value in a collection to the given number of digits. The rounding is done in-place.
 
@@ -216,7 +216,7 @@ def round_digits(data: T, digits: int) -> T:
     generator = enumerate(data) if isinstance(data, MutableSequence) else data.items()
     for k, v in generator:
         if isinstance(v, (MutableSequence, MutableMapping)):
-            data[k] = round_digits(v, digits)
+            data[k] = round_digits_in_data(v, digits)
         elif isinstance(v, float):
             data[k] = round(v, digits)
         else:

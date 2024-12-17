@@ -11,6 +11,7 @@ import yaml
 
 from .common import check_text_files
 from .common import perform_regression_check
+from .common import round_digits_in_data
 
 
 class DataRegressionFixture:
@@ -55,7 +56,7 @@ class DataRegressionFixture:
         __tracebackhide__ = True
 
         if round_digits is not None:
-            round_digits(data_dict, round_digits)
+            round_digits_in_data(data_dict, round_digits)
 
         def dump(filename: Path) -> None:
             """Dump dict contents to the given filename"""
