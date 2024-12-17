@@ -1,0 +1,7 @@
+content:
+  value: 1.12
+  value1: toto
+value: 1.23
+values:
+- 1.12
+- 2.35

@@ -3,7 +3,11 @@ import os
 from pathlib import Path
 from typing import Callable
 from typing import List
+from typing import MutableMapping
+from typing import MutableSequence
 from typing import Optional
+from typing import TypeVar
+from typing import Union
 
 import pytest
 
@@ -188,3 +192,33 @@ def perform_regression_check(
             else:
                 dump_aux_fn(Path(obtained_filename))
                 raise
+
+
+T = TypeVar("T", bound=Union[MutableSequence, MutableMapping])
+
+
+def round_digits_in_data(data: T, digits: int) -> T:
+    """
+    Recursively round the values of any float value in a collection to the given number of digits. The rounding is done in-place.
+
+    :param data:
+        The collection to round.
+
+    :param digits:
+        The number of digits to round to.
+
+    :return:
+        The collection with all float values rounded to the given precision.
+        Note that the rounding is done in-place, so this return value only exists
+        because we use the function recursively.
+    """
+    # Change the generator depending on the collection type.
+    generator = enumerate(data) if isinstance(data, MutableSequence) else data.items()
+    for k, v in generator:
+        if isinstance(v, (MutableSequence, MutableMapping)):
+            data[k] = round_digits_in_data(v, digits)
+        elif isinstance(v, float):
+            data[k] = round(v, digits)
+        else:
+            data[k] = v
+    return data
