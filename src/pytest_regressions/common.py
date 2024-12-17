@@ -197,22 +197,28 @@ def perform_regression_check(
 T = TypeVar("T", bound=Union[MutableSequence, MutableMapping])
 
 
-def round_digits(data: T, precision: int) -> T:
+def round_digits(data: T, digits: int) -> T:
     """
-    Recursively Round the values of any float value in a collection to the given precision.
+    Recursively round the values of any float value in a collection to the given number of digits. The rounding is done in-place.
 
-    :param data: The collection to round.
-    :param precision: The number of decimal places to round to.
-    :return: The collection with all float values rounded to the given precision.
+    :param data: 
+        The collection to round.
 
+    :param digits: 
+        The number of digits to round to.
+    
+    :return: 
+        The collection with all float values rounded to the given precision.
+        Note that the rounding is done in-place, so this return value only exists
+        because we use the function recursively.
     """
-    # change the generator depending on the collection type
+    # Change the generator depending on the collection type.
     generator = enumerate(data) if isinstance(data, MutableSequence) else data.items()
     for k, v in generator:
         if isinstance(v, (MutableSequence, MutableMapping)):
-            data[k] = round_digits(v, precision)
+            data[k] = round_digits(v, digits)
         elif isinstance(v, float):
-            data[k] = round(v, precision)
+            data[k] = round(v, digits)
         else:
             data[k] = v
     return data
