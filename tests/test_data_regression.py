@@ -42,9 +42,18 @@ def test_round_digits(data_regression):
     """Example including float numbers and check rounding capabilities."""
     contents = {
         "content": {"value1": "toto", "value": 1.123456789},
+        "values": [1.12345, 2.34567],
         "value": 1.23456789,
     }
-    data_regression.check(contents, prescision=2)
+    data_regression.check(contents, precision=2)
+    
+    with pytest.raises(AssertionError):
+        contents = {
+            "content": {"value1": "toto", "value": 1.2345678},
+            "values": [1.13456, 2.45678],
+            "value": 1.23456789,
+        }
+        data_regression.check(contents, precision=2)
 
 
 def test_usage_workflow(pytester, monkeypatch):
