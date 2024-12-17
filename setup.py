@@ -21,6 +21,7 @@ setup(
     url="https://github.com/ESSS/pytest-regressions",
     description="Easy to use fixtures to write regression tests.",
     long_description=read("README.rst"),
+    long_description_content_type="text/x-rst",
     packages=find_packages("src"),
     package_dir={"": "src"},
     python_requires=">=3.8",
