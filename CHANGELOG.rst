@@ -1,7 +1,8 @@
 UNRELEASED
 ----------
 
-* `#132 <https://github.com/ESSS/pytest-regressions/pull/132>`__: Add documentation for specifying custom data directories.
+* `#132 <https://github.com/ESSS/pytest-regressions/pull/132>`__: Added documentation for specifying custom data directories.
+* `#177 <https://github.com/ESSS/pytest-regressions/pull/177>`__: Added new `round_digits` to `data_regression.check`, which when given will round all float values to the given number of dicts (recursively) before saving the data to disk.
 
 2.5.0 (2023-08-31)
 ------------------
