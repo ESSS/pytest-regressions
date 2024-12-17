@@ -201,9 +201,9 @@ def round_digits(data: Union[list, dict], prescision: int) -> Union[list, dict]:
 
     """
     # change the generator depending on the collection type
-    generator = enumerate(data) if isinstance(data, list) else data.items()
+    generator = enumerate(data) if isinstance(data, MutableSequence) else data.items()
     for k, v in generator:
-        if isinstance(v, (list, dict)):
+        if isinstance(v, (MutableSequence, MutableMapping)):
             data[k] = round_digits(v, prescision)
         elif isinstance(v, float):
             data[k] = round(v, prescision)
