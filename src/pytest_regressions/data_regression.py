@@ -59,7 +59,6 @@ class DataRegressionFixture:
 
         def dump(filename: Path) -> None:
             """Dump dict contents to the given filename"""
-            import yaml
 
             dumped_str = yaml.dump_all(
                 [data_dict],
