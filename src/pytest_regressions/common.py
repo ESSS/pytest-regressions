@@ -193,6 +193,7 @@ def perform_regression_check(
 
 T = TypeVar("T", bound=Union[MutableSequence, MutableMapping])
 
+
 def round_digits(data: T, precision: int) -> T:
     """
     Recursively Round the values of any float value in a collection to the given precision.
