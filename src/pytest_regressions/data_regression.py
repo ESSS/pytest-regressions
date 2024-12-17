@@ -55,7 +55,7 @@ class DataRegressionFixture:
         __tracebackhide__ = True
 
         if prescision is not None:
-            data_dict = round_digits(data_dict, prescision)
+            round_digits(data_dict, prescision)
 
         def dump(filename: Path) -> None:
             """Dump dict contents to the given filename"""
