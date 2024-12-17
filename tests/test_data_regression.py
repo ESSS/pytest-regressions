@@ -1,6 +1,7 @@
 import sys
 from textwrap import dedent
 
+import pytest
 import yaml
 
 from pytest_regressions.testing import check_regression_fixture_workflow

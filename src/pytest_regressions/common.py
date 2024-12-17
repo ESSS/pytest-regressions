@@ -3,7 +3,10 @@ import os
 from pathlib import Path
 from typing import Callable
 from typing import List
+from typing import MutableMapping
+from typing import MutableSequence
 from typing import Optional
+from typing import TypeVar
 from typing import Union
 
 import pytest
@@ -199,17 +202,17 @@ def round_digits(data: T, precision: int) -> T:
     Recursively Round the values of any float value in a collection to the given precision.
 
     :param data: The collection to round.
-    :param prescision: The number of decimal places to round to.
-    :return: The collection with all float values rounded to the given prescision.
+    :param precision: The number of decimal places to round to.
+    :return: The collection with all float values rounded to the given precision.
 
     """
     # change the generator depending on the collection type
     generator = enumerate(data) if isinstance(data, MutableSequence) else data.items()
     for k, v in generator:
         if isinstance(v, (MutableSequence, MutableMapping)):
-            data[k] = round_digits(v, prescision)
+            data[k] = round_digits(v, precision)
         elif isinstance(v, float):
-            data[k] = round(v, prescision)
+            data[k] = round(v, precision)
         else:
             data[k] = v
     return data

@@ -33,7 +33,7 @@ class DataRegressionFixture:
         data_dict: Dict[str, Any],
         basename: Optional[str] = None,
         fullpath: Optional["os.PathLike[str]"] = None,
-        prescision: Optional[int] = None,
+        precision: Optional[int] = None,
     ) -> None:
         """
         Checks the given dict against a previously recorded version, or generate a new file.
@@ -48,14 +48,14 @@ class DataRegressionFixture:
             will ignore ``datadir`` fixture when reading *expected* files but will still use it to
             write *obtained* files. Useful if a reference file is located in the session data dir for example.
 
-        :param prescision: if given, round all floats in the dict to the given number of digits.
+        :param precision: if given, round all floats in the dict to the given number of digits.
 
         ``basename`` and ``fullpath`` are exclusive.
         """
         __tracebackhide__ = True
 
-        if prescision is not None:
-            round_digits(data_dict, prescision)
+        if precision is not None:
+            round_digits(data_dict, precision)
 
         def dump(filename: Path) -> None:
             """Dump dict contents to the given filename"""
