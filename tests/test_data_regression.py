@@ -46,7 +46,7 @@ def test_round_digits(data_regression):
         "value": 1.23456789,
     }
     data_regression.check(contents, precision=2)
-    
+
     with pytest.raises(AssertionError):
         contents = {
             "content": {"value1": "toto", "value": 1.2345678},
