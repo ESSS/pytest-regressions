@@ -38,21 +38,6 @@ can be used to verify that future runs produce the same data.
 See `the docs <https://pytest-regressions.readthedocs.io/en/latest>`_ for examples and API usage.
 
 
-Requirements
-------------
-
-* ``pytest>=3.5``
-* Python 3.6+.
-
-
-Installation
-------------
-
-You can install "pytest-regressions" via `pip`_ from `PyPI`_::
-
-    $ pip install pytest-regressions
-
-
 Contributing
 ------------
 Contributions are very welcome. Tests can be run with `tox`_, please ensure

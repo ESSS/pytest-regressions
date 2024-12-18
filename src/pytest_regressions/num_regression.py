@@ -1,8 +1,7 @@
 import os
+from collections.abc import Sequence
 from typing import Any
-from typing import Dict
 from typing import Optional
-from typing import Sequence
 
 from .common import import_error_message
 from .dataframe_regression import DataFrameRegressionFixture
@@ -15,11 +14,11 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
 
     def check(
         self,
-        data_dict: Dict[str, Any],
+        data_dict: dict[str, Any],
         basename: Optional[str] = None,
         fullpath: Optional["os.PathLike[str]"] = None,
-        tolerances: Optional[Dict[str, Dict[str, float]]] = None,
-        default_tolerance: Optional[Dict[str, float]] = None,
+        tolerances: Optional[dict[str, dict[str, float]]] = None,
+        default_tolerance: Optional[dict[str, float]] = None,
         data_index: Optional[Sequence[int]] = None,
         fill_different_shape_with_nan: bool = True,
     ) -> None:

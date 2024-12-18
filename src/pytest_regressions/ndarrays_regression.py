@@ -2,7 +2,6 @@ import os
 import zipfile
 from pathlib import Path
 from typing import Any
-from typing import Dict
 from typing import Optional
 
 import pytest
@@ -22,8 +21,8 @@ class NDArraysRegressionFixture:
     def __init__(
         self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
     ) -> None:
-        self._tolerances_dict: Dict[str, Dict[str, float]] = {}
-        self._default_tolerance: Dict[str, float] = {}
+        self._tolerances_dict: dict[str, dict[str, float]] = {}
+        self._default_tolerance: dict[str, float] = {}
 
         self.request = request
         self.datadir = datadir
@@ -239,7 +238,7 @@ class NDArraysRegressionFixture:
 
             raise AssertionError(error_msg)
 
-    def _load_fn(self, filename: Path) -> Dict[str, Any]:
+    def _load_fn(self, filename: Path) -> dict[str, Any]:
         """
         Load dict contents from the given filename.
         """
@@ -260,7 +259,7 @@ class NDArraysRegressionFixture:
             ) from e
         return result
 
-    def _dump_fn(self, data_dict: Dict[str, Any], filename: Path) -> None:
+    def _dump_fn(self, data_dict: dict[str, Any], filename: Path) -> None:
         """
         Dump dict contents to the given filename.
         """
@@ -273,11 +272,11 @@ class NDArraysRegressionFixture:
 
     def check(
         self,
-        data_dict: Dict[str, Any],
+        data_dict: dict[str, Any],
         basename: Optional[str] = None,
         fullpath: Optional["os.PathLike[str]"] = None,
-        tolerances: Optional[Dict[str, Dict[str, float]]] = None,
-        default_tolerance: Optional[Dict[str, float]] = None,
+        tolerances: Optional[dict[str, dict[str, float]]] = None,
+        default_tolerance: Optional[dict[str, float]] = None,
     ) -> None:
         """
         Checks a dictionary of NumPy ndarrays, containing only numeric data, against a previously recorded version, or generate a new file.
