@@ -137,6 +137,7 @@ class ImageRegressionFixture:
         diff_threshold: float = 0.1,
         expect_equal: bool = True,
         basename: Optional[str] = None,
+        fullpath: Optional["os.PathLike[str]"] = None,
     ) -> None:
         """
         Checks that the given image contents are comparable with the ones stored in the data directory.
@@ -148,6 +149,11 @@ class ImageRegressionFixture:
             image should be considered different at least above the threshold.
         :param diff_threshold:
             Tolerance as a percentage (1 to 100) on how the images are allowed to differ.
+        :param fullpath: complete path to use as a reference file. This option
+            will ignore ``datadir`` fixture when reading *expected* files but will still use it to
+            write *obtained* files. Useful if a reference file is located in the session data dir for example.
+
+        ``basename`` and ``fullpath`` are exclusive.
         """
         __tracebackhide__ = True
 
@@ -172,6 +178,7 @@ class ImageRegressionFixture:
             dump_fn=dump_fn,
             extension=".png",
             basename=basename,
+            fullpath=fullpath,
             force_regen=self.force_regen,
             with_test_class_names=self.with_test_class_names,
         )
