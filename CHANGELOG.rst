@@ -5,6 +5,7 @@ UNRELEASED
 
 * Python 3.12 and 3.13 are now officially supported.
 * Python 3.8 (EOL) is no longer supported.
+* `#184 <https://github.com/ESSS/pytest-regressions/pull/184>`__: Added ``fullpath`` parameter to ``image_regression.check``.
 
 
 2.6.0
