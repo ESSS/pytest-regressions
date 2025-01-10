@@ -1,7 +1,7 @@
-UNRELEASED
-----------
+2.7.0
+-----
 
-*UNRELEASED*
+*2025-01-10*
 
 * Python 3.12 and 3.13 are now officially supported.
 * Python 3.8 (EOL) is no longer supported.
