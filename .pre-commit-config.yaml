@@ -14,7 +14,7 @@ repos:
         language: python
         files: \.py$
 -   repo: https://github.com/asottile/reorder-python-imports
-    rev: v3.14.0
+    rev: v3.15.0
     hooks:
     -   id: reorder-python-imports
         args: ['--application-directories=.:src', --py36-plus]
