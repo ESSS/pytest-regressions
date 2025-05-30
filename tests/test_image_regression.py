@@ -4,7 +4,7 @@ from functools import partial
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 
-def test_image_regression(image_regression, datadir):
+def test_image_regression(image_regression, lazy_datadir):
     import matplotlib
 
     # this ensures matplot lib does not use a GUI backend (such as Tk)
@@ -26,14 +26,15 @@ def test_image_regression(image_regression, datadir):
     )
     ax.grid()
 
-    image_filename = datadir / "test.png"
+    image_filename = lazy_datadir / "test.png"
     fig.savefig(str(image_filename))
 
     image_regression.check(image_filename.read_bytes(), diff_threshold=1.0)
 
 
-def test_image_regression_workflow(pytester, monkeypatch, datadir):
+def test_image_regression_workflow(pytester, monkeypatch):
     import sys
+
     from PIL import Image
 
     def get_image(color):

@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from .file_regression import FileRegressionFixture
     from .num_regression import NumericRegressionFixture
     from .image_regression import ImageRegressionFixture
+    from pytest_datadir import LazyDataDir
 
 
 def pytest_addoption(parser: Any) -> None:
@@ -37,7 +38,7 @@ def pytest_addoption(parser: Any) -> None:
 
 @pytest.fixture
 def data_regression(
-    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    lazy_datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
 ) -> "DataRegressionFixture":
     """
     Fixture used to test arbitrary data against known versions previously
@@ -58,12 +59,12 @@ def data_regression(
     """
     from .data_regression import DataRegressionFixture
 
-    return DataRegressionFixture(datadir, original_datadir, request)
+    return DataRegressionFixture(lazy_datadir, original_datadir, request)
 
 
 @pytest.fixture
 def dataframe_regression(
-    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    lazy_datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
 ) -> "DataFrameRegressionFixture":
     """
     Example usage:
@@ -84,12 +85,12 @@ def dataframe_regression(
     """
     from .dataframe_regression import DataFrameRegressionFixture
 
-    return DataFrameRegressionFixture(datadir, original_datadir, request)
+    return DataFrameRegressionFixture(lazy_datadir, original_datadir, request)
 
 
 @pytest.fixture
 def ndarrays_regression(
-    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    lazy_datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
 ) -> "NDArraysRegressionFixture":
     """
     Similar to num_regression, but supports numpy arrays with arbitrary shape. The
@@ -110,12 +111,12 @@ def ndarrays_regression(
     """
     from .ndarrays_regression import NDArraysRegressionFixture
 
-    return NDArraysRegressionFixture(datadir, original_datadir, request)
+    return NDArraysRegressionFixture(lazy_datadir, original_datadir, request)
 
 
 @pytest.fixture
 def file_regression(
-    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    lazy_datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
 ) -> "FileRegressionFixture":
     """
     Very similar to `data_regression`, but instead of saving data to YAML file it saves to an
@@ -125,12 +126,12 @@ def file_regression(
     """
     from .file_regression import FileRegressionFixture
 
-    return FileRegressionFixture(datadir, original_datadir, request)
+    return FileRegressionFixture(lazy_datadir, original_datadir, request)
 
 
 @pytest.fixture
 def num_regression(
-    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    lazy_datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
 ) -> "NumericRegressionFixture":
     """
     Example usage:
@@ -150,21 +151,21 @@ def num_regression(
     """
     from .num_regression import NumericRegressionFixture
 
-    return NumericRegressionFixture(datadir, original_datadir, request)
+    return NumericRegressionFixture(lazy_datadir, original_datadir, request)
 
 
 @pytest.fixture
 def image_regression(
-    datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+    lazy_datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
 ) -> "ImageRegressionFixture":
     """
     Regression checks for images, accounting for small differences between them.
 
     Example:
-        def test_plots(datadir, image_regression):
-            path = generate_plot(datadir / 'plot.png')
+        def test_plots(lazy_datadir, image_regression):
+            path = generate_plot(lazy_datadir / 'plot.png')
             image_regression.check(path.read_bytes(), diff_threshold=2.5)  # 2.5%
     """
     from .image_regression import ImageRegressionFixture
 
-    return ImageRegressionFixture(datadir, original_datadir, request)
+    return ImageRegressionFixture(lazy_datadir, original_datadir, request)

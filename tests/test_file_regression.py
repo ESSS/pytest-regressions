@@ -6,7 +6,7 @@ import pytest
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 
-def test_simple_text_file(file_regression, datadir):
+def test_simple_text_file(file_regression):
     contents = textwrap.dedent(
         """\
         # Title
@@ -16,7 +16,7 @@ def test_simple_text_file(file_regression, datadir):
     file_regression.check(contents, encoding="latin1", extension=".md")
 
 
-def test_simple_bin_file(file_regression, datadir):
+def test_simple_bin_file(file_regression):
     contents = b"binary contents \xff\xff\xde"
     file_regression.check(contents, binary=True, extension=".bin")
 

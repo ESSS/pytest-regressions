@@ -1,7 +1,7 @@
 import pytest
 
 
-def test_foo(datadir, num_regression):
+def test_foo(lazy_datadir, num_regression):
     """
     Dumb test, just to generate a expected csv file that must be different from the one gathered
     from `TestClass::test_foo`.
@@ -11,12 +11,12 @@ def test_foo(datadir, num_regression):
 
     expected_filename = f"{test_foo.__name__}.csv"
     obtained_filename = f"{test_foo.__name__}.obtained.csv"
-    assert (datadir / expected_filename).exists()
-    assert (datadir / obtained_filename).exists()
+    assert (lazy_datadir / expected_filename).exists()
+    assert (lazy_datadir / obtained_filename).exists()
 
 
 class TestClass:
-    def test_foo(self, datadir, num_regression):
+    def test_foo(self, lazy_datadir, num_regression):
         """
         Since 2.2.1, pytest-regressions use the test class name to compose the name of the datafiles, by default.
         This tests asserts this behavior.
@@ -31,12 +31,12 @@ class TestClass:
         obtained_filename = (
             f"{TestClass.__name__}_{TestClass.test_foo.__name__}.obtained.csv"
         )
-        assert (datadir / expected_filename).exists()
-        assert (datadir / obtained_filename).exists()
+        assert (lazy_datadir / expected_filename).exists()
+        assert (lazy_datadir / obtained_filename).exists()
 
 
 class TestClassWithIgnoredName:
-    def test_foo(self, datadir, num_regression):
+    def test_foo(self, lazy_datadir, num_regression):
         """
         Specifies to not use the class name to compose the expected data filename. The filename coincides with the
         expected data filename used by `test_foo` function. The regression test then fails because the expected
@@ -51,11 +51,11 @@ class TestClassWithIgnoredName:
         # Assert that we have the expected names, without class name
         expected_filename = f"{TestClassWithIgnoredName.test_foo.__name__}.csv"
         obtained_filename = f"{TestClassWithIgnoredName.test_foo.__name__}.obtained.csv"
-        assert (datadir / expected_filename).exists()
-        assert (datadir / obtained_filename).exists()
+        assert (lazy_datadir / expected_filename).exists()
+        assert (lazy_datadir / obtained_filename).exists()
 
         # Assert that don't have files with class name
         expected_with_class_name = f"{TestClassWithIgnoredName.__name__}_{TestClassWithIgnoredName.test_foo.__name__}.csv"
         obtained_with_class_name = f"{TestClassWithIgnoredName.__name__}_{TestClassWithIgnoredName.test_foo.__name__}.obtained.csv"
-        assert not (datadir / expected_with_class_name).exists()
-        assert not (datadir / obtained_with_class_name).exists()
+        assert not (lazy_datadir / expected_with_class_name).exists()
+        assert not (lazy_datadir / obtained_with_class_name).exists()
