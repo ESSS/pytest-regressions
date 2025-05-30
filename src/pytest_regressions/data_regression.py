@@ -23,7 +23,10 @@ class DataRegressionFixture:
     """
 
     def __init__(
-        self, datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
+        self,
+        datadir: "LazyDataDir",
+        original_datadir: Path,
+        request: pytest.FixtureRequest,
     ) -> None:
         self.request = request
         self.datadir = datadir

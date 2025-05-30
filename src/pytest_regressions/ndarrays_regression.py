@@ -23,7 +23,10 @@ class NDArraysRegressionFixture:
     ROWFORMAT = "{:>15s}  {:>20s}  {:>20s}  {:>20s}\n"
 
     def __init__(
-        self, datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
+        self,
+        datadir: "LazyDataDir",
+        original_datadir: Path,
+        request: pytest.FixtureRequest,
     ) -> None:
         self._tolerances_dict: dict[str, dict[str, float]] = {}
         self._default_tolerance: dict[str, float] = {}

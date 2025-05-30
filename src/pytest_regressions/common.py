@@ -5,9 +5,9 @@ from collections.abc import MutableSequence
 from pathlib import Path
 from typing import Callable
 from typing import Optional
+from typing import TYPE_CHECKING
 from typing import TypeVar
 from typing import Union
-from typing import TYPE_CHECKING
 
 import pytest
 

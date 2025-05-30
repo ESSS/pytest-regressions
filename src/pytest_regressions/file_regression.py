@@ -3,8 +3,8 @@ from functools import partial
 from pathlib import Path
 from typing import Callable
 from typing import Optional
-from typing import Union
 from typing import TYPE_CHECKING
+from typing import Union
 
 import pytest
 
@@ -21,7 +21,10 @@ class FileRegressionFixture:
     """
 
     def __init__(
-        self, datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
+        self,
+        datadir: "LazyDataDir",
+        original_datadir: Path,
+        request: pytest.FixtureRequest,
     ) -> None:
         self.request = request
         self.datadir = datadir
