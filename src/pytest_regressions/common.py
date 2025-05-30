@@ -7,8 +7,12 @@ from typing import Callable
 from typing import Optional
 from typing import TypeVar
 from typing import Union
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    from pytest_datadir import LazyDataDir
 
 
 def import_error_message(libname: str) -> str:
@@ -82,7 +86,7 @@ def check_text_files(
 
 
 def perform_regression_check(
-    datadir: Path,
+    datadir: "LazyDataDir",
     original_datadir: Path,
     request: pytest.FixtureRequest,
     check_fn: Callable[[Path, Path], None],

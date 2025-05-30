@@ -47,7 +47,7 @@ setup(
         "image": ["pillow", "numpy"],
         "dataframe": ["numpy", "pandas"],
     },
-    install_requires=["pytest-datadir>=1.2.0", "pytest>=6.2.0", "pyyaml"],
+    install_requires=["pytest-datadir>=1.7.0", "pytest>=6.2.0", "pyyaml"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Pytest",

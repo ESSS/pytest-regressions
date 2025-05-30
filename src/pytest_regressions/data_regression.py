@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 from typing import Callable
 from typing import Optional
+from typing import TYPE_CHECKING
 
 import pytest
 import yaml
@@ -12,6 +13,9 @@ from .common import check_text_files
 from .common import perform_regression_check
 from .common import round_digits_in_data
 
+if TYPE_CHECKING:
+    from pytest_datadir import LazyDataDir
+
 
 class DataRegressionFixture:
     """
@@ -19,7 +23,7 @@ class DataRegressionFixture:
     """
 
     def __init__(
-        self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+        self, datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
     ) -> None:
         self.request = request
         self.datadir = datadir
@@ -44,7 +48,7 @@ class DataRegressionFixture:
             Use either `basename` or `fullpath`.
 
         :param fullpath: complete path to use as a reference file. This option
-            will ignore ``datadir`` fixture when reading *expected* files but will still use it to
+            will ignore ``lazy_datadir`` fixture when reading *expected* files but will still use it to
             write *obtained* files. Useful if a reference file is located in the session data dir for example.
 
         :param round_digits:

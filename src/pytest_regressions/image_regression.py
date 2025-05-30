@@ -4,11 +4,15 @@ from functools import partial
 from pathlib import Path
 from typing import Any
 from typing import Optional
+from typing import TYPE_CHECKING
 
 import pytest
 
 from .common import import_error_message
 from .common import perform_regression_check
+
+if TYPE_CHECKING:
+    from pytest_datadir import LazyDataDir
 
 
 class ImageRegressionFixture:
@@ -17,7 +21,7 @@ class ImageRegressionFixture:
     """
 
     def __init__(
-        self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+        self, datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
     ) -> None:
         self.request = request
         self.datadir = datadir
@@ -150,7 +154,7 @@ class ImageRegressionFixture:
         :param diff_threshold:
             Tolerance as a percentage (1 to 100) on how the images are allowed to differ.
         :param fullpath: complete path to use as a reference file. This option
-            will ignore ``datadir`` fixture when reading *expected* files but will still use it to
+            will ignore ``lazy_datadir`` fixture when reading *expected* files but will still use it to
             write *obtained* files. Useful if a reference file is located in the session data dir for example.
 
         ``basename`` and ``fullpath`` are exclusive.

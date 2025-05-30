@@ -186,7 +186,7 @@ Data directory path
 Optionally you can configure your own *data directory* paths by overriding
 the fixtures provided by `pytest-datadir <https://github.com/gabrielcnr/pytest-datadir>`__.
 
-The trick is to use the standard fixture override mechanism provided by pytest, to change the `original_datadir` and `datadir` to return
+The trick is to use the standard fixture override mechanism provided by pytest, to change the `original_datadir` and `lazy_datadir` to return
 other paths customized to your test suite.
 
 For example, you can hard-code the paths like this:
@@ -199,7 +199,7 @@ For example, you can hard-code the paths like this:
 
 
     @pytest.fixture(scope="session")
-    def datadir() -> Path:
+    def lazy_datadir() -> Path:
         return PATH.repo / "test-data-regression"
 
 
@@ -212,7 +212,7 @@ An alternative would be to configure this using the configuration file:
 .. code-block:: ini
 
     [pytest]
-    datadir = mydatadir
+    lazy_datadir = mydatadir
     original_datadir = my_originaldatadir
 
 Next, register the path parameter options in `conftest.py`:
@@ -220,7 +220,7 @@ Next, register the path parameter options in `conftest.py`:
 .. code-block:: python
 
     def pytest_addoption(parser):
-        parser.addini("datadir", "my own datadir for pytest-regressions")
+        parser.addini("lazy_datadir", "my own datadir for pytest-regressions")
         parser.addini("original_datadir", "my own original_datadir for pytest-regressions")
 
 Finally, override the fixtures to use the new options.
@@ -237,9 +237,9 @@ Finally, override the fixtures to use the new options.
 
 
   @pytest.fixture(scope="session")
-  def datadir(request) -> pathlib.Path:
+  def lazy_datadir(request) -> pathlib.Path:
       config = request.config
-      return config.rootpath / config.getini('datadir')
+      return config.rootpath / config.getini('lazy_datadir')
 
 Generated Filenames
 -------------------

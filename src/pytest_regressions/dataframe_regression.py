@@ -2,11 +2,15 @@ import os
 from pathlib import Path
 from typing import Any
 from typing import Optional
+from typing import TYPE_CHECKING
 
 import pytest
 
 from .common import import_error_message
 from .common import perform_regression_check
+
+if TYPE_CHECKING:
+    from pytest_datadir import LazyDataDir
 
 
 class DataFrameRegressionFixture:
@@ -19,7 +23,7 @@ class DataFrameRegressionFixture:
     DISPLAY_MAX_COLUMNS = 1000  # Max. Number of columns (see #3)
 
     def __init__(
-        self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+        self, datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
     ) -> None:
         self._tolerances_dict: dict[str, dict[str, float]] = {}
         self._default_tolerance: dict[str, float] = {}

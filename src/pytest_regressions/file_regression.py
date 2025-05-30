@@ -4,11 +4,15 @@ from pathlib import Path
 from typing import Callable
 from typing import Optional
 from typing import Union
+from typing import TYPE_CHECKING
 
 import pytest
 
 from .common import check_text_files
 from .common import perform_regression_check
+
+if TYPE_CHECKING:
+    from pytest_datadir import LazyDataDir
 
 
 class FileRegressionFixture:
@@ -17,7 +21,7 @@ class FileRegressionFixture:
     """
 
     def __init__(
-        self, datadir: Path, original_datadir: Path, request: pytest.FixtureRequest
+        self, datadir: "LazyDataDir", original_datadir: Path, request: pytest.FixtureRequest
     ) -> None:
         self.request = request
         self.datadir = datadir
