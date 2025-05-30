@@ -1,7 +1,7 @@
-UNRELEASED
-----------
+2.8.0
+-----
 
-*UNRELEASED*
+*2025-08-30*
 
 * `#192 <https://github.com/ESSS/pytest-regressions/pull/192>`__: Replaced ``datadir`` with the ``lazy_datadir`` fixture for improved performance in test suites with large data directories.
 
