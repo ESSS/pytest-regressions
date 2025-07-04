@@ -253,7 +253,7 @@ class DataFrameRegressionFixture:
             if (array.dtype == "O") and (type(array.iloc[0]) is str):
                 continue
             # Rejected: timedelta, datetime, objects, zero-terminated bytes, unicode strings and raw data
-            assert array.dtype not in ["m", "M", "O", "S", "a", "U", "V"], (
+            assert array.dtype.kind not in ["m", "M", "O", "S", "U", "V"], (
                 "Only numeric data is supported on dataframe_regression fixture.\n"
                 "Array with type '%s' was given." % (str(array.dtype),)
             )
