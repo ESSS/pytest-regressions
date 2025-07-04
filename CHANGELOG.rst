@@ -1,3 +1,10 @@
+UNRELEASED
+----------
+
+*UNRELEASED*
+
+* `#173 <https://github.com/ESSS/pytest-regressions/issues/173>`__: Removed check against numpy-2.0-deprecated ``a`` dtype alias.
+
 2.8.0
 -----
 
