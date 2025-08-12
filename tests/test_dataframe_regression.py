@@ -1,4 +1,6 @@
 import sys
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -266,6 +268,14 @@ def test_dataframe_with_empty_strings(dataframe_regression):
             {"a": "a", "b": "b"},
             {"a": "a1", "b": ""},
         ]
+    )
+
+    dataframe_regression.check(df)
+
+
+def test_dataframe_with_datetime(dataframe_regression):
+    df = pd.DataFrame(
+        [{"when": datetime(2020, 1, 1, tzinfo=ZoneInfo("America/Sao_Paulo"))}]
     )
 
     dataframe_regression.check(df)
