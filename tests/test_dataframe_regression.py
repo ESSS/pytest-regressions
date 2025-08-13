@@ -1,4 +1,6 @@
 import sys
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -172,7 +174,7 @@ def test_non_numeric_data(dataframe_regression, array, no_regen):
     data1["data1"] = array
     with pytest.raises(
         AssertionError,
-        match="Only numeric data is supported on dataframe_regression fixture.\n"
+        match="Only numeric data/datatime objects are supported on dataframe_regression fixture.\n"
         " *Array with type '%s' was given." % (str(data1["data1"].dtype),),
     ):
         dataframe_regression.check(data1)
@@ -265,6 +267,19 @@ def test_dataframe_with_empty_strings(dataframe_regression):
         [
             {"a": "a", "b": "b"},
             {"a": "a1", "b": ""},
+        ]
+    )
+
+    dataframe_regression.check(df)
+
+
+def test_dataframe_with_datetime(dataframe_regression):
+    df = pd.DataFrame(
+        [
+            {
+                "naive": datetime(2020, 1, 1),
+                "timezone": datetime(2020, 1, 1, tzinfo=ZoneInfo("America/Sao_Paulo")),
+            },
         ]
     )
 
