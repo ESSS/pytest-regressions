@@ -254,7 +254,7 @@ class DataFrameRegressionFixture:
                 continue
             # Rejected: timedelta, objects, zero-terminated bytes, unicode strings and raw data
             assert array.dtype.kind not in ["m", "O", "S", "U", "V"], (
-                "Only numeric data is supported on dataframe_regression fixture.\n"
+                "Only numeric data/datatime objects are supported on dataframe_regression fixture.\n"
                 "Array with type '%s' was given." % (str(array.dtype),)
             )
 
