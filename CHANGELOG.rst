@@ -1,5 +1,7 @@
-UNRELEASED
-----------
+2.8.2
+-----
+
+*2025-08-13*
 
 * `#200 <https://github.com/ESSS/pytest-regressions/issues/200>`__: Reintroduced support for ``datetime`` columns in ``dataframe_regression``.
 
