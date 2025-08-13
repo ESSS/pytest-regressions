@@ -275,7 +275,12 @@ def test_dataframe_with_empty_strings(dataframe_regression):
 
 def test_dataframe_with_datetime(dataframe_regression):
     df = pd.DataFrame(
-        [{"when": datetime(2020, 1, 1, tzinfo=ZoneInfo("America/Sao_Paulo"))}]
+        [
+            {
+                "naive": datetime(2020, 1, 1),
+                "timezone": datetime(2020, 1, 1, tzinfo=ZoneInfo("America/Sao_Paulo")),
+            },
+        ]
     )
 
     dataframe_regression.check(df)
