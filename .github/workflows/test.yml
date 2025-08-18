@@ -22,7 +22,7 @@ jobs:
   package:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build and Check Package
         uses: hynek/build-and-inspect-python-package@v2.13
 
@@ -36,7 +36,7 @@ jobs:
         os: [ubuntu-latest, windows-latest]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Download Package
         uses: actions/download-artifact@v5
