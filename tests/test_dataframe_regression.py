@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from pytest_regressions.dataframe_regression import DataFrameRegressionFixture
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 
@@ -283,4 +284,16 @@ def test_dataframe_with_datetime(dataframe_regression):
         ]
     )
 
+    dataframe_regression.check(df)
+
+
+def test_categorical(dataframe_regression: DataFrameRegressionFixture) -> None:
+    """Support for categorical data columns (#197)."""
+    values = [3, 3, 1, 1, 2, 0, 0, 2]
+    types = pd.Categorical.from_codes(
+        np.array(values),
+        categories=["a", "b", "c", "d"],
+    )
+
+    df = pd.DataFrame.from_dict({"types": types})
     dataframe_regression.check(df)
