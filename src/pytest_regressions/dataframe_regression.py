@@ -249,7 +249,12 @@ class DataFrameRegressionFixture:
 
         for column in data_frame.columns:
             array = data_frame[column]
-            # Skip assertion if an array of strings
+
+            # Categorical columns (numbers mapped to strings) are supported.
+            if isinstance(array.dtype, pd.CategoricalDtype):
+                continue
+
+            # Arrays of strings are supported.
             if (array.dtype == "O") and (type(array.iloc[0]) is str):
                 continue
             # Rejected: timedelta, objects, zero-terminated bytes, unicode strings and raw data

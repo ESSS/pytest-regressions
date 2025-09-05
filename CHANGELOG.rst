@@ -1,3 +1,10 @@
+UNRELEASED
+----------
+
+*UNRELEASED*
+
+* `#197 <https://github.com/ESSS/pytest-regressions/issues/197>`__: Fixed support for ``pandas.CategoricalDtype``, regressed in ``2.8.1``.
+
 2.8.2
 -----
 
