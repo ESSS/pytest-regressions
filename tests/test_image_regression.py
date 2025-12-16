@@ -1,8 +1,8 @@
 import io
 from functools import partial
-from PIL import Image
 
 import pytest
+from PIL import Image
 
 from pytest_regressions.testing import check_regression_fixture_workflow
 

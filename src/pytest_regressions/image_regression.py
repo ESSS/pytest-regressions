@@ -4,8 +4,8 @@ from functools import partial
 from pathlib import Path
 from typing import Any
 from typing import Optional
-from typing import Union
 from typing import TYPE_CHECKING
+from typing import Union
 
 import pytest
 
@@ -122,13 +122,13 @@ class ImageRegressionFixture:
         def check_result(equal: bool, manhattan_distance: Optional[float]) -> None:
             if equal != expect_equal:
                 if expect_equal:
-                    assert False, (
-                        f"Difference between images too high: {manhattan_distance} %\n{expected_file}\n{obtained_file}"
-                    )
+                    assert (
+                        False
+                    ), f"Difference between images too high: {manhattan_distance} %\n{expected_file}\n{obtained_file}"
                 else:
-                    assert False, (
-                        f"Difference between images too small: {manhattan_distance} %\n{expected_file}\n{obtained_file}"
-                    )
+                    assert (
+                        False
+                    ), f"Difference between images too small: {manhattan_distance} %\n{expected_file}\n{obtained_file}"
 
         # 1st check: identical
         diff_img = ImageChops.difference(obtained_img, expected_img)
