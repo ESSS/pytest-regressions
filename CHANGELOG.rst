@@ -1,3 +1,10 @@
+2.9.0
+-----
+
+*UNRELEASED*
+
+* `#218 <https://github.com/ESSS/pytest-regressions/pull/218>`__: ``ImageRegression.check`` now supports receiving an ``PIL.Image`` object directly.
+
 2.8.3
 -----
 
