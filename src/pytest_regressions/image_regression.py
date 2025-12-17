@@ -142,7 +142,7 @@ class ImageRegressionFixture:
 
     def check(
         self,
-        image_data: Union[bytes, Image.Image],
+        image_data: Union[bytes, "Image.Image"],
         diff_threshold: float = 0.1,
         expect_equal: bool = True,
         basename: Optional[str] = None,
