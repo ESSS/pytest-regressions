@@ -36,7 +36,7 @@ class DataRegressionFixture:
 
     def check(
         self,
-        data_dict: dict[str, Any],
+        data_dict: dict[str | int, Any],
         basename: Optional[str] = None,
         fullpath: Optional["os.PathLike[str]"] = None,
         round_digits: Optional[int] = None,
