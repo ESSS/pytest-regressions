@@ -37,7 +37,9 @@ def test_image_regression(image_regression, lazy_datadir, image_type):
         image_data = image_filename.read_bytes()
     else:
         image_data = Image.open(image_filename)
-    image_regression.check(image_data, diff_threshold=1.0)
+    image_regression.check(
+        image_data, diff_threshold=1.0, basename="test_image_regression"
+    )
 
 
 @pytest.mark.parametrize("image_type", ["pil", "bytes"])
