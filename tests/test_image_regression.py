@@ -1,10 +1,14 @@
 import io
 from functools import partial
 
+import pytest
+from PIL import Image
+
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 
-def test_image_regression(image_regression, lazy_datadir):
+@pytest.mark.parametrize("image_type", ["pil", "bytes"])
+def test_image_regression(image_regression, lazy_datadir, image_type):
     import matplotlib
 
     # this ensures matplot lib does not use a GUI backend (such as Tk)
@@ -29,19 +33,29 @@ def test_image_regression(image_regression, lazy_datadir):
     image_filename = lazy_datadir / "test.png"
     fig.savefig(str(image_filename))
 
-    image_regression.check(image_filename.read_bytes(), diff_threshold=1.0)
+    if image_type == "bytes":
+        image_data = image_filename.read_bytes()
+    else:
+        image_data = Image.open(image_filename)
+    image_regression.check(
+        image_data, diff_threshold=1.0, basename="test_image_regression"
+    )
 
 
-def test_image_regression_workflow(pytester, monkeypatch):
+@pytest.mark.parametrize("image_type", ["pil", "bytes"])
+def test_image_regression_workflow(pytester, monkeypatch, image_type):
     import sys
 
     from PIL import Image
 
     def get_image(color):
-        f = io.BytesIO()
         img = Image.new("RGB", (100, 100), color)
-        img.save(f, "PNG")
-        return f.getvalue()
+        if image_type == "pil":
+            return img
+        else:
+            f = io.BytesIO()
+            img.save(f, "PNG")
+            return f.getvalue()
 
     monkeypatch.setattr(sys, "get_image", partial(get_image, "white"), raising=False)
     source = """
@@ -54,7 +68,11 @@ def test_image_regression_workflow(pytester, monkeypatch):
     def get_file_contents():
         fn = pytester.path / "test_file" / "test_1.png"
         assert fn.is_file()
-        return fn.read_bytes()
+        if image_type == "pil":
+            # Copy is necessary because Image.open returns a ImageFile class
+            return Image.open(fn).copy()
+        else:
+            return fn.read_bytes()
 
     check_regression_fixture_workflow(
         pytester,

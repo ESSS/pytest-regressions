@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 from typing import Optional
 from typing import TYPE_CHECKING
+from typing import Union
 
 import pytest
 
@@ -13,6 +14,7 @@ from .common import perform_regression_check
 
 if TYPE_CHECKING:
     from pytest_datadir import LazyDataDir
+    from PIL import Image
 
 
 class ImageRegressionFixture:
@@ -140,7 +142,7 @@ class ImageRegressionFixture:
 
     def check(
         self,
-        image_data: bytes,
+        image_data: Union[bytes, "Image.Image"],
         diff_threshold: float = 0.1,
         expect_equal: bool = True,
         basename: Optional[str] = None,
@@ -149,7 +151,7 @@ class ImageRegressionFixture:
         """
         Checks that the given image contents are comparable with the ones stored in the data directory.
 
-        :param image_data: image data
+        :param image_data: image data bytes which can be read with PIL, or directly a PIL image object.
         :param basename: basename to store the information in the data directory. If none, use the name
             of the test function.
         :param expect_equal: if the image should considered equal below of the given threshold. If False, the
@@ -170,7 +172,11 @@ class ImageRegressionFixture:
             raise ModuleNotFoundError(import_error_message("Pillow"))
 
         def dump_fn(target: Path) -> None:
-            image = Image.open(io.BytesIO(image_data))
+            if isinstance(image_data, Image.Image):
+                image = image_data
+            else:
+                image = Image.open(io.BytesIO(image_data))
+
             image.save(str(target), "PNG")
 
         perform_regression_check(
