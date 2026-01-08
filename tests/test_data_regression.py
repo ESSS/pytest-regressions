@@ -19,6 +19,17 @@ def test_basename(data_regression):
     data_regression.check(contents, basename="case.normal")
 
 
+def test_integer_keys(data_regression):
+    """Test that integer keys are supported in data dictionaries."""
+    contents = {
+        1: "first",
+        2: "second",
+        10: "tenth",
+        100: "hundredth",
+    }
+    data_regression.check(contents)
+
+
 def test_custom_object(data_regression):
     """Basic example where we register a custom conversion to dump objects"""
 
