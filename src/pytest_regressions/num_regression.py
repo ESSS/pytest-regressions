@@ -15,11 +15,11 @@ class NumericRegressionFixture(DataFrameRegressionFixture):
     def check(
         self,
         data_dict: dict[str, Any],
-        basename: Optional[str] = None,
+        basename: str | None = None,
         fullpath: Optional["os.PathLike[str]"] = None,
-        tolerances: Optional[dict[str, dict[str, float]]] = None,
-        default_tolerance: Optional[dict[str, float]] = None,
-        data_index: Optional[Sequence[int]] = None,
+        tolerances: dict[str, dict[str, float]] | None = None,
+        default_tolerance: dict[str, float] | None = None,
+        data_index: Sequence[int] | None = None,
         fill_different_shape_with_nan: bool = True,
     ) -> None:
         """

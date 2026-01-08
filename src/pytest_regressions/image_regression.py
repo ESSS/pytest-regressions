@@ -119,7 +119,7 @@ class ImageRegressionFixture:
         obtained_img = self._load_image(obtained_file)
         expected_img = self._load_image(expected_file)
 
-        def check_result(equal: bool, manhattan_distance: Optional[float]) -> None:
+        def check_result(equal: bool, manhattan_distance: float | None) -> None:
             if equal != expect_equal:
                 if expect_equal:
                     assert (
@@ -145,7 +145,7 @@ class ImageRegressionFixture:
         image_data: Union[bytes, "Image.Image"],
         diff_threshold: float = 0.1,
         expect_equal: bool = True,
-        basename: Optional[str] = None,
+        basename: str | None = None,
         fullpath: Optional["os.PathLike[str]"] = None,
     ) -> None:
         """
