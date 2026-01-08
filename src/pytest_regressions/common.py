@@ -1,9 +1,9 @@
 import difflib
 import os
+from collections.abc import Callable
 from collections.abc import MutableMapping
 from collections.abc import MutableSequence
 from pathlib import Path
-from collections.abc import Callable
 from typing import Optional
 from typing import TYPE_CHECKING
 from typing import TypeVar

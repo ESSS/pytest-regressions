@@ -1,10 +1,9 @@
 import os
+from collections.abc import Callable
 from functools import partial
 from pathlib import Path
-from collections.abc import Callable
 from typing import Optional
 from typing import TYPE_CHECKING
-from typing import Union
 
 import pytest
 
