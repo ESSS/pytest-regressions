@@ -1,7 +1,7 @@
 2.9.0
 -----
 
-*UNRELEASED*
+*2026-01-08*
 
 * `#218 <https://github.com/ESSS/pytest-regressions/pull/218>`__: ``ImageRegression.check`` now supports receiving an ``PIL.Image`` object directly.
 * `#220 <https://github.com/ESSS/pytest-regressions/pull/220>`__: Support for Python 3.14 has been added, while Python 3.9 (EOL) has been dropped.
