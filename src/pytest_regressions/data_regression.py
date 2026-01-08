@@ -1,11 +1,10 @@
 import os
+from collections.abc import Callable
 from functools import partial
 from pathlib import Path
 from typing import Any
-from typing import Callable
 from typing import Optional
 from typing import TYPE_CHECKING
-from typing import Union
 
 import pytest
 import yaml
@@ -37,10 +36,10 @@ class DataRegressionFixture:
 
     def check(
         self,
-        data_dict: dict[Union[str, int], Any],
-        basename: Optional[str] = None,
+        data_dict: dict[str | int, Any],
+        basename: str | None = None,
         fullpath: Optional["os.PathLike[str]"] = None,
-        round_digits: Optional[int] = None,
+        round_digits: int | None = None,
     ) -> None:
         """
         Checks the given dict against a previously recorded version, or generate a new file.

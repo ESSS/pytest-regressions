@@ -1,6 +1,5 @@
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
-from typing import Optional
 
 import pytest
 
@@ -12,7 +11,7 @@ def check_regression_fixture_workflow(
     data_modifier: Callable[[], Any],
     expected_data_1: Any,
     expected_data_2: Any,
-    compare_fn: Optional[Callable[[object, object], None]] = None,
+    compare_fn: Callable[[object, object], None] | None = None,
 ) -> None:
     """
     Helper method to test regression fixtures like `data_regression`. Offers a basic template/script

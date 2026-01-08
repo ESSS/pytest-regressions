@@ -1,10 +1,9 @@
 import os
+from collections.abc import Callable
 from functools import partial
 from pathlib import Path
-from typing import Callable
 from typing import Optional
 from typing import TYPE_CHECKING
-from typing import Union
 
 import pytest
 
@@ -34,15 +33,15 @@ class FileRegressionFixture:
 
     def check(
         self,
-        contents: Union[str, bytes],
-        encoding: Optional[str] = None,
+        contents: str | bytes,
+        encoding: str | None = None,
         extension: str = ".txt",
-        newline: Optional[str] = None,
-        basename: Optional[str] = None,
+        newline: str | None = None,
+        basename: str | None = None,
         fullpath: Optional["os.PathLike[str]"] = None,
         binary: bool = False,
         obtained_filename: Optional["os.PathLike[str]"] = None,
-        check_fn: Optional[Callable[[Path, Path], None]] = None,
+        check_fn: Callable[[Path, Path], None] | None = None,
     ) -> None:
         """
         Checks the contents against a previously recorded version, or generate a new file.

@@ -1,9 +1,9 @@
 import difflib
 import os
+from collections.abc import Callable
 from collections.abc import MutableMapping
 from collections.abc import MutableSequence
 from pathlib import Path
-from typing import Callable
 from typing import Optional
 from typing import TYPE_CHECKING
 from typing import TypeVar
@@ -23,7 +23,7 @@ def check_text_files(
     obtained_fn: "os.PathLike[str]",
     expected_fn: "os.PathLike[str]",
     fix_callback: Callable[[list[str]], list[str]] = lambda x: x,
-    encoding: Optional[str] = None,
+    encoding: str | None = None,
 ) -> None:
     """
     Compare two files contents. If the files differ, show the diff and write a nice HTML
@@ -92,7 +92,7 @@ def perform_regression_check(
     check_fn: Callable[[Path, Path], None],
     dump_fn: Callable[[Path], None],
     extension: str,
-    basename: Optional[str] = None,
+    basename: str | None = None,
     fullpath: Optional["os.PathLike[str]"] = None,
     force_regen: bool = False,
     with_test_class_names: bool = False,
