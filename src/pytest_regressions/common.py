@@ -4,6 +4,7 @@ from collections.abc import Callable
 from collections.abc import MutableMapping
 from collections.abc import MutableSequence
 from pathlib import Path
+from typing import Any
 from typing import Optional
 from typing import TYPE_CHECKING
 from typing import TypeVar
@@ -12,7 +13,7 @@ from typing import Union
 import pytest
 
 if TYPE_CHECKING:
-    from pytest_datadir import LazyDataDir
+    from pytest_datadir.plugin import LazyDataDir
 
 
 def import_error_message(libname: str) -> str:
@@ -197,7 +198,7 @@ def perform_regression_check(
                 raise
 
 
-T = TypeVar("T", bound=Union[MutableSequence, MutableMapping])
+T = TypeVar("T", bound=Union[MutableSequence[Any], MutableMapping[Any, Any]])
 
 
 def round_digits_in_data(data: T, digits: int) -> T:

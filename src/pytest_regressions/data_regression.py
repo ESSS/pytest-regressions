@@ -1,5 +1,6 @@
 import os
 from collections.abc import Callable
+from collections.abc import MutableMapping
 from functools import partial
 from pathlib import Path
 from typing import Any
@@ -14,7 +15,7 @@ from .common import perform_regression_check
 from .common import round_digits_in_data
 
 if TYPE_CHECKING:
-    from pytest_datadir import LazyDataDir
+    from pytest_datadir.plugin import LazyDataDir
 
 
 class DataRegressionFixture:
@@ -36,7 +37,7 @@ class DataRegressionFixture:
 
     def check(
         self,
-        data_dict: dict[str | int, Any],
+        data_dict: MutableMapping[Any, Any],
         basename: str | None = None,
         fullpath: Optional["os.PathLike[str]"] = None,
         round_digits: int | None = None,

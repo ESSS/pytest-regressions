@@ -11,7 +11,7 @@ from .common import import_error_message
 from .common import perform_regression_check
 
 if TYPE_CHECKING:
-    from pytest_datadir import LazyDataDir
+    from pytest_datadir.plugin import LazyDataDir
 
 
 class NDArraysRegressionFixture:

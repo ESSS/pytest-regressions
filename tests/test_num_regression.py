@@ -4,11 +4,12 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from pytest_regressions.num_regression import NumericRegressionFixture
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 
 @pytest.fixture
-def no_regen(num_regression, request):
+def no_regen(num_regression: NumericRegressionFixture, request):
     if num_regression._force_regen or request.config.getoption("force_regen"):
         pytest.fail("--force-regen should not be used on this test.")
 
@@ -45,7 +46,7 @@ def test_usage_workflow(pytester, monkeypatch):
     )
 
 
-def test_common_cases(num_regression, no_regen):
+def test_common_cases(num_regression: NumericRegressionFixture, no_regen):
     # Most common case: Data is valid, is present and should pass
     data1 = 1.1 * np.ones(5000)
     data2 = 2.2 * np.ones(5000)
@@ -149,7 +150,7 @@ def test_common_cases(num_regression, no_regen):
     )
 
 
-def test_different_data_types(num_regression, no_regen):
+def test_different_data_types(num_regression: NumericRegressionFixture, no_regen):
     data1 = np.ones(10)
     # Smoke test: Should not raise any exception
     num_regression.check({"data1": data1})
@@ -162,7 +163,7 @@ def test_different_data_types(num_regression, no_regen):
         num_regression.check({"data1": data2})
 
 
-def test_n_dimensions(num_regression, no_regen):
+def test_n_dimensions(num_regression: NumericRegressionFixture, no_regen):
     data1 = np.ones(shape=(10, 10), dtype=int)
     with pytest.raises(
         AssertionError,
@@ -171,7 +172,9 @@ def test_n_dimensions(num_regression, no_regen):
         num_regression.check({"data1": data1})
 
 
-def test_arrays_with_different_sizes(num_regression, no_regen):
+def test_arrays_with_different_sizes(
+    num_regression: NumericRegressionFixture, no_regen
+):
     data1 = np.ones(10, dtype=np.float64)
     with pytest.raises(
         AssertionError, match="Obtained and expected data shape are not the same."
@@ -179,24 +182,28 @@ def test_arrays_with_different_sizes(num_regression, no_regen):
         num_regression.check({"data1": data1})
 
 
-def test_integer_values_smoke_test(num_regression, no_regen):
+def test_integer_values_smoke_test(num_regression: NumericRegressionFixture, no_regen):
     data1 = np.ones(11, dtype=int)
     num_regression.check({"data1": data1})
 
 
-def test_number_formats(num_regression, no_regen):
+def test_number_formats(num_regression: NumericRegressionFixture, no_regen):
     data1 = np.array([1.2345678e50, 1.2345678e-50, 0.0])
     num_regression.check({"data1": data1})
 
 
-def test_fill_different_shape_with_nan(num_regression, no_regen):
+def test_fill_different_shape_with_nan(
+    num_regression: NumericRegressionFixture, no_regen
+):
     data1 = np.ones(5, dtype=np.float64)
     data2 = np.ones(2, dtype=np.float32)
     data3 = np.ones(6, dtype=np.float16)
     num_regression.check({"data1": data1, "data2": data2, "data3": data3})
 
 
-def test_fill_different_shape_with_nan_false(num_regression, no_regen):
+def test_fill_different_shape_with_nan_false(
+    num_regression: NumericRegressionFixture, no_regen
+):
     data1 = np.ones(5, dtype=np.float64)
     data2 = np.ones(2, dtype=np.float32)
     data3 = np.ones(6, dtype=np.float16)
@@ -210,7 +217,9 @@ def test_fill_different_shape_with_nan_false(num_regression, no_regen):
         )
 
 
-def test_fill_different_shape_with_nan_for_non_float_array(num_regression, no_regen):
+def test_fill_different_shape_with_nan_for_non_float_array(
+    num_regression: NumericRegressionFixture, no_regen
+):
     data1 = np.ones(5, dtype=np.int32)
     data2 = np.ones(2, dtype=np.float64)
     data3 = np.ones(6, dtype=np.float64)
@@ -221,7 +230,7 @@ def test_fill_different_shape_with_nan_for_non_float_array(num_regression, no_re
         num_regression.check({"data1": data1, "data2": data2, "data3": data3})
 
 
-def test_bool_array(num_regression, no_regen):
+def test_bool_array(num_regression: NumericRegressionFixture, no_regen):
     data1 = np.array([True, True, True], dtype=bool)
     with pytest.raises(AssertionError) as excinfo:
         num_regression.check({"data1": data1})
@@ -253,7 +262,7 @@ def test_arrays_of_same_size(num_regression):
     num_regression.check(same_size_int_arrays)
 
 
-def test_simple_numbers(num_regression, data_regression):
+def test_simple_numbers(num_regression: NumericRegressionFixture, data_regression):
     data1 = 1.1
     data2 = 2
     num_regression.check({"data1": data1, "data2": data2})

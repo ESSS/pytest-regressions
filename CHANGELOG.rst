@@ -1,3 +1,10 @@
+2.9.1
+-----
+
+*2026-01-09*
+
+* Fix type annotation for ``data_regression.check``.
+
 2.9.0
 -----
 

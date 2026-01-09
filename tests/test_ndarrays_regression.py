@@ -3,11 +3,12 @@ import sys
 import numpy as np
 import pytest
 
+from pytest_regressions.ndarrays_regression import NDArraysRegressionFixture
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 
 @pytest.fixture
-def no_regen(ndarrays_regression, request):
+def no_regen(ndarrays_regression: NDArraysRegressionFixture, request):
     if ndarrays_regression._force_regen or request.config.getoption("force_regen"):
         pytest.fail("--force-regen should not be used on this test.")
 
@@ -43,7 +44,7 @@ def test_usage_workflow(pytester, monkeypatch):
     )
 
 
-def test_common_case(ndarrays_regression, no_regen):
+def test_common_case(ndarrays_regression: NDArraysRegressionFixture, no_regen):
     # Most common case: Data is valid, is present and should pass
     data1 = np.full(5000, 1.1, dtype=float)
     data2 = np.arange(5000, dtype=int)
@@ -140,7 +141,7 @@ def test_common_case(ndarrays_regression, no_regen):
     assert expected in obtained_error_msg
 
 
-def test_common_case_nd(ndarrays_regression, no_regen):
+def test_common_case_nd(ndarrays_regression: NDArraysRegressionFixture, no_regen):
     # Most common case: Data is valid, is present and should pass
     data1 = np.full((50, 20), 1.1, dtype=float)
     data2 = np.arange(60, dtype=int).reshape((3, 4, 5))
@@ -238,7 +239,9 @@ def test_common_case_nd(ndarrays_regression, no_regen):
     assert expected in obtained_error_msg
 
 
-def test_common_case_zero_expected(ndarrays_regression, no_regen):
+def test_common_case_zero_expected(
+    ndarrays_regression: NDArraysRegressionFixture, no_regen
+):
     # Most common case: Data is valid, is present and should pass
     data = {"data1": np.array([0, 0, 2, 3, 0, 5, 0, 7])}
     ndarrays_regression.check(data)
@@ -276,7 +279,7 @@ def test_common_case_zero_expected(ndarrays_regression, no_regen):
     assert expected in obtained_error_msg
 
 
-def test_different_data_types(ndarrays_regression, no_regen):
+def test_different_data_types(ndarrays_regression: NDArraysRegressionFixture, no_regen):
     # Generate data with integer array.
     data = {"data1": np.array([1] * 10)}
     ndarrays_regression.check(data)
@@ -302,7 +305,7 @@ class Foo:
         self.bar = bar
 
 
-def test_object_dtype(ndarrays_regression, no_regen):
+def test_object_dtype(ndarrays_regression: NDArraysRegressionFixture, no_regen):
     data1 = {"data1": np.array([Foo(i) for i in range(4)], dtype=object)}
     with pytest.raises(TypeError) as excinfo:
         ndarrays_regression.check(data1)
@@ -316,7 +319,9 @@ def test_object_dtype(ndarrays_regression, no_regen):
     assert expected in obtained_error_msg
 
 
-def test_integer_values_smoke_test(ndarrays_regression, no_regen):
+def test_integer_values_smoke_test(
+    ndarrays_regression: NDArraysRegressionFixture, no_regen
+):
     data1 = np.ones(11, dtype=int)
     ndarrays_regression.check({"data1": data1})
 
@@ -326,7 +331,7 @@ def test_float_values_smoke_test(ndarrays_regression):
     ndarrays_regression.check({"data1": data1})
 
 
-def test_bool_array(ndarrays_regression, no_regen):
+def test_bool_array(ndarrays_regression: NDArraysRegressionFixture, no_regen):
     # Correct data
     data1 = np.array([False, False, False], dtype=bool)
     ndarrays_regression.check({"data1": data1})
@@ -357,7 +362,7 @@ def test_bool_array(ndarrays_regression, no_regen):
     assert expected in obtained_error_msg
 
 
-def test_complex_array(ndarrays_regression, no_regen):
+def test_complex_array(ndarrays_regression: NDArraysRegressionFixture, no_regen):
     # Correct data
     data1 = np.array([3.0 + 2.5j, -0.5, -1.879j])
     ndarrays_regression.check({"data1": data1})
@@ -397,7 +402,9 @@ def test_arrays_of_same_size_1d(ndarrays_regression):
     ndarrays_regression.check(data)
 
 
-def test_arrays_with_different_sizes_1d(ndarrays_regression, no_regen):
+def test_arrays_with_different_sizes_1d(
+    ndarrays_regression: NDArraysRegressionFixture, no_regen
+):
     data = {"data1": np.ones(11, dtype=np.float64)}
     ndarrays_regression.check(data)
 
@@ -616,7 +623,7 @@ def test_missing_obtained(ndarrays_regression):
 
 
 @pytest.mark.parametrize("prefix", [True, False])
-def test_corrupt_npz(ndarrays_regression, tmp_path, prefix):
+def test_corrupt_npz(ndarrays_regression: NDArraysRegressionFixture, tmp_path, prefix):
     data = {"data1": np.array([4, 5])}
     fn_npz = tmp_path / "corrupt.npz"
     # Write random bytes to a file

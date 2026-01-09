@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from .file_regression import FileRegressionFixture
     from .num_regression import NumericRegressionFixture
     from .image_regression import ImageRegressionFixture
-    from pytest_datadir import LazyDataDir
+    from pytest_datadir.plugin import LazyDataDir
 
 
 def pytest_addoption(parser: Any) -> None:

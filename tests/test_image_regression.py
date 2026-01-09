@@ -4,11 +4,14 @@ from functools import partial
 import pytest
 from PIL import Image
 
+from pytest_regressions.image_regression import ImageRegressionFixture
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 
 @pytest.mark.parametrize("image_type", ["pil", "bytes"])
-def test_image_regression(image_regression, lazy_datadir, image_type):
+def test_image_regression(
+    image_regression: ImageRegressionFixture, lazy_datadir, image_type
+):
     import matplotlib
 
     # this ensures matplot lib does not use a GUI backend (such as Tk)
