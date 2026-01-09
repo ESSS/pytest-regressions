@@ -3,7 +3,8 @@
 
 *2026-01-09*
 
-* Fix type annotation for ``data_regression.check``.
+* `#222 <https://github.com/ESSS/pytest-regressions/pull/222>`__: Fix type annotation for ``data_regression.check``.
+
 
 2.9.0
 -----
