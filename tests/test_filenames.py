@@ -1,7 +1,9 @@
 import pytest
 
+from pytest_regressions.num_regression import NumericRegressionFixture
 
-def test_foo(lazy_datadir, num_regression):
+
+def test_foo(lazy_datadir, num_regression: NumericRegressionFixture):
     """
     Dumb test, just to generate a expected csv file that must be different from the one gathered
     from `TestClass::test_foo`.
@@ -16,7 +18,7 @@ def test_foo(lazy_datadir, num_regression):
 
 
 class TestClass:
-    def test_foo(self, lazy_datadir, num_regression):
+    def test_foo(self, lazy_datadir, num_regression: NumericRegressionFixture):
         """
         Since 2.2.1, pytest-regressions use the test class name to compose the name of the datafiles, by default.
         This tests asserts this behavior.
@@ -36,7 +38,7 @@ class TestClass:
 
 
 class TestClassWithIgnoredName:
-    def test_foo(self, lazy_datadir, num_regression):
+    def test_foo(self, lazy_datadir, num_regression: NumericRegressionFixture):
         """
         Specifies to not use the class name to compose the expected data filename. The filename coincides with the
         expected data filename used by `test_foo` function. The regression test then fails because the expected

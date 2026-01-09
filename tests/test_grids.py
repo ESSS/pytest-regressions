@@ -1,4 +1,7 @@
-def summary_grids():
+from typing import Any
+
+
+def summary_grids() -> dict[str, Any]:
     return {
         "Main Grid": {
             "id": 0,
@@ -21,7 +24,7 @@ def summary_grids():
     }
 
 
-def test_grids():
+def test_grids() -> None:
     data = summary_grids()
     assert data["Main Grid"]["id"] == 0
     assert data["Main Grid"]["cell_count"] == 1000
@@ -32,6 +35,6 @@ def test_grids():
     ]
 
 
-def test_grids2(data_regression):
+def test_grids2(data_regression) -> None:
     data = summary_grids()
     data_regression.check(data)

@@ -11,7 +11,7 @@ from pytest_regressions.testing import check_regression_fixture_workflow
 
 
 @pytest.fixture
-def no_regen(dataframe_regression, request):
+def no_regen(dataframe_regression: DataFrameRegressionFixture, request):
     if dataframe_regression._force_regen or request.config.getoption("force_regen"):
         pytest.fail("--force-regen should not be used on this test.")
 
@@ -49,7 +49,7 @@ def test_usage_workflow(pytester, monkeypatch):
     )
 
 
-def test_common_cases(dataframe_regression, no_regen):
+def test_common_cases(dataframe_regression: DataFrameRegressionFixture, no_regen):
     # Most common case: Data is valid, is present and should pass
     data1 = 1.1 * np.ones(5000)
     data2 = 2.2 * np.ones(5000)
@@ -152,7 +152,9 @@ def test_common_cases(dataframe_regression, no_regen):
     )
 
 
-def test_different_data_types(dataframe_regression, no_regen):
+def test_different_data_types(
+    dataframe_regression: DataFrameRegressionFixture, no_regen
+):
     # Original CSV file contains integer data
     data1 = np.array([True] * 10)
     with pytest.raises(
@@ -170,7 +172,9 @@ class Foo:
 @pytest.mark.parametrize(
     "array", [[np.random.randint(10, 99, 6)] * 6, [Foo(i) for i in range(4)]]
 )
-def test_non_numeric_data(dataframe_regression, array, no_regen):
+def test_non_numeric_data(
+    dataframe_regression: DataFrameRegressionFixture, array, no_regen
+):
     data1 = pd.DataFrame()
     data1["data1"] = array
     with pytest.raises(
@@ -181,7 +185,9 @@ def test_non_numeric_data(dataframe_regression, array, no_regen):
         dataframe_regression.check(data1)
 
 
-def test_arrays_with_different_sizes(dataframe_regression, no_regen):
+def test_arrays_with_different_sizes(
+    dataframe_regression: DataFrameRegressionFixture, no_regen
+):
     data1 = np.ones(10, dtype=np.float64)
     with pytest.raises(
         AssertionError, match="Obtained and expected data shape are not the same."
@@ -189,22 +195,24 @@ def test_arrays_with_different_sizes(dataframe_regression, no_regen):
         dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
-def test_nonrange_index(dataframe_regression, no_regen):
+def test_nonrange_index(dataframe_regression: DataFrameRegressionFixture, no_regen):
     data1 = pd.DataFrame({"b": ["a", "b", "c"]}, index=pd.Index([90, 91, 92], name="a"))
     dataframe_regression.check(data1)
 
 
-def test_integer_values_smoke_test(dataframe_regression, no_regen):
+def test_integer_values_smoke_test(
+    dataframe_regression: DataFrameRegressionFixture, no_regen
+):
     data1 = np.ones(11, dtype=int)
     dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
-def test_number_formats(dataframe_regression, no_regen):
+def test_number_formats(dataframe_regression: DataFrameRegressionFixture, no_regen):
     data1 = np.array([1.2345678e50, 1.2345678e-50, 0.0])
     dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
-def test_bool_array(dataframe_regression, no_regen):
+def test_bool_array(dataframe_regression: DataFrameRegressionFixture, no_regen):
     data1 = np.array([True, True, True], dtype=bool)
     with pytest.raises(AssertionError) as excinfo:
         dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))

@@ -3,10 +3,11 @@ import textwrap
 
 import pytest
 
+from pytest_regressions.file_regression import FileRegressionFixture
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 
-def test_simple_text_file(file_regression):
+def test_simple_text_file(file_regression: FileRegressionFixture):
     contents = textwrap.dedent(
         """\
         # Title
@@ -16,12 +17,12 @@ def test_simple_text_file(file_regression):
     file_regression.check(contents, encoding="latin1", extension=".md")
 
 
-def test_simple_bin_file(file_regression):
+def test_simple_bin_file(file_regression: FileRegressionFixture):
     contents = b"binary contents \xff\xff\xde"
     file_regression.check(contents, binary=True, extension=".bin")
 
 
-def test_binary_and_text_error(file_regression):
+def test_binary_and_text_error(file_regression: FileRegressionFixture):
     with pytest.raises(ValueError):
         file_regression.check("", encoding="UTF-8", binary=True)
 
