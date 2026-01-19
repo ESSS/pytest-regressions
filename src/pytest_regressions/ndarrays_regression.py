@@ -148,7 +148,7 @@ class NDArraysRegressionFixture:
                 else:
                     diff_ids = np.array(
                         np.nonzero(not_close_mask)
-                    ).T  # type:ignore[unreachable]
+                    ).T  # type: ignore[unreachable]
                 comparison_tables_dict[k] = (
                     expected_array.size,
                     expected_array.shape,
