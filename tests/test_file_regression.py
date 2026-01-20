@@ -8,12 +8,10 @@ from pytest_regressions.testing import check_regression_fixture_workflow
 
 
 def test_simple_text_file(file_regression: FileRegressionFixture):
-    contents = textwrap.dedent(
-        """\
+    contents = textwrap.dedent("""\
         # Title
         Another line: olá
-    """
-    )
+    """)
     file_regression.check(contents, encoding="latin1", extension=".md")
 
 

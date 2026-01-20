@@ -113,9 +113,7 @@ def test_data_regression_full_path(pytester, tmp_path):
         def test(data_regression) -> None:
             contents = {'data': [1, 2]}
             data_regression.check(contents, fullpath=%s)
-    """ % (
-        repr(str(fullpath))
-    )
+    """ % (repr(str(fullpath)))
     pytester.makepyfile(test_foo=source)
     # First run fails because there's no yml file yet
     result = pytester.inline_run()
@@ -160,8 +158,7 @@ def test_data_regression_no_aliases(pytester):
     result.assertoutcome(failed=1)
 
     yaml_file_contents = pytester.path.joinpath("test_file/test.yml").read_text()
-    assert yaml_file_contents == dedent(
-        """\
+    assert yaml_file_contents == dedent("""\
         color1:
         - 255
         - 0
@@ -186,8 +183,7 @@ def test_data_regression_no_aliases(pytester):
         - 0
         - 0
         - 255
-        """
-    )
+        """)
     result = pytester.inline_run()
     result.assertoutcome(passed=1)
 
