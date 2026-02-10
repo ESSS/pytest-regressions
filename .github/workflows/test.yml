@@ -34,6 +34,7 @@ jobs:
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
         os: [ubuntu-latest, windows-latest]
+        pandas-version: [pd2, pd3]
 
     steps:
       - uses: actions/checkout@v6
@@ -57,4 +58,4 @@ jobs:
       - name: Test
         shell: bash
         run: |
-          tox run -e py --installpkg `find dist/*.tar.gz`
+          tox run -e ${{ matrix.pandas-version }} --installpkg `find dist/*.tar.gz`
