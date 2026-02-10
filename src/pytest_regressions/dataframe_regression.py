@@ -59,8 +59,8 @@ class DataFrameRegressionFixture:
             raise ModuleNotFoundError(import_error_message("NumPy"))
 
         __tracebackhide__ = True
-        obtained_data_type = obtained_column.values.dtype
-        expected_data_type = expected_column.values.dtype
+        obtained_data_type = obtained_column.values.dtype.type
+        expected_data_type = expected_column.values.dtype.type
         if obtained_data_type != expected_data_type:
             # Check if both data types are comparable as numbers (float, int, short, bytes, etc...)
             if np.issubdtype(obtained_data_type, np.number) and np.issubdtype(
@@ -134,7 +134,7 @@ class DataFrameRegressionFixture:
             self._check_data_types(k, obtained_column, expected_column)
             self._check_data_shapes(obtained_column, expected_column)
 
-            if np.issubdtype(obtained_column.values.dtype, np.inexact):
+            if np.issubdtype(obtained_column.values.dtype.type, np.inexact):
                 not_close_mask = ~np.isclose(
                     obtained_column.values,
                     expected_column.values,
@@ -156,7 +156,10 @@ class DataFrameRegressionFixture:
                 diff_expected_data = expected_column[diff_ids]
                 if obtained_column.values.dtype == bool:
                     diffs = np.logical_xor(obtained_column, expected_column)[diff_ids]
-                elif obtained_column.values.dtype == object:
+                elif (
+                    obtained_column.values.dtype == object
+                    or obtained_column.values.dtype == "str"
+                ):
                     diffs = diff_obtained_data.copy()
                     diffs[:] = "?"
                 else:
@@ -173,7 +176,10 @@ class DataFrameRegressionFixture:
             error_msg += "To update values, use --force-regen option.\n\n"
             for k, comparison_table in comparison_tables_dict.items():
                 error_msg += f"{k}:\n{comparison_table}\n\n"
-            if obtained_column.values.dtype == object:
+            if (
+                obtained_column.values.dtype == object
+                or obtained_column.values.dtype == "str"
+            ):
                 error_msg += (
                     "WARNING: diffs for this kind of data type cannot be computed."
                 )
@@ -255,7 +261,7 @@ class DataFrameRegressionFixture:
                 continue
 
             # Arrays of strings are supported.
-            if (array.dtype == "O") and (type(array.iloc[0]) is str):
+            if (array.dtype.kind == "O") and (type(array.iloc[0]) is str):
                 continue
             # Rejected: timedelta, objects, zero-terminated bytes, unicode strings and raw data
             assert array.dtype.kind not in ["m", "O", "S", "U", "V"], (
