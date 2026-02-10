@@ -1,3 +1,10 @@
+UNRELEASED
+----------
+
+*UNRELEASED*
+
+* `#225 <https://github.com/ESSS/pytest-regressions/issues/225>`__: Add support for Pandas 3.0 to `dataframe_regression`.
+
 2.9.1
 -----
 
