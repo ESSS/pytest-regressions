@@ -8,16 +8,18 @@ from pytest_regressions.data_regression import DataRegressionFixture
 from pytest_regressions.testing import check_regression_fixture_workflow
 
 
-def test_example(data_regression: DataRegressionFixture) -> None:
+@pytest.mark.parametrize("extension", [".yml", ".json"])
+def test_example(data_regression: DataRegressionFixture, extension: str) -> None:
     """Basic example"""
     contents = {"contents": "Foo", "value": 11}
-    data_regression.check(contents)
+    data_regression.check(contents, extension=extension)
 
 
-def test_basename(data_regression: DataRegressionFixture) -> None:
+@pytest.mark.parametrize("extension", [".yml", ".json"])
+def test_basename(data_regression: DataRegressionFixture, extension: str) -> None:
     """Basic example using basename parameter"""
     contents = {"contents": "Foo", "value": 11}
-    data_regression.check(contents, basename="case.normal")
+    data_regression.check(contents, basename="case.normal", extension=extension)
 
 
 def test_integer_keys(data_regression: DataRegressionFixture) -> None:
@@ -51,14 +53,15 @@ def test_custom_object(data_regression: DataRegressionFixture) -> None:
     data_regression.check(contents)
 
 
-def test_round_digits(data_regression: DataRegressionFixture) -> None:
+@pytest.mark.parametrize("extension", [".yml", ".json"])
+def test_round_digits(data_regression: DataRegressionFixture, extension: str) -> None:
     """Example including float numbers and check rounding capabilities."""
     contents = {
         "content": {"value1": "toto", "value": 1.123456789},
         "values": [1.12345, 2.34567],
         "value": 1.23456789,
     }
-    data_regression.check(contents, round_digits=2)
+    data_regression.check(contents, round_digits=2, extension=extension)
 
     with pytest.raises(AssertionError):
         contents = {
@@ -66,7 +69,7 @@ def test_round_digits(data_regression: DataRegressionFixture) -> None:
             "values": [1.13456, 2.45678],
             "value": 1.23456789,
         }
-        data_regression.check(contents, round_digits=2)
+        data_regression.check(contents, round_digits=2, extension=extension)
 
 
 def test_usage_workflow(pytester, monkeypatch):
@@ -101,21 +104,56 @@ def test_usage_workflow(pytester, monkeypatch):
     )
 
 
-def test_data_regression_full_path(pytester, tmp_path):
+def test_usage_workflow_json(pytester, monkeypatch):
+    import json
+
+    monkeypatch.setattr(
+        sys, "testing_get_data", lambda: {"contents": "Foo", "value": 10}, raising=False
+    )
+    source = """
+        import sys
+        def test_1(data_regression) -> None:
+            contents = sys.testing_get_data()
+            data_regression.check(contents, extension=".json")
+    """
+
+    def get_json_contents():
+        json_filename = pytester.path / "test_file" / "test_1.json"
+        assert json_filename.is_file()
+        with json_filename.open() as f:
+            return json.load(f)
+
+    check_regression_fixture_workflow(
+        pytester,
+        source=source,
+        data_getter=get_json_contents,
+        data_modifier=lambda: monkeypatch.setattr(
+            sys,
+            "testing_get_data",
+            lambda: {"contents": "Bar", "value": 20},
+            raising=False,
+        ),
+        expected_data_1={"contents": "Foo", "value": 10},
+        expected_data_2={"contents": "Bar", "value": 20},
+    )
+
+
+@pytest.mark.parametrize("extension", [".yml", ".json"])
+def test_data_regression_full_path(pytester, tmp_path, extension):
     """
     Test data_regression with ``fullpath`` parameter.
     """
-    fullpath = tmp_path.joinpath("full/path/to/contents.yaml")
+    fullpath = tmp_path.joinpath(f"full/path/to/contents{extension}")
     fullpath.parent.mkdir(parents=True)
     assert not fullpath.is_file()
 
     source = """
         def test(data_regression) -> None:
             contents = {'data': [1, 2]}
-            data_regression.check(contents, fullpath=%s)
-    """ % (repr(str(fullpath)))
+            data_regression.check(contents, fullpath=%s, extension=%r)
+    """ % (repr(str(fullpath)), extension)
     pytester.makepyfile(test_foo=source)
-    # First run fails because there's no yml file yet
+    # First run fails because there's no expected file yet
     result = pytester.inline_run()
     result.assertoutcome(failed=1)
 
@@ -208,6 +246,14 @@ def test_not_create_file_on_error(pytester):
 
     yaml_file = pytester.path.joinpath("test_file/test.yml")
     assert not yaml_file.is_file()
+
+
+def test_unsupported_extension(data_regression):
+    data = {"foo": "bar"}
+    with pytest.raises(
+        NotImplementedError, match=r"file extension `\.txt` is not supported"
+    ):
+        data_regression.check(data, extension=".txt")
 
 
 def test_regen_all(pytester, tmp_path):

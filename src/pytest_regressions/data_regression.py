@@ -1,4 +1,5 @@
 import os
+import json
 from collections.abc import Callable
 from collections.abc import MutableMapping
 from functools import partial
@@ -41,6 +42,7 @@ class DataRegressionFixture:
         basename: str | None = None,
         fullpath: Optional["os.PathLike[str]"] = None,
         round_digits: int | None = None,
+        extension: str = ".yml",
     ) -> None:
         """
         Checks the given dict against a previously recorded version, or generate a new file.
@@ -58,6 +60,10 @@ class DataRegressionFixture:
         :param round_digits:
             If given, round all floats in the dict to the given number of digits.
 
+        :param extension: Extension of the file. Defaults to ".yml".
+            If equal to ".json", expects `data_dict` to be JSON serializable
+            and dumps it using standard `json.dump`.
+
         ``basename`` and ``fullpath`` are exclusive.
         """
         __tracebackhide__ = True
@@ -67,17 +73,27 @@ class DataRegressionFixture:
 
         def dump(filename: Path) -> None:
             """Dump dict contents to the given filename"""
-
-            dumped_str = yaml.dump_all(
-                [data_dict],
-                Dumper=RegressionYamlDumper,
-                default_flow_style=False,
-                allow_unicode=True,
-                indent=2,
-                encoding="utf-8",
-            )
-            with filename.open("wb") as f:
-                f.write(dumped_str)
+            if extension.lower() in [".yml", ".yaml"]:
+                dumped_str = yaml.dump_all(
+                    [data_dict],
+                    Dumper=RegressionYamlDumper,
+                    default_flow_style=False,
+                    allow_unicode=True,
+                    indent=2,
+                    encoding="utf-8",
+                )
+                with filename.open("wb") as f:
+                    f.write(dumped_str)
+            elif extension.lower() == ".json":
+                with filename.open("w", encoding="utf-8") as f:
+                    json.dump(
+                        data_dict, f, indent=2, sort_keys=True, ensure_ascii=False
+                    )
+            else:
+                raise NotImplementedError(
+                    f"file extension `{extension}` is not supported by data_regression; "
+                    "supported extensions are '.yml', '.yaml', '.json'"
+                )
 
         perform_regression_check(
             datadir=self.datadir,
@@ -85,7 +101,7 @@ class DataRegressionFixture:
             request=self.request,
             check_fn=partial(check_text_files, encoding="UTF-8"),
             dump_fn=dump,
-            extension=".yml",
+            extension=extension,
             basename=basename,
             fullpath=fullpath,
             force_regen=self.force_regen,
