@@ -89,7 +89,7 @@ class DataRegressionFixture:
             elif extension.lower() == ".json":
                 with filename.open("w", encoding="utf-8") as f:
                     json.dump(
-                        data_dict, f, indent=2, sort_keys=True, ensure_ascii=False
+                        data_dict, f, indent=4, sort_keys=True, ensure_ascii=False
                     )
             else:
                 raise NotImplementedError(
