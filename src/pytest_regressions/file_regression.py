@@ -14,6 +14,23 @@ if TYPE_CHECKING:
     from pytest_datadir.plugin import LazyDataDir
 
 
+def _encode_as_dumped(
+    contents: str,
+    encoding: str | None,
+    newline: str | None,
+) -> bytes:
+    """Return *contents* as the bytes ``open(..., "w", encoding=encoding,
+    newline=newline)`` would write, without touching disk.
+    """
+    if newline is None:
+        translated = contents.replace("\n", os.linesep)
+    elif newline in ("", "\n"):
+        translated = contents
+    else:
+        translated = contents.replace("\n", newline)
+    return translated.encode(encoding or "utf-8")
+
+
 class FileRegressionFixture:
     """
     Implementation of `file_regression` fixture.
@@ -78,6 +95,7 @@ class FileRegressionFixture:
                 type(contents).__name__
             )
 
+        user_supplied_check_fn = check_fn is not None
         if check_fn is None:
             if binary:
 
@@ -97,6 +115,20 @@ class FileRegressionFixture:
             with open(str(filename), mode, encoding=encoding, newline=newline) as f:
                 f.write(contents)
 
+        fast_equal_fn: Callable[[Path], bool] | None = None
+        if not user_supplied_check_fn:
+            if binary:
+                assert isinstance(contents, bytes)
+                expected_bytes = contents
+            else:
+                assert isinstance(contents, str)
+                expected_bytes = _encode_as_dumped(
+                    contents=contents, encoding=encoding, newline=newline
+                )
+            fast_equal_fn = (
+                lambda expected: expected.read_bytes() == expected_bytes
+            )  # noqa: E731
+
         assert check_fn is not None
         perform_regression_check(
             datadir=self.datadir,
@@ -110,6 +142,7 @@ class FileRegressionFixture:
             force_regen=self.force_regen,
             with_test_class_names=self.with_test_class_names,
             obtained_filename=obtained_filename,
+            fast_equal_fn=fast_equal_fn,
         )
 
     # non-PEP 8 alias used internally at ESSS

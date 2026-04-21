@@ -99,6 +99,7 @@ def perform_regression_check(
     with_test_class_names: bool = False,
     obtained_filename: Optional["os.PathLike[str]"] = None,
     dump_aux_fn: Callable[[Path], list[str]] = lambda filename: [],
+    fast_equal_fn: Callable[[Path], bool] | None = None,
 ) -> None:
     """
     First run of this check will generate a expected file. Following attempts will always try to
@@ -124,6 +125,10 @@ def perform_regression_check(
         the basename.
     :param obtained_filename: complete path to use to write the obtained file. By
         default will prepend `.obtained` before the file extension.
+    :param fast_equal_fn: Optional function receiving the expected file path and returning
+        ``True`` when the in-memory contents already match the expected file byte-exact. When
+        provided and it returns ``True``, ``dump_fn`` and ``check_fn`` are skipped, avoiding the
+        ``.obtained`` write on the pass path.
     ..see: `data_regression.Check` for `basename` and `fullpath` arguments.
     """
     import re
@@ -171,6 +176,9 @@ def perform_regression_check(
         )
         pytest.fail(msg)
     else:
+        if fast_equal_fn is not None and not force_regen and fast_equal_fn(filename):
+            return
+
         if obtained_filename is None:
             if fullpath:
                 obtained_filename = (datadir / basename).with_suffix(

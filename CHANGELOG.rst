@@ -1,3 +1,8 @@
+UNRELEASED
+----------
+
+* `#240 <https://github.com/ESSS/pytest-regressions/issues/240>`__: ``file_regression.check`` now short-circuits the pass path with an in-memory byte-exact comparison, skipping the ``.obtained`` write and ``difflib`` when contents already match the expected file. Suites with many ``file_regression`` checks see several-times-faster run times; behaviour on mismatch (and when a custom ``check_fn`` is supplied) is unchanged.
+
 2.10.0
 ------
 
