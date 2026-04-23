@@ -1,5 +1,5 @@
-import os
 import json
+import os
 from collections.abc import Callable
 from collections.abc import MutableMapping
 from functools import partial
@@ -11,9 +11,10 @@ from typing import TYPE_CHECKING
 import pytest
 import yaml
 
-from .common import check_text_files, sort_dict_by_keys
+from .common import check_text_files
 from .common import perform_regression_check
 from .common import round_digits_in_data
+from .common import sort_dict_by_keys
 
 if TYPE_CHECKING:
     from pytest_datadir.plugin import LazyDataDir
@@ -89,7 +90,7 @@ class DataRegressionFixture:
             elif extension.lower() == ".json":
                 with filename.open("w", encoding="utf-8") as f:
                     json.dump(
-                        data_dict, f, indent=4, sort_keys=True, ensure_ascii=False
+                        data_dict, f, indent=2, sort_keys=True, ensure_ascii=False
                     )
             else:
                 raise NotImplementedError(
