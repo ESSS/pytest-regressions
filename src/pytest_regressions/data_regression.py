@@ -45,7 +45,7 @@ class DataRegressionFixture:
         round_digits: int | None = None,
         extension: str = ".yml",
         *,
-        indent: int = 2
+        indent: int = 2,
     ) -> None:
         """
         Checks the given dict against a previously recorded version, or generate a new file.
