@@ -36,6 +36,8 @@ def sort_dict_by_keys(data: MutableMapping[Any, Any]) -> MutableMapping[Any, Any
         return value
 
     return _sort_nested(data)
+
+
 def check_text_files(
     obtained_fn: "os.PathLike[str]",
     expected_fn: "os.PathLike[str]",
