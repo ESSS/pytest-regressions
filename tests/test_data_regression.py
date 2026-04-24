@@ -1,11 +1,31 @@
+import json
 import sys
 from textwrap import dedent
 
 import pytest
 import yaml
 
+from pytest_regressions.common import sort_dict_by_keys
 from pytest_regressions.data_regression import DataRegressionFixture
 from pytest_regressions.testing import check_regression_fixture_workflow
+
+
+def test_sort_dict_by_keys_matches_json_sort_keys() -> None:
+    contents = {
+        "z": [{"b": 2, "a": 1}, {"k": 0, "inner": [{"d": 4, "c": 3}]}],
+        "a": {"y": 2, "x": 1},
+        "m": [{"beta": 2, "alpha": 1}, ["keep", {"bb": 2, "aa": 1}]],
+    }
+
+    sorted_contents = sort_dict_by_keys(contents)
+
+    assert list(sorted_contents) == ["a", "m", "z"]
+    assert list(sorted_contents["z"][0]) == ["a", "b"]
+    assert list(sorted_contents["z"][1]["inner"][0]) == ["c", "d"]
+    assert list(sorted_contents["m"][0]) == ["alpha", "beta"]
+    assert list(sorted_contents["m"][1][1]) == ["aa", "bb"]
+
+    assert json.dumps(sorted_contents) == json.dumps(contents, sort_keys=True)
 
 
 @pytest.mark.parametrize("extension", [".yml", ".json"])
