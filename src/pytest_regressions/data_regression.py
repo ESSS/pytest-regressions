@@ -44,6 +44,8 @@ class DataRegressionFixture:
         fullpath: Optional["os.PathLike[str]"] = None,
         round_digits: int | None = None,
         extension: str = ".yml",
+        *,
+        indent: int = 2
     ) -> None:
         """
         Checks the given dict against a previously recorded version, or generate a new file.
@@ -82,14 +84,14 @@ class DataRegressionFixture:
                     Dumper=RegressionYamlDumper,
                     default_flow_style=False,
                     allow_unicode=True,
-                    indent=2,
+                    indent=indent,
                     encoding="utf-8",
                 )
                 with filename.open("wb") as f:
                     f.write(dumped_str)
             elif extension.lower() == ".json":
                 dumped_str = json.dumps(
-                    data_dict, indent=2, sort_keys=True, ensure_ascii=False
+                    data_dict, indent=indent, sort_keys=True, ensure_ascii=False
                 )
                 with filename.open("w", encoding="utf-8") as f:
                     f.write(dumped_str)
