@@ -88,10 +88,11 @@ class DataRegressionFixture:
                 with filename.open("wb") as f:
                     f.write(dumped_str)
             elif extension.lower() == ".json":
+                dumped_str = json.dumps(
+                    data_dict, indent=2, sort_keys=True, ensure_ascii=False
+                )
                 with filename.open("w", encoding="utf-8") as f:
-                    json.dump(
-                        data_dict, f, indent=2, sort_keys=True, ensure_ascii=False
-                    )
+                    f.write(dumped_str)
             else:
                 raise NotImplementedError(
                     f"file extension `{extension}` is not supported by data_regression; "
