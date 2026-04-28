@@ -20,6 +20,24 @@ def import_error_message(libname: str) -> str:
     return f"'{libname}' library is an optional dependency and must be installed explicitly when the fixture 'check' is used"
 
 
+def sort_dict_by_keys(data: MutableMapping[Any, Any]) -> MutableMapping[Any, Any]:
+    """Recursively sort a dict by its keys, including nested dicts in sequences.
+
+    :param data: The dict to sort.
+    :return: The sorted dict.
+    """
+
+    def _sort_nested(value: Any) -> Any:
+        if isinstance(value, MutableMapping):
+            normalized = {k: _sort_nested(v) for k, v in value.items()}
+            return dict(sorted(normalized.items()))
+        if isinstance(value, MutableSequence):
+            return [_sort_nested(item) for item in value]
+        return value
+
+    return _sort_nested(data)
+
+
 def check_text_files(
     obtained_fn: "os.PathLike[str]",
     expected_fn: "os.PathLike[str]",

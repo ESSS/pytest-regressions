@@ -1,3 +1,4 @@
+import json
 import os
 from collections.abc import Callable
 from collections.abc import MutableMapping
@@ -13,6 +14,7 @@ import yaml
 from .common import check_text_files
 from .common import perform_regression_check
 from .common import round_digits_in_data
+from .common import sort_dict_by_keys
 
 if TYPE_CHECKING:
     from pytest_datadir.plugin import LazyDataDir
@@ -41,6 +43,9 @@ class DataRegressionFixture:
         basename: str | None = None,
         fullpath: Optional["os.PathLike[str]"] = None,
         round_digits: int | None = None,
+        extension: str = ".yml",
+        *,
+        indent: int = 2,
     ) -> None:
         """
         Checks the given dict against a previously recorded version, or generate a new file.
@@ -58,6 +63,10 @@ class DataRegressionFixture:
         :param round_digits:
             If given, round all floats in the dict to the given number of digits.
 
+        :param extension: Extension of the file. Defaults to ".yml".
+            If equal to ".json", expects `data_dict` to be JSON serializable
+            and dumps it using standard `json.dump`.
+
         ``basename`` and ``fullpath`` are exclusive.
         """
         __tracebackhide__ = True
@@ -65,19 +74,32 @@ class DataRegressionFixture:
         if round_digits is not None:
             round_digits_in_data(data_dict, round_digits)
 
+        data_dict = sort_dict_by_keys(data_dict)
+
         def dump(filename: Path) -> None:
             """Dump dict contents to the given filename"""
-
-            dumped_str = yaml.dump_all(
-                [data_dict],
-                Dumper=RegressionYamlDumper,
-                default_flow_style=False,
-                allow_unicode=True,
-                indent=2,
-                encoding="utf-8",
-            )
-            with filename.open("wb") as f:
-                f.write(dumped_str)
+            if extension.lower() in [".yml", ".yaml"]:
+                dumped_str = yaml.dump_all(
+                    [data_dict],
+                    Dumper=RegressionYamlDumper,
+                    default_flow_style=False,
+                    allow_unicode=True,
+                    indent=indent,
+                    encoding="utf-8",
+                )
+                with filename.open("wb") as f:
+                    f.write(dumped_str)
+            elif extension.lower() == ".json":
+                dumped_str = json.dumps(
+                    data_dict, indent=indent, sort_keys=True, ensure_ascii=False
+                )
+                with filename.open("w", encoding="utf-8") as f:
+                    f.write(dumped_str)
+            else:
+                raise NotImplementedError(
+                    f"file extension `{extension}` is not supported by data_regression; "
+                    "supported extensions are '.yml', '.yaml', '.json'"
+                )
 
         perform_regression_check(
             datadir=self.datadir,
@@ -85,7 +107,7 @@ class DataRegressionFixture:
             request=self.request,
             check_fn=partial(check_text_files, encoding="UTF-8"),
             dump_fn=dump,
-            extension=".yml",
+            extension=extension,
             basename=basename,
             fullpath=fullpath,
             force_regen=self.force_regen,
