@@ -86,6 +86,44 @@ def check_text_files(
             raise AssertionError("\n".join(msg))
 
 
+def resolve_check_paths(
+    datadir: "LazyDataDir",
+    original_datadir: Path,
+    request: pytest.FixtureRequest,
+    extension: str,
+    basename: str | None = None,
+    fullpath: Optional["os.PathLike[str]"] = None,
+    with_test_class_names: bool = False,
+) -> tuple[Path, Path, str]:
+    """Resolve the (expected, source, resolved-basename) tuple for a regression check.
+
+    Mirrors the basename / ``fullpath`` / ``with_test_class_names`` logic used
+    inside :func:`perform_regression_check` so callers can locate the expected
+    file without going through the full check (e.g. for a byte-exact fast-path
+    short-circuit).
+    """
+    import re
+
+    assert not (basename and fullpath), "pass either basename or fullpath, but not both"
+
+    with_test_class_names = with_test_class_names or request.config.getoption(
+        "with_test_class_names"
+    )
+    if basename is None:
+        if (request.node.cls is not None) and (with_test_class_names):
+            basename = re.sub(r"[\W]", "_", request.node.cls.__name__) + "_"
+        else:
+            basename = ""
+        basename += re.sub(r"[\W]", "_", request.node.name)
+
+    if fullpath:
+        filename = source_filename = Path(fullpath)
+    else:
+        filename = datadir / (basename + extension)
+        source_filename = original_datadir / (basename + extension)
+    return filename, source_filename, basename
+
+
 def perform_regression_check(
     datadir: "LazyDataDir",
     original_datadir: Path,
@@ -99,7 +137,6 @@ def perform_regression_check(
     with_test_class_names: bool = False,
     obtained_filename: Optional["os.PathLike[str]"] = None,
     dump_aux_fn: Callable[[Path], list[str]] = lambda filename: [],
-    expected_bytes: bytes | None = None,
 ) -> None:
     """
     First run of this check will generate a expected file. Following attempts will always try to
@@ -125,33 +162,19 @@ def perform_regression_check(
         the basename.
     :param obtained_filename: complete path to use to write the obtained file. By
         default will prepend `.obtained` before the file extension.
-    :param expected_bytes: When provided, short-circuits the pass path: if the on-disk
-        file's bytes equal these bytes, return without dumping or running ``check_fn``.
-        Mismatches fall through to the standard path, so callers can pass a best-effort
-        encoding without worrying about line-ending or codec edge cases.
     ..see: `data_regression.Check` for `basename` and `fullpath` arguments.
     """
-    import re
-
-    assert not (basename and fullpath), "pass either basename or fullpath, but not both"
-
     __tracebackhide__ = True
 
-    with_test_class_names = with_test_class_names or request.config.getoption(
-        "with_test_class_names"
+    filename, source_filename, basename = resolve_check_paths(
+        datadir=datadir,
+        original_datadir=original_datadir,
+        request=request,
+        extension=extension,
+        basename=basename,
+        fullpath=fullpath,
+        with_test_class_names=with_test_class_names,
     )
-    if basename is None:
-        if (request.node.cls is not None) and (with_test_class_names):
-            basename = re.sub(r"[\W]", "_", request.node.cls.__name__) + "_"
-        else:
-            basename = ""
-        basename += re.sub(r"[\W]", "_", request.node.name)
-
-    if fullpath:
-        filename = source_filename = Path(fullpath)
-    else:
-        filename = datadir / (basename + extension)
-        source_filename = original_datadir / (basename + extension)
 
     def make_location_message(banner: str, filename: Path, aux_files: list[str]) -> str:
         msg = [banner, f"- {filename}"]
@@ -176,13 +199,6 @@ def perform_regression_check(
         )
         pytest.fail(msg)
     else:
-        if (
-            expected_bytes is not None
-            and not force_regen
-            and filename.read_bytes() == expected_bytes
-        ):
-            return
-
         if obtained_filename is None:
             if fullpath:
                 obtained_filename = (datadir / basename).with_suffix(
