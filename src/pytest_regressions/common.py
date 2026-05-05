@@ -5,6 +5,7 @@ from collections.abc import MutableMapping
 from collections.abc import MutableSequence
 from pathlib import Path
 from typing import Any
+from typing import NamedTuple
 from typing import Optional
 from typing import TYPE_CHECKING
 from typing import TypeVar
@@ -86,6 +87,12 @@ def check_text_files(
             raise AssertionError("\n".join(msg))
 
 
+class _ResolvedCheckPaths(NamedTuple):
+    expected: Path
+    source: Path
+    basename: str
+
+
 def resolve_check_paths(
     datadir: "LazyDataDir",
     original_datadir: Path,
@@ -94,8 +101,8 @@ def resolve_check_paths(
     basename: str | None = None,
     fullpath: Optional["os.PathLike[str]"] = None,
     with_test_class_names: bool = False,
-) -> tuple[Path, Path, str]:
-    """Resolve the (expected, source, resolved-basename) tuple for a regression check.
+) -> _ResolvedCheckPaths:
+    """Resolve the expected / source paths and basename for a regression check.
 
     Mirrors the basename / ``fullpath`` / ``with_test_class_names`` logic used
     inside :func:`perform_regression_check` so callers can locate the expected
@@ -117,11 +124,11 @@ def resolve_check_paths(
         basename += re.sub(r"[\W]", "_", request.node.name)
 
     if fullpath:
-        filename = source_filename = Path(fullpath)
+        expected = source = Path(fullpath)
     else:
-        filename = datadir / (basename + extension)
-        source_filename = original_datadir / (basename + extension)
-    return filename, source_filename, basename
+        expected = datadir / (basename + extension)
+        source = original_datadir / (basename + extension)
+    return _ResolvedCheckPaths(expected=expected, source=source, basename=basename)
 
 
 def perform_regression_check(
@@ -166,7 +173,7 @@ def perform_regression_check(
     """
     __tracebackhide__ = True
 
-    filename, source_filename, basename = resolve_check_paths(
+    paths = resolve_check_paths(
         datadir=datadir,
         original_datadir=original_datadir,
         request=request,
@@ -175,6 +182,9 @@ def perform_regression_check(
         fullpath=fullpath,
         with_test_class_names=with_test_class_names,
     )
+    filename = paths.expected
+    source_filename = paths.source
+    basename = paths.basename
 
     def make_location_message(banner: str, filename: Path, aux_files: list[str]) -> str:
         msg = [banner, f"- {filename}"]

@@ -105,7 +105,7 @@ class FileRegressionFixture:
             and not self.request.config.getoption("force_regen")
             and not self.request.config.getoption("regen_all")
         ):
-            expected_path, _, _ = resolve_check_paths(
+            expected_path = resolve_check_paths(
                 datadir=self.datadir,
                 original_datadir=self.original_datadir,
                 request=self.request,
@@ -113,7 +113,7 @@ class FileRegressionFixture:
                 basename=basename,
                 fullpath=fullpath,
                 with_test_class_names=self.with_test_class_names,
-            )
+            ).expected
             if expected_path.is_file():
                 if binary:
                     assert isinstance(contents, bytes)
