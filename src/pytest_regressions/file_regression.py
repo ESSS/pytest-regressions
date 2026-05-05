@@ -9,6 +9,7 @@ import pytest
 
 from .common import check_text_files
 from .common import perform_regression_check
+from .common import resolve_check_paths
 
 if TYPE_CHECKING:
     from pytest_datadir.plugin import LazyDataDir
@@ -78,6 +79,7 @@ class FileRegressionFixture:
                 type(contents).__name__
             )
 
+        user_supplied_check_fn = check_fn is not None
         if check_fn is None:
             if binary:
 
@@ -96,6 +98,31 @@ class FileRegressionFixture:
             mode = "wb" if binary else "w"
             with open(str(filename), mode, encoding=encoding, newline=newline) as f:
                 f.write(contents)
+
+        if (
+            not user_supplied_check_fn
+            and not self.force_regen
+            and not self.request.config.getoption("force_regen")
+            and not self.request.config.getoption("regen_all")
+        ):
+            expected_path = resolve_check_paths(
+                datadir=self.datadir,
+                original_datadir=self.original_datadir,
+                request=self.request,
+                extension=extension,
+                basename=basename,
+                fullpath=fullpath,
+                with_test_class_names=self.with_test_class_names,
+            ).expected
+            if expected_path.is_file():
+                if binary:
+                    assert isinstance(contents, bytes)
+                    expected_bytes = contents
+                else:
+                    assert isinstance(contents, str)
+                    expected_bytes = contents.encode(encoding or "utf-8")
+                if expected_path.read_bytes() == expected_bytes:
+                    return
 
         assert check_fn is not None
         perform_regression_check(

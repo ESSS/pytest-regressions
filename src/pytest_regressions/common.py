@@ -3,6 +3,7 @@ import os
 from collections.abc import Callable
 from collections.abc import MutableMapping
 from collections.abc import MutableSequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from typing import Optional
@@ -86,6 +87,51 @@ def check_text_files(
             raise AssertionError("\n".join(msg))
 
 
+@dataclass(frozen=True)
+class _ResolvedCheckPaths:
+    expected: Path
+    source: Path
+    basename: str
+
+
+def resolve_check_paths(
+    datadir: "LazyDataDir",
+    original_datadir: Path,
+    request: pytest.FixtureRequest,
+    extension: str,
+    basename: str | None = None,
+    fullpath: Optional["os.PathLike[str]"] = None,
+    with_test_class_names: bool = False,
+) -> _ResolvedCheckPaths:
+    """Resolve the expected / source paths and basename for a regression check.
+
+    Mirrors the basename / ``fullpath`` / ``with_test_class_names`` logic used
+    inside :func:`perform_regression_check` so callers can locate the expected
+    file without going through the full check (e.g. for a byte-exact fast-path
+    short-circuit).
+    """
+    import re
+
+    assert not (basename and fullpath), "pass either basename or fullpath, but not both"
+
+    with_test_class_names = with_test_class_names or request.config.getoption(
+        "with_test_class_names"
+    )
+    if basename is None:
+        if (request.node.cls is not None) and (with_test_class_names):
+            basename = re.sub(r"[\W]", "_", request.node.cls.__name__) + "_"
+        else:
+            basename = ""
+        basename += re.sub(r"[\W]", "_", request.node.name)
+
+    if fullpath:
+        expected = source = Path(fullpath)
+    else:
+        expected = datadir / (basename + extension)
+        source = original_datadir / (basename + extension)
+    return _ResolvedCheckPaths(expected=expected, source=source, basename=basename)
+
+
 def perform_regression_check(
     datadir: "LazyDataDir",
     original_datadir: Path,
@@ -126,27 +172,20 @@ def perform_regression_check(
         default will prepend `.obtained` before the file extension.
     ..see: `data_regression.Check` for `basename` and `fullpath` arguments.
     """
-    import re
-
-    assert not (basename and fullpath), "pass either basename or fullpath, but not both"
-
     __tracebackhide__ = True
 
-    with_test_class_names = with_test_class_names or request.config.getoption(
-        "with_test_class_names"
+    paths = resolve_check_paths(
+        datadir=datadir,
+        original_datadir=original_datadir,
+        request=request,
+        extension=extension,
+        basename=basename,
+        fullpath=fullpath,
+        with_test_class_names=with_test_class_names,
     )
-    if basename is None:
-        if (request.node.cls is not None) and (with_test_class_names):
-            basename = re.sub(r"[\W]", "_", request.node.cls.__name__) + "_"
-        else:
-            basename = ""
-        basename += re.sub(r"[\W]", "_", request.node.name)
-
-    if fullpath:
-        filename = source_filename = Path(fullpath)
-    else:
-        filename = datadir / (basename + extension)
-        source_filename = original_datadir / (basename + extension)
+    filename = paths.expected
+    source_filename = paths.source
+    basename = paths.basename
 
     def make_location_message(banner: str, filename: Path, aux_files: list[str]) -> str:
         msg = [banner, f"- {filename}"]
