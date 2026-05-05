@@ -3,9 +3,9 @@ import os
 from collections.abc import Callable
 from collections.abc import MutableMapping
 from collections.abc import MutableSequence
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from typing import NamedTuple
 from typing import Optional
 from typing import TYPE_CHECKING
 from typing import TypeVar
@@ -87,7 +87,8 @@ def check_text_files(
             raise AssertionError("\n".join(msg))
 
 
-class _ResolvedCheckPaths(NamedTuple):
+@dataclass(frozen=True)
+class _ResolvedCheckPaths:
     expected: Path
     source: Path
     basename: str
