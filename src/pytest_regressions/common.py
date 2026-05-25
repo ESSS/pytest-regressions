@@ -103,13 +103,7 @@ def resolve_check_paths(
     fullpath: Optional["os.PathLike[str]"] = None,
     with_test_class_names: bool = False,
 ) -> _ResolvedCheckPaths:
-    """Resolve the expected / source paths and basename for a regression check.
-
-    Mirrors the basename / ``fullpath`` / ``with_test_class_names`` logic used
-    inside :func:`perform_regression_check` so callers can locate the expected
-    file without going through the full check (e.g. for a byte-exact fast-path
-    short-circuit).
-    """
+    """Resolve the expected / source paths and basename for a regression check."""
     import re
 
     assert not (basename and fullpath), "pass either basename or fullpath, but not both"
