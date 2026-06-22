@@ -15,7 +15,7 @@ jobs:
     env:
       SETUPTOOLS_SCM_PRETEND_VERSION: ${{ github.event.inputs.version }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Build and Check Package
       uses: hynek/build-and-inspect-python-package@v2.18
@@ -28,7 +28,7 @@ jobs:
       contents: write  # For tag.
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Download Package
       uses: actions/download-artifact@v8
