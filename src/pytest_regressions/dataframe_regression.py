@@ -260,6 +260,10 @@ class DataFrameRegressionFixture:
             if isinstance(array.dtype, pd.CategoricalDtype):
                 continue
 
+            # pandas StringDtype columns are supported (#208).
+            if isinstance(array.dtype, pd.StringDtype):
+                continue
+
             # Arrays of strings are supported.
             if (array.dtype.kind == "O") and (type(array.iloc[0]) is str):
                 continue
