@@ -305,3 +305,27 @@ def test_categorical(dataframe_regression: DataFrameRegressionFixture) -> None:
 
     df = pd.DataFrame.from_dict({"types": types})
     dataframe_regression.check(df)
+
+
+def test_string_dtype(dataframe_regression: DataFrameRegressionFixture) -> None:
+    """Support for pandas StringDtype columns (#208)."""
+    df = pd.DataFrame(
+        {
+            "name": pd.Series(["Alice", "Bob", "Charlie"], dtype="string"),
+            "age": [25, 30, 35],
+            "city": pd.Series(["New York", "London", "Paris"], dtype="string"),
+        }
+    )
+    dataframe_regression.check(df)
+
+
+def test_string_dtype_with_na(
+    dataframe_regression: DataFrameRegressionFixture,
+) -> None:
+    """StringDtype columns whose first value is NA are still string columns (#208)."""
+    df = pd.DataFrame(
+        {
+            "name": pd.Series([pd.NA, "Bob", "Charlie"], dtype="string"),
+        }
+    )
+    dataframe_regression.check(df)
