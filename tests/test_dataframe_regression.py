@@ -309,6 +309,61 @@ def test_multiindex_column_tolerances(
 
 
 @pytest.mark.parametrize(
+    "column_labels",
+    [
+        [(1,), (2,)],
+        [(1, "x"), (1, "y")],
+        [(1, "x"), ("1", "x")],
+    ],
+)
+@pytest.mark.parametrize("index_name", [None, "rows"])
+def test_multiindex_nonstring_column_tolerances(
+    dataframe_regression, tmp_path, column_labels, index_name
+):
+    df = pd.DataFrame(
+        [[1.1, 2.2], [3.3, 4.4]],
+        columns=pd.MultiIndex.from_tuples(column_labels),
+        index=pd.Index(["first", "second"], name=index_name),
+    )
+    baseline = tmp_path / "baseline.csv"
+    df.to_csv(baseline, float_format="%.17g")
+    df.iloc[0, 0] += 0.01
+    tolerance_options = dict(
+        tolerances={df.columns[0]: dict(atol=0.1, rtol=1e-17)},
+        default_tolerance=dict(atol=1e-17, rtol=1e-17),
+    )
+    dataframe_regression.check(df, fullpath=baseline, **tolerance_options)
+
+    df.iloc[0, 1] += 0.01
+    with pytest.raises(AssertionError, match="Values are not sufficiently close"):
+        dataframe_regression.check(df, fullpath=baseline, **tolerance_options)
+
+
+@pytest.mark.parametrize("column_names", [None, ["a", "x"]])
+@pytest.mark.parametrize("default_atol", [1e-17, 0.1])
+def test_multiindex_index_tolerance(
+    dataframe_regression, tmp_path, column_names, default_atol
+):
+    df = pd.DataFrame(
+        [[1.1], [2.2]],
+        columns=pd.MultiIndex.from_tuples([("a", "x")], names=column_names),
+        index=pd.Index([0.0, 1.0], name="rows"),
+    )
+    baseline = tmp_path / "baseline.csv"
+    df.to_csv(baseline, float_format="%.17g")
+    df.index = pd.Index([0.01, 1.0], name="rows")
+    tolerance_options = dict(
+        tolerances={df.columns[0]: dict(atol=0.1, rtol=0)},
+        default_tolerance=dict(atol=default_atol, rtol=0),
+    )
+    if default_atol == 0.1:
+        dataframe_regression.check(df, fullpath=baseline, **tolerance_options)
+    else:
+        with pytest.raises(AssertionError, match="Values are not sufficiently close"):
+            dataframe_regression.check(df, fullpath=baseline, **tolerance_options)
+
+
+@pytest.mark.parametrize(
     "columns",
     [
         pd.MultiIndex.from_tuples([("a", "renamed"), ("a", "y")]),

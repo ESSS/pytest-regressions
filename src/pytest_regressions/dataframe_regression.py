@@ -102,6 +102,7 @@ class DataFrameRegressionFixture:
         column_levels: int = 1,
         has_multiindex_columns: bool = False,
         has_index_names: bool = False,
+        original_columns: list[Any] | None = None,
     ) -> None:
         """
         Check if dict contents dumped to a file match the contents in expected file.
@@ -151,8 +152,20 @@ class DataFrameRegressionFixture:
             for frame in (obtained_data, expected_data):
                 frame.columns = pd.MultiIndex.from_arrays([frame.columns])
 
+        tolerance_keys = (
+            list(obtained_data.columns)
+            if original_columns is None
+            else original_columns
+        )
+        index_columns = len(obtained_data.columns) - len(tolerance_keys)
+        # Only data columns use tolerances keyed by original MultiIndex labels.
+        column_tolerances = [self._default_tolerance] * index_columns + [
+            self._tolerances_dict.get(key, self._default_tolerance)
+            for key in tolerance_keys
+        ]
+
         comparison_tables_dict = {}
-        for k in obtained_data.keys():
+        for k, tolerance_args in zip(obtained_data.keys(), column_tolerances):
             obtained_column = obtained_data[k]
             expected_column = expected_data.get(k)
 
@@ -168,8 +181,6 @@ class DataFrameRegressionFixture:
                 error_msg += "]\n"
                 error_msg += "To update values, use --force-regen option.\n\n"
                 raise AssertionError(error_msg)
-
-            tolerance_args = self._tolerances_dict.get(k, self._default_tolerance)
 
             self._check_data_types(k, obtained_column, expected_column)
             self._check_data_shapes(obtained_column, expected_column)
@@ -344,6 +355,9 @@ class DataFrameRegressionFixture:
                     column_levels=data_frame.columns.nlevels,
                     has_multiindex_columns=has_multiindex_columns,
                     has_index_names=has_index_names,
+                    original_columns=(
+                        list(data_frame.columns) if has_multiindex_columns else None
+                    ),
                 ),
                 dump_fn=dump_fn,
                 extension=".csv",
