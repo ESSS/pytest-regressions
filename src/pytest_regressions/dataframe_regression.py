@@ -203,7 +203,12 @@ class DataFrameRegressionFixture:
         default_tolerance: dict[str, float] | None = None,
     ) -> None:
         """
-        Checks a pandas dataframe, containing only numeric data, against a previously recorded version, or generate a new file.
+        Checks a pandas DataFrame against a previously recorded version, or generates a new file.
+
+        Data is stored and compared as CSV. Floating-point columns read from CSV are
+        compared using ``numpy.isclose``, with ``tolerances`` and ``default_tolerance``.
+        Other supported columns, including strings, booleans, integers and datetimes,
+        are compared for equality. Missing values in the same positions compare equal.
 
         Example::
 
@@ -213,6 +218,16 @@ class DataFrameRegressionFixture:
                 'gas_vol_frac [-]': vol_frac[0][positions],
                 'liquid_vol_frac [-]': vol_frac[1][positions],
                 'P': Pa_to_bar(P)[positions],
+            })
+            dataframe_regression.check(data_frame)
+
+        Numeric and string columns can be checked together.
+
+        .. code-block:: python
+
+            data_frame = pandas.DataFrame({
+                'measurement': [1.25, 2.5],
+                'label': ['gas', 'liquid'],
             })
             dataframe_regression.check(data_frame)
 
