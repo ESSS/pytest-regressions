@@ -113,27 +113,30 @@ def test_custom_check_fn_disables_fast_path(
     assert obtained.exists()
 
 
-def test_file_regression_workflow(pytester, monkeypatch):
-    monkeypatch.setattr(sys, "get_data", lambda: "foo", raising=False)
-    source = """
+@pytest.mark.parametrize("binary", [False, True])
+def test_file_regression_workflow(pytester, monkeypatch, binary):
+    initial = b"foo" if binary else "foo"
+    changed = b"foobar" if binary else "foobar"
+    monkeypatch.setattr(sys, "get_data", lambda: initial, raising=False)
+    source = f"""
         import sys
         def test_1(file_regression):
             contents = sys.get_data()
-            file_regression.check(contents, extension='.test')
+            file_regression.check(contents, extension='.test', binary={binary!r})
     """
 
     def get_file_contents():
         fn = pytester.path / "test_file" / "test_1.test"
         assert fn.is_file()
-        return fn.read_text()
+        return fn.read_bytes() if binary else fn.read_text()
 
     check_regression_fixture_workflow(
         pytester,
         source,
         data_getter=get_file_contents,
         data_modifier=lambda: monkeypatch.setattr(
-            sys, "get_data", lambda: "foobar", raising=False
+            sys, "get_data", lambda: changed, raising=False
         ),
-        expected_data_1="foo",
-        expected_data_2="foobar",
+        expected_data_1=initial,
+        expected_data_2=changed,
     )

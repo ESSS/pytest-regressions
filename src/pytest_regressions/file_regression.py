@@ -80,25 +80,6 @@ class FileRegressionFixture:
             )
 
         user_supplied_check_fn = check_fn is not None
-        if check_fn is None:
-            if binary:
-
-                def check_fn(obtained_filename: Path, expected_filename: Path) -> None:
-                    if obtained_filename.read_bytes() != expected_filename.read_bytes():
-                        raise AssertionError(
-                            "Binary files {} and {} differ.".format(
-                                obtained_filename, expected_filename
-                            )
-                        )
-
-            else:
-                check_fn = partial(check_text_files, encoding=encoding)
-
-        def dump_fn(filename: Path) -> None:
-            mode = "wb" if binary else "w"
-            with open(str(filename), mode, encoding=encoding, newline=newline) as f:
-                f.write(contents)
-
         if (
             not user_supplied_check_fn
             and not self.force_regen
@@ -125,6 +106,25 @@ class FileRegressionFixture:
                 # we can skip all the diff/match machinery (#240).
                 if expected_path.read_bytes() == contents_bytes:
                     return
+
+        if check_fn is None:
+            if binary:
+
+                def check_fn(obtained_filename: Path, expected_filename: Path) -> None:
+                    if obtained_filename.read_bytes() != expected_filename.read_bytes():
+                        raise AssertionError(
+                            "Binary files {} and {} differ.".format(
+                                obtained_filename, expected_filename
+                            )
+                        )
+
+            else:
+                check_fn = partial(check_text_files, encoding=encoding)
+
+        def dump_fn(filename: Path) -> None:
+            mode = "wb" if binary else "w"
+            with open(str(filename), mode, encoding=encoding, newline=newline) as f:
+                f.write(contents)
 
         assert check_fn is not None
         perform_regression_check(
