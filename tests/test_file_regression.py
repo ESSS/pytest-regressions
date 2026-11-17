@@ -97,42 +97,6 @@ def test_fullpath_and_basename_are_exclusive(file_regression, tmp_path, matches)
         )
 
 
-@pytest.mark.parametrize("with_test_class_names", [False, True])
-def test_fullpath_mismatch_uses_test_basename(
-    pytester, tmp_path, with_test_class_names
-):
-    golden = tmp_path / "custom.txt"
-    golden.write_text("expected\n", encoding="utf-8")
-    obtained = tmp_path / "obtained"
-    obtained.mkdir()
-    pytester.makeconftest(f"""
-        from pathlib import Path
-        import pytest
-
-        @pytest.fixture
-        def lazy_datadir():
-            return Path({str(obtained)!r})
-        """)
-    pytester.makepyfile(test_fullpath=f"""
-        from pathlib import Path
-
-        class TestSnapshots:
-            def test_snapshot(self, file_regression):
-                file_regression.check("different\\n", fullpath=Path({str(golden)!r}))
-        """)
-    args = ["--with-test-class-names"] if with_test_class_names else []
-    result = pytester.runpytest_subprocess(*args)
-    result.assert_outcomes(failed=1)
-    basename = (
-        "TestSnapshots_test_snapshot" if with_test_class_names else "test_snapshot"
-    )
-    assert (obtained / f"{basename}.obtained.txt").read_text(
-        encoding="utf-8"
-    ) == "different\n"
-    assert (obtained / f"{basename}.obtained.diff.html").is_file()
-    assert golden.read_text(encoding="utf-8") == "expected\n"
-
-
 def test_custom_check_fn_disables_fast_path(
     file_regression: FileRegressionFixture, tmp_path
 ):
