@@ -117,7 +117,6 @@ class FileRegressionFixture:
             try:
                 expected_bytes = expected_path.read_bytes()
             except OSError:
-                # Preserve the normal missing-file/error handling below.
                 pass
             else:
                 if binary:
