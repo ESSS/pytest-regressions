@@ -79,9 +79,8 @@ class FileRegressionFixture:
                 type(contents).__name__
             )
 
-        user_supplied_check_fn = check_fn is not None
         if (
-            not user_supplied_check_fn
+            check_fn is None
             and not self.force_regen
             and not self.request.config.getoption("force_regen")
             and not self.request.config.getoption("regen_all")
