@@ -25,6 +25,44 @@ def test_binary_and_text_error(file_regression: FileRegressionFixture):
         file_regression.check("", encoding="UTF-8", binary=True)
 
 
+@pytest.mark.parametrize("binary", [False, True])
+def test_fullpath_workflow(pytester, tmp_path, binary):
+    golden = tmp_path / "nested" / "golden.bin"
+    contents = tmp_path / "contents.bin"
+    contents.write_bytes(b"first\n")
+    pytester.makepyfile(test_fullpath=f"""
+        from pathlib import Path
+
+        def test_snapshot(file_regression):
+            contents = Path({str(contents)!r}).read_bytes()
+            file_regression.check(
+                contents if {binary!r} else contents.decode("utf-8"),
+                binary={binary!r},
+                fullpath=Path({str(golden)!r}),
+            )
+        """)
+    result = pytester.runpytest_subprocess()
+    result.assert_outcomes(failed=1)
+    assert golden.read_bytes() == b"first\n"
+    result = pytester.runpytest_subprocess()
+    result.assert_outcomes(passed=1)
+
+    contents.write_bytes(b"second\n")
+    result = pytester.runpytest_subprocess()
+    result.assert_outcomes(failed=1)
+    assert golden.read_bytes() == b"first\n"
+    result = pytester.runpytest_subprocess("--force-regen")
+    result.assert_outcomes(failed=1)
+    assert golden.read_bytes() == b"second\n"
+    result = pytester.runpytest_subprocess()
+    result.assert_outcomes(passed=1)
+
+    contents.write_bytes(b"third\n")
+    result = pytester.runpytest_subprocess("--regen-all")
+    result.assert_outcomes(passed=1)
+    assert golden.read_bytes() == b"third\n"
+
+
 def test_skips_obtained_write_on_match(
     file_regression: FileRegressionFixture, tmp_path
 ):
