@@ -1,5 +1,6 @@
 import os
 from collections.abc import Callable
+from copy import copy
 from functools import partial
 from pathlib import Path
 from typing import Optional
@@ -31,6 +32,18 @@ class FileRegressionFixture:
         self.original_datadir = original_datadir
         self.force_regen = False
         self.with_test_class_names = False
+        self._regen_all: bool | None = None
+
+    def with_options(self, *, regen_all: bool | None = None) -> "FileRegressionFixture":
+        """Return a copy with options for subsequent checks.
+
+        :param regen_all: If true, write the expected file and pass as with
+            ``--regen-all``. If false, disable that mode. If omitted or
+            ``None``, use the pytest session setting.
+        """
+        fixture = copy(self)
+        fixture._regen_all = regen_all
+        return fixture
 
     def check(
         self,
@@ -99,11 +112,15 @@ class FileRegressionFixture:
             with open(str(filename), mode, encoding=encoding, newline=newline) as f:
                 f.write(contents)
 
+        regen_all = self._regen_all
+        if regen_all is None:
+            regen_all = self.request.config.getoption("regen_all")
+
         if (
             not user_supplied_check_fn
             and not self.force_regen
             and not self.request.config.getoption("force_regen")
-            and not self.request.config.getoption("regen_all")
+            and not regen_all
         ):
             expected_path = resolve_check_paths(
                 datadir=self.datadir,
@@ -139,6 +156,7 @@ class FileRegressionFixture:
             force_regen=self.force_regen,
             with_test_class_names=self.with_test_class_names,
             obtained_filename=obtained_filename,
+            regen_all=regen_all,
         )
 
     # non-PEP 8 alias used internally at ESSS

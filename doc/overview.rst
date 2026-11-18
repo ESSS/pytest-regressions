@@ -150,6 +150,17 @@ With this flag, the regression fixtures will regenerate all files but will not f
 easy to update all regression files in a single pytest run when individual tests contain multiple regressions.
 
 
+To apply this behavior to specific file checks, use a configured copy:
+
+.. code-block:: python
+
+    regenerating = file_regression.with_options(regen_all=True)
+    regenerating.check("new contents")
+
+The original fixture retains its settings. Pass ``regen_all=False`` to disable the mode for the copy.
+Omitting the option uses the pytest session setting.
+
+
 Parametrized tests
 ------------------
 
