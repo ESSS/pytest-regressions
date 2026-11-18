@@ -139,10 +139,10 @@ def test_file_regression_workflow(pytester, monkeypatch):
     )
 
 
-def test_with_options_regenerates_one_fixture(file_regression, tmp_path):
+def test_with_regeneration_regenerates_one_fixture(file_regression, tmp_path):
     golden = tmp_path / "golden.txt"
     golden.write_text("original")
-    regenerating = file_regression.with_options(regen_all=True)
+    regenerating = file_regression.with_regeneration(enabled=True)
 
     regenerating.check("regenerated", fullpath=golden)
     assert golden.read_text() == "regenerated"
@@ -152,20 +152,20 @@ def test_with_options_regenerates_one_fixture(file_regression, tmp_path):
     assert golden.read_text() == "regenerated"
 
 
-def test_with_options_overrides_or_inherits_session_regeneration(pytester):
+def test_with_regeneration_overrides_or_inherits_session_regeneration(pytester):
     pytester.makepyfile("""
         import pytest
 
         def test_override(file_regression, tmp_path):
             golden = tmp_path / "golden.txt"
             golden.write_text("original")
-            verifying = file_regression.with_options(regen_all=False)
+            verifying = file_regression.with_regeneration(enabled=False)
 
             with pytest.raises(AssertionError, match="FILES DIFFER"):
                 verifying.check("different", fullpath=golden)
             assert golden.read_text() == "original"
 
-            verifying.with_options().check("regenerated", fullpath=golden)
+            file_regression.check("regenerated", fullpath=golden)
             assert golden.read_text() == "regenerated"
         """)
     pytester.runpytest_inprocess("--regen-all").assert_outcomes(passed=1)

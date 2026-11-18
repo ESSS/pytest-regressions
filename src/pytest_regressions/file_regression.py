@@ -34,15 +34,14 @@ class FileRegressionFixture:
         self.with_test_class_names = False
         self._regen_all: bool | None = None
 
-    def with_options(self, *, regen_all: bool | None = None) -> "FileRegressionFixture":
-        """Return a copy with options for subsequent checks.
+    def with_regeneration(self, *, enabled: bool) -> "FileRegressionFixture":
+        """Return a copy with an explicit override for ``--regen-all``.
 
-        :param regen_all: If true, write the expected file and pass as with
-            ``--regen-all``. If false, disable that mode. If omitted or
-            ``None``, use the pytest session setting.
+        :param enabled: If true, write the expected file and pass as with
+            ``--regen-all``. If false, disable that mode for the copy.
         """
         fixture = copy(self)
-        fixture._regen_all = regen_all
+        fixture._regen_all = enabled
         return fixture
 
     def check(

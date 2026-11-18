@@ -154,11 +154,11 @@ To apply this behavior to specific file checks, use a configured copy:
 
 .. code-block:: python
 
-    regenerating = file_regression.with_options(regen_all=True)
+    regenerating = file_regression.with_regeneration(enabled=True)
     regenerating.check("new contents")
 
-The original fixture retains its settings. Pass ``regen_all=False`` to disable the mode for the copy.
-Omitting the option uses the pytest session setting.
+The original fixture retains its settings and follows the pytest session flags.
+Pass ``enabled=False`` to disable this mode for the copy.
 
 
 Parametrized tests
