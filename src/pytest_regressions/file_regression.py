@@ -32,16 +32,31 @@ class FileRegressionFixture:
         self.original_datadir = original_datadir
         self.force_regen = False
         self.with_test_class_names = False
-        self._regen_all: bool | None = None
+        self.regen_all: bool | None = None
 
-    def with_regeneration(self, *, enabled: bool) -> "FileRegressionFixture":
-        """Return a copy with an explicit override for ``--regen-all``.
+    def copy(
+        self,
+        *,
+        regen_all: bool | None = None,
+        with_test_class_names: bool | None = None,
+        force_regen: bool | None = None,
+    ) -> "FileRegressionFixture":
+        """Return a shallow copy with optional changes to its settings.
 
-        :param enabled: If true, write the expected file and pass as with
-            ``--regen-all``. If false, disable that mode for the copy.
+        Omitted arguments and ``None`` preserve the original fixture's settings.
+
+        :param regen_all: Enable or disable the behavior of ``--regen-all``.
+        :param with_test_class_names: Set whether the fixture adds the test class
+            name to expected filenames.
+        :param force_regen: Set whether the fixture updates expected files on mismatch.
         """
         fixture = copy(self)
-        fixture._regen_all = enabled
+        if regen_all is not None:
+            fixture.regen_all = regen_all
+        if with_test_class_names is not None:
+            fixture.with_test_class_names = with_test_class_names
+        if force_regen is not None:
+            fixture.force_regen = force_regen
         return fixture
 
     def check(
@@ -111,7 +126,7 @@ class FileRegressionFixture:
             with open(str(filename), mode, encoding=encoding, newline=newline) as f:
                 f.write(contents)
 
-        regen_all = self._regen_all
+        regen_all = self.regen_all
         if regen_all is None:
             regen_all = self.request.config.getoption("regen_all")
 

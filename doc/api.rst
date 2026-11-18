@@ -19,7 +19,7 @@ file_regression
 
 .. automethod:: pytest_regressions.file_regression.FileRegressionFixture.check
 
-.. automethod:: pytest_regressions.file_regression.FileRegressionFixture.with_regeneration
+.. automethod:: pytest_regressions.file_regression.FileRegressionFixture.copy
 
 
 num_regression
