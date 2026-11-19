@@ -85,6 +85,18 @@ def test_writes_obtained_on_mismatch(file_regression: FileRegressionFixture, tmp
     assert obtained.exists()
 
 
+@pytest.mark.parametrize("matches", [False, True])
+def test_fullpath_and_basename_are_exclusive(file_regression, tmp_path, matches):
+    golden = tmp_path / "golden.txt"
+    golden.write_text("expected\n", encoding="utf-8")
+    with pytest.raises(AssertionError, match="pass either basename or fullpath"):
+        file_regression.check(
+            "expected\n" if matches else "different\n",
+            basename="explicit_name",
+            fullpath=golden,
+        )
+
+
 def test_custom_check_fn_disables_fast_path(
     file_regression: FileRegressionFixture, tmp_path
 ):

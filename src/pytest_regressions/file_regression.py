@@ -136,15 +136,22 @@ class FileRegressionFixture:
             and not self.request.config.getoption("force_regen")
             and not regen_all
         ):
-            expected_path = resolve_check_paths(
-                datadir=self.datadir,
-                original_datadir=self.original_datadir,
-                request=self.request,
-                extension=extension,
-                basename=basename,
-                fullpath=fullpath,
-                with_test_class_names=self.with_test_class_names,
-            ).expected
+            assert not (
+                basename and fullpath
+            ), "pass either basename or fullpath, but not both"
+            if fullpath:
+                # The test-derived basename is only needed for failure output.
+                expected_path = Path(fullpath)
+            else:
+                expected_path = resolve_check_paths(
+                    datadir=self.datadir,
+                    original_datadir=self.original_datadir,
+                    request=self.request,
+                    extension=extension,
+                    basename=basename,
+                    fullpath=fullpath,
+                    with_test_class_names=self.with_test_class_names,
+                ).expected
             if expected_path.is_file():
                 if binary:
                     assert isinstance(contents, bytes)
