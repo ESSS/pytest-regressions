@@ -1,5 +1,6 @@
 import os
 from collections.abc import Callable
+from copy import copy
 from functools import partial
 from pathlib import Path
 from typing import Optional
@@ -31,6 +32,32 @@ class FileRegressionFixture:
         self.original_datadir = original_datadir
         self.force_regen = False
         self.with_test_class_names = False
+        self.regen_all: bool | None = None
+
+    def copy(
+        self,
+        *,
+        regen_all: bool | None = None,
+        with_test_class_names: bool | None = None,
+        force_regen: bool | None = None,
+    ) -> "FileRegressionFixture":
+        """Return a shallow copy with optional changes to its settings.
+
+        Omitted arguments and ``None`` preserve the original fixture's settings.
+
+        :param regen_all: Enable or disable the behavior of ``--regen-all``.
+        :param with_test_class_names: Set whether the fixture adds the test class
+            name to expected filenames.
+        :param force_regen: Set whether the fixture updates expected files on mismatch.
+        """
+        fixture = copy(self)
+        if regen_all is not None:
+            fixture.regen_all = regen_all
+        if with_test_class_names is not None:
+            fixture.with_test_class_names = with_test_class_names
+        if force_regen is not None:
+            fixture.force_regen = force_regen
+        return fixture
 
     def check(
         self,
@@ -99,11 +126,15 @@ class FileRegressionFixture:
             with open(str(filename), mode, encoding=encoding, newline=newline) as f:
                 f.write(contents)
 
+        regen_all = self.regen_all
+        if regen_all is None:
+            regen_all = self.request.config.getoption("regen_all")
+
         if (
             not user_supplied_check_fn
             and not self.force_regen
             and not self.request.config.getoption("force_regen")
-            and not self.request.config.getoption("regen_all")
+            and not regen_all
         ):
             expected_path = resolve_check_paths(
                 datadir=self.datadir,
@@ -139,6 +170,7 @@ class FileRegressionFixture:
             force_regen=self.force_regen,
             with_test_class_names=self.with_test_class_names,
             obtained_filename=obtained_filename,
+            regen_all=regen_all,
         )
 
     # non-PEP 8 alias used internally at ESSS

@@ -139,6 +139,7 @@ def perform_regression_check(
     with_test_class_names: bool = False,
     obtained_filename: Optional["os.PathLike[str]"] = None,
     dump_aux_fn: Callable[[Path], list[str]] = lambda filename: [],
+    regen_all: bool | None = None,
 ) -> None:
     """
     First run of this check will generate a expected file. Following attempts will always try to
@@ -189,7 +190,8 @@ def perform_regression_check(
         return "\n".join(msg)
 
     force_regen = force_regen or request.config.getoption("force_regen")
-    regen_all = request.config.getoption("regen_all")
+    if regen_all is None:
+        regen_all = request.config.getoption("regen_all")
     if regen_all:
         source_filename.parent.mkdir(parents=True, exist_ok=True)
         dump_fn(source_filename)

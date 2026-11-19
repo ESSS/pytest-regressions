@@ -137,3 +137,57 @@ def test_file_regression_workflow(pytester, monkeypatch):
         expected_data_1="foo",
         expected_data_2="foobar",
     )
+
+
+def test_copy_regenerates_one_fixture(file_regression, tmp_path):
+    golden = tmp_path / "golden.txt"
+    golden.write_text("original")
+    regenerating = file_regression.copy(regen_all=True)
+
+    regenerating.check("regenerated", fullpath=golden)
+    assert golden.read_text() == "regenerated"
+
+    with pytest.raises(AssertionError, match="FILES DIFFER"):
+        file_regression.check("different", fullpath=golden)
+    assert golden.read_text() == "regenerated"
+
+
+def test_copy_overrides_or_inherits_session_regeneration(pytester):
+    pytester.makepyfile("""
+        import pytest
+
+        def test_override(file_regression, tmp_path):
+            golden = tmp_path / "golden.txt"
+            golden.write_text("original")
+            verifying = file_regression.copy(regen_all=False)
+
+            with pytest.raises(AssertionError, match="FILES DIFFER"):
+                verifying.check("different", fullpath=golden)
+            assert golden.read_text() == "original"
+
+            file_regression.check("regenerated", fullpath=golden)
+            assert golden.read_text() == "regenerated"
+        """)
+    pytester.runpytest_inprocess("--regen-all").assert_outcomes(passed=1)
+
+
+def test_copy_preserves_and_overrides_fixture_options(file_regression):
+    configured = file_regression.copy(
+        regen_all=True, with_test_class_names=True, force_regen=True
+    )
+    assert file_regression.regen_all is None
+    assert file_regression.with_test_class_names is False
+    assert file_regression.force_regen is False
+
+    copied = configured.copy()
+    assert copied is not configured
+    assert copied.regen_all is True
+    assert copied.with_test_class_names is True
+    assert copied.force_regen is True
+
+    overridden = configured.copy(with_test_class_names=False, force_regen=False)
+    assert overridden.regen_all is True
+    assert overridden.with_test_class_names is False
+    assert overridden.force_regen is False
+    assert configured.with_test_class_names is True
+    assert configured.force_regen is True
