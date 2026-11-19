@@ -145,7 +145,11 @@ class FileRegressionFixture:
                 fullpath=fullpath,
                 with_test_class_names=self.with_test_class_names,
             ).expected
-            if expected_path.is_file():
+            try:
+                expected_bytes = expected_path.read_bytes()
+            except OSError:
+                pass
+            else:
                 if binary:
                     assert isinstance(contents, bytes)
                     contents_bytes = contents
@@ -154,7 +158,7 @@ class FileRegressionFixture:
                     contents_bytes = contents.encode(encoding or "utf-8")
                 # If the expected paths matches the given contents exactly,
                 # we can skip all the diff/match machinery (#240).
-                if expected_path.read_bytes() == contents_bytes:
+                if expected_bytes == contents_bytes:
                     return
 
         assert check_fn is not None
