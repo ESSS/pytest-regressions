@@ -1,8 +1,11 @@
+from collections.abc import Generator
 from pathlib import Path
 from typing import Any
 from typing import TYPE_CHECKING
 
 import pytest
+
+from ._artifacts import process_report
 
 if TYPE_CHECKING:
     from .data_regression import DataRegressionFixture
@@ -29,11 +32,24 @@ def pytest_addoption(parser: Any) -> None:
         help="Regenerate all files, letting tests pass (use to regenerate everything in one run).",
     )
     group.addoption(
+        "--regression-artifacts",
+        metavar="DIR",
+        type=Path,
+        help="Copy expected and obtained files for failed regression tests into DIR.",
+    )
+    group.addoption(
         "--with-test-class-names",
         action="store_true",
         default=False,
         help="Do not ignore the names of the test classes when composing the name of the regression data files.",
     )
+
+
+@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+def pytest_runtest_makereport(item: pytest.Item) -> Generator[None, Any, None]:
+    # Read the final outcome after pytest applies xfail and skip markers.
+    outcome = yield
+    process_report(item, outcome.get_result())
 
 
 @pytest.fixture
