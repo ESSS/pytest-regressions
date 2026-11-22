@@ -57,7 +57,7 @@ class ImageRegressionFixture:
         Computes a percentage of similarity of the difference image given.
 
         :param diff_image:
-            An image in RGB mode computed from ImageChops.difference
+            An image in L or RGB mode computed from ImageChops.difference
         """
         try:
             import numpy
@@ -72,8 +72,8 @@ class ImageRegressionFixture:
                 # Compute the sum of differences
                 numpy.sum(diff_image)
                 /
-                # Divide by the number of channel differences RGB * Pixels
-                float(3 * number_of_pixels)
+                # Divide by the number of bands times the number of pixels
+                float(len(diff_image.getbands()) * number_of_pixels)
             )
             # Normalize between 0.0 -> 1.0
             / 255.0
