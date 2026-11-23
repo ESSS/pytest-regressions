@@ -3,6 +3,7 @@ UNRELEASED
 
 *UNRELEASED*
 
+* Support for Python 3.15 has been added, while Python 3.10 (EOL) has been dropped.
 * `#208 <https://github.com/ESSS/pytest-regressions/issues/208>`__: Fixed support for ``pandas.StringDtype`` columns in ``dataframe_regression``, including when the first value is NA.
 
 2.11.0
