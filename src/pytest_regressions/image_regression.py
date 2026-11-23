@@ -47,7 +47,7 @@ class ImageRegressionFixture:
             raise ModuleNotFoundError(import_error_message("Pillow"))
 
         img = Image.open(str(filename), "r")
-        if img.mode not in ("L" or "RGB"):
+        if img.mode not in ("L", "RGB"):
             return img.convert("RGB")
         else:
             return img
