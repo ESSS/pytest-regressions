@@ -45,6 +45,21 @@ def test_image_regression(
     )
 
 
+@pytest.mark.parametrize("mode", ["L", "RGB"])
+def test_image_difference_threshold(image_regression, tmp_path, mode):
+    expected = tmp_path / "black.png"
+    Image.new(mode, (2, 1), "black").save(expected)
+    obtained = Image.new(mode, (2, 1), "black")
+    obtained.paste("white", (0, 0, 1, 1))
+
+    image_regression.check(obtained, fullpath=expected, diff_threshold=50)
+
+    with pytest.raises(
+        AssertionError, match=r"Difference between images too high: 50\.0 %"
+    ):
+        image_regression.check(obtained, fullpath=expected, diff_threshold=49)
+
+
 @pytest.mark.parametrize("image_type", ["pil", "bytes"])
 def test_image_regression_workflow(pytester, monkeypatch, image_type):
     import sys

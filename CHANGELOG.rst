@@ -4,6 +4,7 @@ UNRELEASED
 *UNRELEASED*
 
 * `#208 <https://github.com/ESSS/pytest-regressions/issues/208>`__: Fixed support for ``pandas.StringDtype`` columns in ``dataframe_regression``, including when the first value is NA.
+* `#266 <https://github.com/ESSS/pytest-regressions/pull/266>`__: ``image_regression`` now normalizes the difference of grayscale (``L``) images by their actual band count; previously grayscale differences were under-reported by a factor of 3, so existing ``diff_threshold`` values for grayscale images may need adjusting.
 
 2.11.0
 ------
