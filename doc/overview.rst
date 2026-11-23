@@ -125,6 +125,23 @@ The fixture will generate a ``test_grids2.yml`` file (same name as the test) in 
 The next time you run this test, it will compare the results of ``summary_grids()`` with the contents of the YAML file.
 If they match, the test passes. If they don't match the test will fail, showing a nice diff of the text differences.
 
+Collecting failed comparisons
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To upload failed snapshots from CI, choose an artifact directory when starting pytest::
+
+    $ pytest --regression-artifacts=artifacts
+
+A relative directory is resolved from the directory where pytest was invoked.
+For each failed test, each mismatched regression comparison gets its own directory.
+This keeps artifacts from repeated checks and parallel workers separate.
+
+Each directory contains the compared files under ``expected/`` and ``obtained/``, preserving
+their original names. Its ``metadata.json`` records the pytest ``nodeid`` and the relative
+paths to both files. Upload the artifact directory to inspect the snapshots after a CI run.
+Use a fresh directory when collecting artifacts for a new run. Passing, skipped and expected-failure tests do not export artifacts.
+Baseline generation and regeneration also leave the artifact directory untouched.
+
 ``--force-regen``
 ~~~~~~~~~~~~~~~~~
 

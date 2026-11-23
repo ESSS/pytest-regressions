@@ -13,6 +13,8 @@ from typing import Union
 
 import pytest
 
+from ._artifacts import record_comparison
+
 if TYPE_CHECKING:
     from pytest_datadir.plugin import LazyDataDir
 
@@ -230,6 +232,7 @@ def perform_regression_check(
                 pytest.fail(msg)
             else:
                 dump_aux_fn(Path(obtained_filename))
+                record_comparison(request, filename, Path(obtained_filename))
                 raise
 
 

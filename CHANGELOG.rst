@@ -3,6 +3,8 @@ UNRELEASED
 
 *UNRELEASED*
 
+* `#182 <https://github.com/ESSS/pytest-regressions/issues/182>`__: Collect expected and obtained files for failed comparisons with ``--regression-artifacts=DIR``.
+
 * `#208 <https://github.com/ESSS/pytest-regressions/issues/208>`__: Fixed support for ``pandas.StringDtype`` columns in ``dataframe_regression``, including when the first value is NA.
 
 2.11.0
