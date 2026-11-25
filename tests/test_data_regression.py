@@ -14,6 +14,16 @@ def test_example(data_regression: DataRegressionFixture) -> None:
     data_regression.check(contents)
 
 
+def test_numpy_values(data_regression: DataRegressionFixture) -> None:
+    np = pytest.importorskip("numpy")
+    contents = {
+        "scalar": np.float64(1.5),
+        "integer": np.int64(2),
+        "array": np.zeros(3),
+    }
+    data_regression.check(contents)
+
+
 def test_basename(data_regression: DataRegressionFixture) -> None:
     """Basic example using basename parameter"""
     contents = {"contents": "Foo", "value": 11}

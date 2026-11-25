@@ -125,3 +125,19 @@ class RegressionYamlDumper(yaml.SafeDumper):
         yaml.add_multi_representer(
             data_type, multi_representer=representer_fn, Dumper=cls
         )
+
+
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover
+    pass
+else:
+
+    def represent_numpy_scalar(dumper: yaml.Dumper, data: Any) -> yaml.Node:
+        return dumper.represent_data(data.item())
+
+    def represent_numpy_array(dumper: yaml.Dumper, data: Any) -> yaml.Node:
+        return dumper.represent_data(data.tolist())
+
+    yaml.add_multi_representer(np.generic, represent_numpy_scalar, Dumper=RegressionYamlDumper)
+    yaml.add_multi_representer(np.ndarray, represent_numpy_array, Dumper=RegressionYamlDumper)
