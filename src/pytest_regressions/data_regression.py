@@ -139,5 +139,9 @@ else:
     def represent_numpy_array(dumper: yaml.Dumper, data: Any) -> yaml.Node:
         return dumper.represent_data(data.tolist())
 
-    yaml.add_multi_representer(np.generic, represent_numpy_scalar, Dumper=RegressionYamlDumper)
-    yaml.add_multi_representer(np.ndarray, represent_numpy_array, Dumper=RegressionYamlDumper)
+    yaml.add_multi_representer(
+        np.generic, represent_numpy_scalar, Dumper=RegressionYamlDumper
+    )
+    yaml.add_multi_representer(
+        np.ndarray, represent_numpy_array, Dumper=RegressionYamlDumper
+    )
