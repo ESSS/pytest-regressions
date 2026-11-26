@@ -134,6 +134,7 @@ class DataFrameRegressionFixture:
             self._check_data_types(k, obtained_column, expected_column)
             self._check_data_shapes(obtained_column, expected_column)
 
+            integer_diffs = None
             if np.issubdtype(obtained_column.values.dtype.type, np.inexact):
                 not_close_mask = ~np.isclose(
                     obtained_column.values,
@@ -141,6 +142,21 @@ class DataFrameRegressionFixture:
                     equal_nan=True,
                     **tolerance_args,
                 )
+            elif (
+                tolerance_args
+                and obtained_column.values.dtype.kind in "iu"
+                and expected_column.values.dtype.kind in "iu"
+            ):
+                # Subtract as Python integers: fixed-width subtraction can
+                # overflow, and converting to floats can lose small differences.
+                expected_ints = expected_column.values.astype(object)
+                integer_diffs = np.abs(
+                    obtained_column.values.astype(object) - expected_ints
+                )
+                atol = tolerance_args.get("atol", 1e-8)
+                rtol = tolerance_args.get("rtol", 1e-5)
+                limit = atol + rtol * np.abs(expected_ints)
+                not_close_mask = (integer_diffs != 0) & ~(integer_diffs <= limit)
             else:
                 not_close_mask = obtained_column.values != expected_column.values
                 # If Empty/NaN data is expected, then the values are equal:
@@ -154,7 +170,11 @@ class DataFrameRegressionFixture:
                 diff_ids = np.where(not_close_mask)[0]
                 diff_obtained_data = obtained_column[diff_ids]
                 diff_expected_data = expected_column[diff_ids]
-                if obtained_column.values.dtype == bool:
+                if integer_diffs is not None:
+                    diffs = pd.Series(
+                        integer_diffs[diff_ids], index=diff_obtained_data.index
+                    )
+                elif obtained_column.values.dtype == bool:
                     diffs = np.logical_xor(obtained_column, expected_column)[diff_ids]
                 elif (
                     obtained_column.values.dtype == object
@@ -207,8 +227,11 @@ class DataFrameRegressionFixture:
 
         Data is stored and compared as CSV. Floating-point columns read from CSV are
         compared using ``numpy.isclose``, with ``tolerances`` and ``default_tolerance``.
-        Other supported columns, including strings, booleans, integers and datetimes,
-        are compared for equality. Missing values in the same positions compare equal.
+        Integer columns are compared for equality unless an explicit per-column or
+        default tolerance is provided. With a tolerance, the comparison uses the same
+        absolute and relative tolerance formula as ``numpy.isclose``, without rounding
+        the integer difference. Strings, booleans and datetimes are compared for
+        equality. Missing values in the same positions compare equal.
 
         Example::
 
@@ -250,7 +273,8 @@ class DataFrameRegressionFixture:
 
                 default_tolerance=dict(atol=1e-7, rtol=1e-18).
 
-            If not provided, will use defaults from numpy's ``isclose`` function.
+            If not provided, floating-point columns use the defaults from
+            numpy's ``isclose`` function; integer columns are compared exactly.
 
         ``basename`` and ``fullpath`` are exclusive.
         """

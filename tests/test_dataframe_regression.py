@@ -207,6 +207,48 @@ def test_integer_values_smoke_test(
     dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
 
 
+@pytest.mark.parametrize(
+    ("expected", "obtained", "options", "passes"),
+    [
+        (2**60, 2**60 + 2, {"tolerances": {"n": dict(atol=2, rtol=0)}}, True),
+        (100, 102, {"default_tolerance": dict(atol=0, rtol=0.02)}, True),
+        (2**63, 2**63 + 1, {"default_tolerance": dict(atol=1, rtol=0)}, True),
+        (2**60, 2**60 + 1, {"default_tolerance": dict(atol=0, rtol=0)}, False),
+        (2**60, 2**60 + 1, {}, False),
+        (
+            -(2**63),
+            2**63 - 1,
+            {"default_tolerance": dict(atol=1, rtol=0)},
+            False,
+        ),
+    ],
+    ids=[
+        "column-absolute",
+        "default-relative",
+        "unsigned-integers",
+        "no-float-rounding",
+        "exact-by-default",
+        "no-integer-overflow",
+    ],
+)
+def test_integer_tolerances(
+    dataframe_regression, tmp_path, expected, obtained, options, passes
+):
+    baseline = tmp_path / "baseline.csv"
+    pd.DataFrame({"n": [expected]}).to_csv(baseline)
+    frame = pd.DataFrame({"n": [obtained]})
+
+    if passes:
+        dataframe_regression.check(frame, fullpath=baseline, **options)
+    else:
+        with pytest.raises(
+            AssertionError, match="Values are not sufficiently close"
+        ) as excinfo:
+            dataframe_regression.check(frame, fullpath=baseline, **options)
+        if expected < 0:
+            assert str(abs(obtained - expected)) in str(excinfo.value)
+
+
 def test_number_formats(dataframe_regression: DataFrameRegressionFixture, no_regen):
     data1 = np.array([1.2345678e50, 1.2345678e-50, 0.0])
     dataframe_regression.check(pd.DataFrame.from_dict({"data1": data1}))
